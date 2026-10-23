@@ -54,8 +54,9 @@ strip, "YOUR LOGO" placeholders). ✅ = on-track verified. The full set is in
 
 ![Aston Martin](docs/gallery/aston-martin-vantage-gt3-evo.jpg)
 
-Porsche 911 RSR, Ferrari 296 Challenge, Ray FF1600 and HPD ARX-01c are in
-[`docs/gallery/`](docs/gallery/) too.
+Porsche 911 RSR, Ferrari 296 Challenge, Ray FF1600, HPD ARX-01c, Lotus 79 and
+Skip Barber Formula 2000 are in [`docs/gallery/`](docs/gallery/) too — all ten
+cars.
 
 ## Quick start (no coding)
 

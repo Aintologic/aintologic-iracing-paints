@@ -17,6 +17,7 @@ your own ID, name and logos.
 | Ferrari 296 Challenge | ![Ferrari](ferrari-296-challenge.jpg) |
 | Ray FF1600 | ![Ray](ray-ff1600.jpg) |
 | HPD ARX-01c | ![HPD](hpd-arx-01c.jpg) |
+| Lotus 79 | ![Lotus 79](lotus-79.jpg) |
+| Skip Barber Formula 2000 | ![Skip Barber](skip-barber-formula-2000.jpg) |
 
-The Lotus 79 and Skip Barber Formula 2000 previews are pending (their ready-made
-paints still ship in `paints/`).
+All ten cars are shown.
