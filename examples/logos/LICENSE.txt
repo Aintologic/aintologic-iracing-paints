@@ -1,0 +1,9 @@
+The images in this folder are licensed under the Creative Commons
+Attribution-NonCommercial-ShareAlike 4.0 International License (CC BY-NC-SA
+4.0): https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+This is SUBJECT TO the trademark terms in TRADEMARKS.md at the repository
+root. The AINTOLOGIC, Freak Farm Racing and Cats Don't Suck names and logos
+are NOT licensed under Creative Commons. You may race these on your own
+iRacing car for personal, non-commercial use; you may not use the names or
+logos to sell anything or to imply endorsement.
