@@ -80,8 +80,8 @@ def plate(w, h, top, bottom, face=BONE, ink=BLACK):
     im = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     k = ImageDraw.Draw(im)
     k.rounded_rectangle([0, 0, W - 1, H - 1], radius=int(H * 0.13), fill=face + (255,))
-    f1 = ImageFont.truetype(F_COND, int(H * 0.30))
-    f2 = ImageFont.truetype(F_GEO, int(H * 0.36))
+    f1 = ImageFont.truetype(F_COND, int(H * 0.30), layout_engine=ImageFont.Layout.BASIC)
+    f2 = ImageFont.truetype(F_GEO, int(H * 0.36), layout_engine=ImageFont.Layout.BASIC)
     for txt, fnt, cy in ((top, f1, H * 0.28), (bottom, f2, H * 0.66)):
         bb = k.textbbox((0, 0), txt, font=fnt)
         k.text((W / 2 - (bb[2] - bb[0]) / 2, cy - (bb[3] - bb[1]) / 2 - bb[1]),
@@ -92,7 +92,7 @@ def plate(w, h, top, bottom, face=BONE, ink=BLACK):
 def decal_text(text, h, color=BONE, track=0.05, font=F_COND):
     """Plain condensed decal lettering, letterspaced like a real sticker."""
     S = 3
-    f = ImageFont.truetype(font, h * S)
+    f = ImageFont.truetype(font, h * S, layout_engine=ImageFont.Layout.BASIC)
     sp = h * S * track
     widths = [f.getlength(c) for c in text]
     W = int(sum(widths) + sp * (len(text) - 1)) + 4

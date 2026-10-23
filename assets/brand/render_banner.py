@@ -36,7 +36,7 @@ im = Image.new('RGBA', (1800, 600), BLACK)
 d = ImageDraw.Draw(im)
 
 def font(size, display=False):
-    f = ImageFont.truetype(str(root / 'fonts' / ('Orbitron-Variable.ttf' if display else 'BarlowCondensed-SemiBold.ttf')), size)
+    f = ImageFont.truetype(str(root / 'fonts' / ('Orbitron-Variable.ttf' if display else 'BarlowCondensed-SemiBold.ttf')), size, layout_engine=ImageFont.Layout.BASIC)
     if display:
         f.set_variation_by_axes([800])
     return f

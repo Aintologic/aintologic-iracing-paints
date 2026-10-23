@@ -55,7 +55,7 @@ BG = (14, 14, 16)
 def _label(d, x, y, w, h, text, fill, edges=True):
     d.rectangle([x, y, x + w, y + h], fill=fill)
     fs = max(28, int(min(w, h) * 0.55))
-    f = ImageFont.truetype(F_GEO, fs)
+    f = ImageFont.truetype(F_GEO, fs, layout_engine=ImageFont.Layout.BASIC)
     bb = d.textbbox((0, 0), text, font=f)
     lum = 0.299 * fill[0] + 0.587 * fill[1] + 0.114 * fill[2]
     tc = (0, 0, 0) if lum > 140 else (255, 255, 255)

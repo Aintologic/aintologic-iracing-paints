@@ -79,7 +79,7 @@ def extinguisher_mark(d, ring=SAFETY_RED, face=BONE, ink=BLACK):
     k.ellipse([0, 0, D - 1, D - 1], fill=ring + (255,))
     ins = int(D * 0.13)
     k.ellipse([ins, ins, D - 1 - ins, D - 1 - ins], fill=face + (255,))
-    f = ImageFont.truetype(F_HEAVY, int(D * 0.58))
+    f = ImageFont.truetype(F_HEAVY, int(D * 0.58), layout_engine=ImageFont.Layout.BASIC)
     bb = k.textbbox((0, 0), "E", font=f)
     k.text((D / 2 - (bb[2] - bb[0]) / 2 - bb[0], D / 2 - (bb[3] - bb[1]) / 2 - bb[1]),
            "E", font=f, fill=ink + (255,))
@@ -97,7 +97,7 @@ def tow_arrow(w, label="TOW", color=BONE, ink=BLACK):
     k.polygon([(0, H / 2), (ah * 0.72, H * 0.04), (ah * 0.72, H * 0.96)], fill=color + (255,))
     k.rounded_rectangle([ah * 0.66, H * 0.16, W - 1, H * 0.84],
                         radius=int(H * 0.16), fill=color + (255,))
-    f = ImageFont.truetype(F_COND, int(H * 0.52))
+    f = ImageFont.truetype(F_COND, int(H * 0.52), layout_engine=ImageFont.Layout.BASIC)
     bb = k.textbbox((0, 0), label, font=f)
     tx = ah * 0.66 + (W - ah * 0.66) / 2 - (bb[2] - bb[0]) / 2 - bb[0]
     k.text((tx, H / 2 - (bb[3] - bb[1]) / 2 - bb[1]), label, font=f, fill=ink + (255,))
@@ -122,7 +122,7 @@ def driver_strip(w, name, flag=None, face=BLACK, ink=BONE, accent=GOLD):
             k.rectangle([x, fy + i * fh / len(flag), x + fw, fy + (i + 1) * fh / len(flag)],
                         fill=band + (255,))
         x += fw + H * 0.26
-    f = ImageFont.truetype(F_COND, int(H * 0.54))
+    f = ImageFont.truetype(F_COND, int(H * 0.54), layout_engine=ImageFont.Layout.BASIC)
     bb = k.textbbox((0, 0), name, font=f)
     k.text((x, H / 2 - (bb[3] - bb[1]) / 2 - bb[1]), name, font=f, fill=ink + (255,))
     return im.resize((w, H // S), Image.LANCZOS)
@@ -142,14 +142,14 @@ def supplier(w, top, bottom=None, face=None, ink=BONE, rule=GOLD):
     k = ImageDraw.Draw(im)
     if face:
         k.rounded_rectangle([0, 0, W - 1, H - 1], radius=int(H * 0.14), fill=face + (255,))
-    f1 = ImageFont.truetype(F_GEO, int(H * (0.44 if bottom else 0.62)))
+    f1 = ImageFont.truetype(F_GEO, int(H * (0.44 if bottom else 0.62)), layout_engine=ImageFont.Layout.BASIC)
     bb = k.textbbox((0, 0), top, font=f1)
     k.text((W / 2 - (bb[2] - bb[0]) / 2 - bb[0], H * (0.28 if bottom else 0.5)
             - (bb[3] - bb[1]) / 2 - bb[1]), top, font=f1, fill=ink + (255,))
     if bottom:
         k.line([(W * 0.20, H * 0.53), (W * 0.80, H * 0.53)],
                fill=rule + (255,), width=max(1, int(H * 0.045)))
-        f2 = ImageFont.truetype(F_COND, int(H * 0.30))
+        f2 = ImageFont.truetype(F_COND, int(H * 0.30), layout_engine=ImageFont.Layout.BASIC)
         bb2 = k.textbbox((0, 0), bottom, font=f2)
         k.text((W / 2 - (bb2[2] - bb2[0]) / 2 - bb2[0], H * 0.76
                 - (bb2[3] - bb2[1]) / 2 - bb2[1]), bottom, font=f2, fill=ink + (255,))
@@ -173,12 +173,12 @@ def freakfarm(w, ink=BONE, accent=RUST):
     sw = H * 0.78
     pts = [(0, H * 0.10), (sw, H * 0.10), (sw, H * 0.52), (sw / 2, H * 0.92), (0, H * 0.52)]
     k.polygon(pts, outline=ink + (255,), width=max(1, int(H * 0.055)))
-    f0 = ImageFont.truetype(F_HEAVY, int(H * 0.34))
+    f0 = ImageFont.truetype(F_HEAVY, int(H * 0.34), layout_engine=ImageFont.Layout.BASIC)
     bb0 = k.textbbox((0, 0), "FF", font=f0)
     k.text((sw / 2 - (bb0[2] - bb0[0]) / 2 - bb0[0], H * 0.42
             - (bb0[3] - bb0[1]) / 2 - bb0[1]), "FF", font=f0, fill=ink + (255,))
-    f1 = ImageFont.truetype(F_GEO, int(H * 0.36))
-    f2 = ImageFont.truetype(F_COND, int(H * 0.26))
+    f1 = ImageFont.truetype(F_GEO, int(H * 0.36), layout_engine=ImageFont.Layout.BASIC)
+    f2 = ImageFont.truetype(F_COND, int(H * 0.26), layout_engine=ImageFont.Layout.BASIC)
     x = sw + H * 0.28
     # the designer, 2026-09-14: the name is one word, "FreakFarm", mixed case
     k.text((x, H * 0.16), "FreakFarm", font=f1, fill=ink + (255,))
@@ -237,10 +237,10 @@ def placeholder_logo(w, label="YOUR LOGO", ink=BONE, accent=RUST, **_):
                         radius=int(H * 0.06), fill=tuple(accent) + (255,))
     target = W * 0.80
     fs = max(6, int(H * 0.40))
-    f = ImageFont.truetype(F_COND, fs)
+    f = ImageFont.truetype(F_COND, fs, layout_engine=ImageFont.Layout.BASIC)
     while fs > 6 and k.textlength(label, font=f) > target:
         fs -= 2
-        f = ImageFont.truetype(F_COND, fs)
+        f = ImageFont.truetype(F_COND, fs, layout_engine=ImageFont.Layout.BASIC)
     bb = k.textbbox((0, 0), label, font=f)
     k.text((W / 2 - (bb[2] - bb[0]) / 2 - bb[0], H / 2 - (bb[3] - bb[1]) / 2 - bb[1]),
            label, font=f, fill=tuple(ink) + (255,))

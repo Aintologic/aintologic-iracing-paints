@@ -46,7 +46,7 @@ F_COND = os.path.join(_FONTS, "BarlowCondensed-SemiBold.ttf")
 
 
 def wide_font(size):
-    f = ImageFont.truetype(F_WIDE, size)
+    f = ImageFont.truetype(F_WIDE, size, layout_engine=ImageFont.Layout.BASIC)
     f.set_variation_by_axes([F_WIDE_WEIGHT])
     return f
 
@@ -289,7 +289,7 @@ def number_panel(w, h, fill=WHITE, radius=None, k=4):
 def small_caps(text, h, ink=WHITE, track=0.08, k=4):
     """Condensed caps for secondary text (driver strip, supplier lines)."""
     H = h * k
-    f = ImageFont.truetype(F_COND, H)
+    f = ImageFont.truetype(F_COND, H, layout_engine=ImageFont.Layout.BASIC)
     sp = int(H * track)
     glyphs = [_glyph(c, f, ink) if c != " " else None for c in text]
     W = sum((g.width if g else H // 3) for g in glyphs) + sp * (len(glyphs) - 1)
