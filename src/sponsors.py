@@ -247,11 +247,18 @@ def placeholder_logo(w, label="YOUR LOGO", ink=BONE, accent=RUST, **_):
     return im.resize((w, max(1, H // S)), Image.LANCZOS)
 
 
-def image_logo(path):
+def image_logo(path, max_aspect=None):
     """Return a f(width, **_) -> RGBA that drops the user's own image into a slot.
 
     The image is cropped to its ink and fitted to the slot width, keeping its
-    aspect - the same shape the builders expect from the example marks."""
+    aspect - the same shape the builders expect from the example marks.
+
+    ``max_aspect`` (height / width) is the tallest shape the slot was designed
+    for. An image taller than that is shrunk to fit inside a ``w`` x
+    ``w * max_aspect`` box, keeping its own proportions, and centred on a
+    transparent canvas of exactly that box, so it lands where the slot's own
+    mark would and never spills off its panel. An image that is already flatter
+    than the box is returned exactly as before."""
     if not os.path.isfile(path):
         raise SystemExit("no such logo image: %s" % path)
 
@@ -260,7 +267,15 @@ def image_logo(path):
         bb = im.getbbox()
         if bb:
             im = im.crop(bb)
-        return im.resize((w, max(1, int(im.height * w / im.width))), Image.LANCZOS)
+        h = max(1, int(im.height * w / im.width))
+        if max_aspect is None or h <= w * max_aspect:
+            return im.resize((w, h), Image.LANCZOS)
+        bh = max(1, int(round(w * max_aspect)))
+        fw = max(1, int(round(im.width * bh / im.height)))
+        fitted = im.resize((fw, bh), Image.LANCZOS)
+        box = Image.new("RGBA", (w, bh), (0, 0, 0, 0))
+        box.paste(fitted, ((w - fw) // 2, 0), fitted)
+        return box
 
     return _render
 

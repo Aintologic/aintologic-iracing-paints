@@ -98,18 +98,28 @@ def profile_id(name, default=DEFAULT_ID):
         return default
 
 
-def resolve_logo(spec):
+def _aspect(mark):
+    """Height / width of a code-drawn mark."""
+    im = mark(1000)
+    return im.height / float(im.width)
+
+
+def resolve_logo(spec, slot=None):
     """Turn a logo-slot value into a ``f(width, **kwargs) -> RGBA`` callable.
 
     ``None`` / ``""`` / ``"placeholder"`` -> the neutral YOUR LOGO placeholder;
     ``"cats_dont_suck"`` / ``"freakfarm"`` -> the code-drawn example marks;
-    anything else is treated as a path to an image file.
+    anything else is treated as a path to an image file. A user image is fitted
+    inside the shape its slot was designed for, so it never spills off its panel:
+    logo spot 1 was laid out for the near-round example mark, logo spot 2 for the
+    wide YOUR LOGO plate.
     """
     if spec in (None, ""):
         return sponsors.placeholder_logo
     if spec in _TOKENS:
         return _TOKENS[spec]
-    return sponsors.image_logo(spec)
+    box = {1: sponsors.cats_dont_suck, 2: sponsors.placeholder_logo}.get(slot)
+    return sponsors.image_logo(spec, _aspect(box) if box else None)
 
 
 def resolve(args):
@@ -127,4 +137,4 @@ def resolve(args):
     if str(cid) in protect:
         raise SystemExit("refusing to build with protected ID %s (see the profile's "
                          "protect_ids)" % cid)
-    return Config(str(cid), driver, resolve_logo(logo1), resolve_logo(logo2), args.out)
+    return Config(str(cid), driver, resolve_logo(logo1, 1), resolve_logo(logo2, 2), args.out)
