@@ -50,6 +50,8 @@ from PIL import Image, ImageDraw
 import teamscheme as T
 import sponsors
 import personalize
+import setup_check
+setup_check.require("f4")
 import f4_islands as ISL
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

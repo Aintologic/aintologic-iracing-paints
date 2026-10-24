@@ -63,8 +63,8 @@ ARX-01c (`team_hpd.py`) and Skip Barber Formula 2000 (`team_sbf2000.py`).
 - **Measured:** go to "The job, step by step". If the car needs the one-time
   setup step (`f4`, `ray`, `hpd`, `srf`, `sbf2000`, `amv`) and it hasn't been
   done, ask for that car's template zip and run
-  `python tools/first_run.py <car> <template.zip>`. Skipping it makes the build
-  fail with `ModuleNotFoundError`.
+  `python tools/first_run.py <car> <template.zip>`. If it was skipped, the build
+  stops with a message naming the missing files and the exact command to run.
 - **Not measured yet:** measure it first (next section). Tell the client this
   takes longer, needs iRacing on their Windows PC, and needs that car's paint
   template from iRacing.
@@ -156,8 +156,6 @@ Known problems:
 
 - On the MX-5, a large logo in logo spot 2 can be oversized and cropped. Check
   the preview, and suggest a smaller or wider, shorter logo if it clips.
-- Six measured cars fail with `ModuleNotFoundError` if their one-time setup step
-  was skipped. Run `tools/first_run.py` for that car.
 
 ### Commands
 

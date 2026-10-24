@@ -62,6 +62,8 @@ from PIL import Image, ImageDraw
 import teamscheme as T
 import sponsors
 import personalize
+import setup_check
+setup_check.require("sbf2000")
 
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CUSTOMER = personalize.DEFAULT_ID
