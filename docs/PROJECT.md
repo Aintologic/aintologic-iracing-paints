@@ -1,54 +1,55 @@
 # Project
 
-## What this is
+## What and why
 
-A standardised AÏntologic example paint scheme that can be applied to any
-iRacing car you drive, so you are recognisable on track across every series.
+iRacing Paints helps people paint their own iRacing cars with an AI assistant.
+The person describes the car they want, like hiring a painter. The AI asks
+questions, shows a preview, and builds the paint once it's approved. The tools
+here handle the hard part: placing stripes, names and logos accurately across
+iRacing's flattened car templates.
 
-## Who it serves
+Because the tools measure each car from iRacing's own paint template, they work
+on any car in iRacing, including cars released after this project. The ten cars
+already measured were chosen to cover the main kinds of car (formula, prototype,
+GT, road-based cup car). They, and the black, papaya and white AÏntologic scheme
+they wear, are examples. They are not the point.
 
-You, racing under the AÏntologic example identity. The generator ships the
-scheme as an example you personalize with your own details:
+It is for anyone who races in iRacing and wants a good-looking car of their own,
+whether or not they can draw, use an image editor or write code.
 
-| flag | what it sets |
-|---|---|
-| `--id <id>` | your iRacing customer ID; the build writes `car_<id>.tga` |
-| `--driver <name>` | the name shown on the driver strip |
-| `--logo1 <image>` | the image dropped into logo slot 1 |
-| `--logo2 <image>` | the image dropped into logo slot 2 |
+It is not an official iRacing tool, not a paint-sharing service, and not a
+showcase of one team's scheme.
 
-With no flags the output carries a neutral "YOUR LOGO" placeholder in both logo
-slots and a blank driver strip, so it is safe to build and view before you have
-supplied anything.
+## What "done" looks like
 
-Each build writes one paint file, `car_<id>.tga`, for the customer ID you pass.
-If you already run a hand-made livery on another account, keep it out of this
-repo — the generator never manages or overwrites a file it did not build.
+The project is doing its job when:
 
-## What matters now
+- Someone who has never painted a car can describe one, approve a preview, and
+  race it, on any car they choose.
+- A car the project has never seen can be measured and painted by following the
+  documented method, without guessing.
+- Graphics sit on the right panels, the right way up, on **both** sides of the
+  car, and iRacing's number areas stay clear and readable.
+- The same inputs always build the same paint, so a design can be rebuilt or
+  moved to another car cheaply.
+- The person stays in charge: nothing installs itself, nothing is overwritten
+  without permission, and nothing private is shared.
 
-The MX-5 (Global Mazda MX-5 Cup) is car one. It establishes the design
-language: black base, forest-green lower sweep with an antique-gold hairline,
-cream AÏNTOLOGIC wordmark on the doors, oversized AÏ mark on the hood.
+Planned next steps are tracked as
+[issues](https://github.com/Aintologic/aintologic-iracing-paints/issues): your
+own colors and design, the full brief-to-delivery workflow, a delivery pack with
+a Trading Paints guide, cars that aren't on the list, versioned releases, and
+automatic checks.
 
-## What must not break
+## For the AI agent
 
-- Graphics must sit on the right panels, right way up, on **both** sides.
-- iRacing's number blocks stay clear and readable.
-- The livery must read as AÏntologic at racing speed, not just up close.
-- Artwork stays reproducible from source so the next car is cheap.
-
-## How success is recognised
-
-Someone sees the car and thinks "that's a good-looking race car — what is
-AÏntologic?" Then the same design language goes onto a second car and the two
-obviously belong to the same team.
-
-## Brand
-
-AÏntologic is a creative identity built around "what is real?" — simulation,
-observation, hidden systems. Premium and deliberate, never generic-AI clichés:
-no falling code, no circuit boards, no neon cyberpunk.
-
-Palette: bone `#EFE4D0`, forest `#1D3A31`, rust `#C0552A`, antique gold
-`#C69A3F`, on warm near-black `#0B0C0E`.
+- Start with `AGENTS.md`; it defines your role and rules.
+- The example scheme (palette, marks, placement rules) is documented in
+  `docs/PAINT-SCHEME.md`. Its palette is black `#0C0C0D`, papaya `#FF7A00`
+  (accent only), white `#ECECEC` and graphite `#2E3034`.
+- The build method is in `docs/IRACING-PAINTING-PLAYBOOK.md`; how a car's panel
+  layout is measured is in `docs/PANEL-PROBING.md`; each car's verified panel
+  map is in `docs/car-maps/`.
+- Personalization options (`--id`, `--driver`, `--logo1`, `--logo2`, `--out`,
+  `--profile`) are shared by every builder through `src/personalize.py`.
+  Defaults are neutral: a blank driver strip and a "YOUR LOGO" placeholder.

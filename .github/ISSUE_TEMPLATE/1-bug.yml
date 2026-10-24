@@ -1,0 +1,40 @@
+name: Something isn't working
+description: A bug, an error message, or a paint that looks wrong.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting this. Plain words are perfect.
+        **Before you post:** remove your iRacing customer ID and any personal folder names from error messages and screenshots (write `123456` or `<my folder>` instead).
+  - type: input
+    id: car
+    attributes:
+      label: Which car?
+      placeholder: e.g. Global Mazda MX-5 Cup
+    validations:
+      required: true
+  - type: textarea
+    id: what-and-why
+    attributes:
+      label: What and why
+      description: What happened, and why it's a problem for you. No technical terms needed.
+      placeholder: e.g. My logo is cut off on the left side of the car.
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: What "done" looks like
+      description: What you expected to see instead.
+      placeholder: e.g. The whole logo shows on both sides, the same size.
+    validations:
+      required: true
+  - type: textarea
+    id: for-the-ai-agent
+    attributes:
+      label: For the AI agent
+      description: Optional technical detail. If an AI assistant was helping you, it can fill this in. Include the exact command, the full error text, your operating system and your Python version. Remove personal details first.
+      render: text
+    validations:
+      required: false

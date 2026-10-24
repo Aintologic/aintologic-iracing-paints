@@ -1,26 +1,37 @@
 # Templates
 
-iRacing paint templates are **not** in this repo. They are iRacing's assets, and
-the full pack is about 5.7 GB.
+## What and why
 
-They live in `Area51/templates/`, which is gitignored:
+iRacing publishes a paint template for each car: a layered image of the car's
+body laid out flat. This project reads each car's panel outlines from that
+template. You need it:
 
-    Area51/templates/all_iracing_templates/     the full pack, unzipped
-    Area51/templates/all_iracing_templates.zip  the pack as downloaded
-    Area51/templates/used/                      templates for cars we have painted
+- for **any car the project hasn't measured yet**, so the AI can measure it, and
+- once, for a short setup step, for six of the cars already measured.
 
-Copy `Area51/` between machines by hand (robocopy / USB / file share) — never
-through the cloud.
+The templates are iRacing's property, so they are **not included** in this
+project. Download your own from iRacing. Keep it on your computer and don't
+share it or commit it to git.
 
-## Finding the right template
+Measured cars that need it for setup: FIA F4, Ray FF1600, HPD ARX-01c, SCCA
+Spec Racer Ford, Skip Barber Formula 2000 and Aston Martin Vantage GT3 EVO. The
+other four measured cars build without one.
 
-Naming is `<carId>_template_<CODE>.zip`. Get the car ID from iRacing:
-`Racing -> My Content -> My Licensed Cars -> View Car -> Car Info` — it is shown
-top right as `#67`.
+## What "done" looks like
 
-| car | ID | file |
-|---|---|---|
-| Global Mazda MX-5 Cup | 67 | `Area51/templates/used/67_template_MX16.zip` |
+- You have the right template zip for your car saved on your computer.
+- For a measured car: you ran its one-time setup step, and it finished without
+  errors.
+- For a new car: the AI has the template it needs to start measuring.
 
-Using the wrong template is the most expensive mistake in this project — see
-`docs/IRACING-PAINTING-PLAYBOOK.md` Rule 1.
+## For the AI agent
+
+- Template zips are named `<carId>_template_<CODE>.zip`. The car ID is shown in
+  iRacing under the car's **Car Info** (for example `#67`).
+- Using the wrong template is the most expensive mistake in this project: the
+  panel shapes won't match and graphics land in the wrong places. Check the car
+  ID in the file name before using it.
+- Measured cars: run `python tools/first_run.py <car> <template.zip>` (template
+  table in `docs/REGENERATING-GEOMETRY.md`). New cars: follow "Measuring a new
+  car" in `AGENTS.md`. The template can live anywhere on the client's computer.
+- Never commit, upload or share a template or the files generated from it.

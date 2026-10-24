@@ -1,0 +1,31 @@
+name: Request or idea
+description: A feature, a clearer explanation, or a car to add to the measured list.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea. Plain words are perfect; no technical knowledge needed.
+  - type: textarea
+    id: what-and-why
+    attributes:
+      label: What and why
+      description: What you'd like, and why it would help you.
+      placeholder: e.g. I'd like to choose my own colors, not just the example design.
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: What "done" looks like
+      description: How we'd know it's finished, from your point of view.
+      placeholder: e.g. I can tell my AI assistant my team colors, and the paint uses them.
+    validations:
+      required: true
+  - type: textarea
+    id: for-the-ai-agent
+    attributes:
+      label: For the AI agent
+      description: Optional technical detail, such as an iRacing car ID, a paint folder name, or the command you tried. Leave blank if you're not sure.
+    validations:
+      required: false

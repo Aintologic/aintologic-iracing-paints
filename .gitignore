@@ -10,13 +10,17 @@ out/
 build/
 dist/
 
+# Your saved settings (customer ID, name, logo paths) stay on your computer
+profiles/
+
 # OS / editor
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
 
-# iRacing templates are iRacing's IP — download your own, keep them out of git.
+# iRacing templates are iRacing's property. Download your own and keep them out of git.
 # The extracted-template working folder used when regenerating car geometry:
 tpl/
 *.psd
+*_template_*.zip
