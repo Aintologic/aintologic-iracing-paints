@@ -13,24 +13,24 @@ the right place, the right way up, on both sides.
 Because the tools measure each car, they aren't limited to a fixed list. They
 work on any car in iRacing, including cars iRacing hasn't released yet.
 
-You don't need to draw or write code. You do need to install a few free
-programs yourself; each one is explained below. Nothing in this project
-installs itself.
+If you can describe a car to a friend, you can do this. You don't need to draw
+or write code. You do need to install a few free programs yourself; each one is
+explained below. Nothing in this project installs itself.
 
 > **Where it stands today.** Ten cars are already measured and painted. They
 > were chosen to cover the main kinds of car: formula cars, a prototype, GT
 > cars and road-based cup cars. Any other car takes one extra step: the AI
-> measures it first. On every car you can add your name, your own two logos and
-> your iRacing customer ID to an example design. Your own colors and layouts
-> are planned; progress is tracked in the
-> [open issues](https://github.com/Aintologic/aintologic-iracing-paints/issues).
+> measures it first. On any car you can put your name, two logos of your own and
+> your iRacing customer ID on an example design. Picking your own colors and
+> layout isn't in this version yet; it's planned for a later one.
 
 ## What and why
 
 Painting an iRacing car by hand means working on a flat, stretched-out map of
 the car's body in an image editor, then checking it in the sim, again and
-again. A stripe that looks straight on the map can bend over a fender or end up
-upside down on one side.
+again. A stripe that looks straight on the map can bend over a fender, and your
+name can come out backwards on the left door. (That one happens more than
+anyone admits.)
 
 This project measures the car instead of guessing. It reads the panel outlines
 from iRacing's own paint template for that car, then checks its measurements
@@ -41,7 +41,7 @@ An AI assistant runs those tools for you. You say what you want in plain words,
 and it does the measuring and the building.
 
 The black, papaya and white AÏntologic cars in the gallery are examples of what
-the tools can do. The point is your car.
+the tools can do. Nobody has to drive around in our colors.
 
 ### What the AI does, and what it doesn't
 
@@ -49,7 +49,8 @@ the tools can do. The point is your car.
   it's new to the project, run the build tools in this folder, show you a
   preview, and write the finished files to the `out` folder.
 - **It doesn't:** install software, change files outside this folder without
-  asking you first, upload anything, or add logos you don't own.
+  asking you first, upload anything, add logos you don't own, or put flames on
+  your hood because it was feeling creative.
 - **You stay in charge.** Nothing is final until you approve the preview. AI
   assistants can make mistakes, so check the preview before you race.
 
@@ -80,17 +81,20 @@ installer.
 
 ### 2. Four Python add-ons
 
-Python add-ons come from the Python Package Index, Python's official public
+Python add-ons come from the [Python Package Index](https://pypi.org), Python's official public
 library of add-ons. You install them with `pip`, the installer that comes with
 Python. Open a terminal (on Windows: press Start, type **PowerShell**, press
 Enter) and type each command, one at a time, in this order:
 
 | order | add-on | what it is | why this project needs it | command |
 |---|---|---|---|---|
-| 1 | **numpy** | fast math on large grids of numbers | a picture is a grid of pixels; numpy does the math on them | `python -m pip install "numpy>=1.24"` |
-| 2 | **Pillow** | the standard Python library for opening, drawing and saving pictures | draws every stripe, letter and logo, and saves the paint file | `python -m pip install "Pillow>=10.0"` |
-| 3 | **scipy** | scientific tools built on numpy | finds the outline of each body panel when a car is measured | `python -m pip install "scipy>=1.10"` |
-| 4 | **psd-tools** | reads Photoshop (.psd) files | iRacing's paint templates are Photoshop files; this reads the layer that shows the panel outlines | `python -m pip install "psd-tools>=1.9"` |
+| 1 | **[numpy](https://numpy.org)** | fast math on large grids of numbers | a picture is a grid of pixels; numpy does the math on them | `python -m pip install "numpy>=1.24"` |
+| 2 | **[Pillow](https://python-pillow.org)** | the standard Python library for opening, drawing and saving pictures | draws every stripe, letter and logo, and saves the paint file | `python -m pip install "Pillow>=10.0"` |
+| 3 | **[scipy](https://scipy.org)** | scientific tools built on numpy | finds the outline of each body panel when a car is measured | `python -m pip install "scipy>=1.10"` |
+| 4 | **[psd-tools](https://github.com/psd-tools/psd-tools)** | reads Photoshop (.psd) files | iRacing's paint templates are Photoshop files; this reads the layer that shows the panel outlines | `python -m pip install "psd-tools>=1.9"` |
+
+Each add-on's name links to its own website, so you can see who makes it and
+what it does before you install it.
 
 If `python` isn't recognized, use `py` instead, for example
 `py -m pip install "numpy>=1.24"`.

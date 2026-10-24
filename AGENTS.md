@@ -147,8 +147,8 @@ cup car (`team_mx5.py`).
 ### Be honest about limits
 
 Today every car carries the example design, with the client's name, two logos
-and customer ID. Their own colors and layouts are planned but not built yet
-(see the open issues). If the client asks for that, say so plainly and offer
+and customer ID. Their own colors and layouts are planned but not built yet.
+If the client asks for that, say so plainly and offer
 what is possible today. If they want to experiment anyway, work on a copy and
 tell them the result is unsupported.
 
