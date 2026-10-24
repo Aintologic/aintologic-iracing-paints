@@ -13,7 +13,7 @@
   was empty).
 - Paint file: `car_<id>.tga` (your iRacing customer ID).
 - Build: `src/team_ray.py`.
-- Status: **LOCKED as `releases/ray-ff1600/v1.0-2026-09-14/`** (approved on the
+- Status: **ready-made paint in `paints/ray-ff1600/`** (approved on the
   render 2026-09-14; on-track verification pending — a change is a new version,
   never an edit of v1.0).
 
@@ -124,9 +124,8 @@ Wheels, suspension, floor, exhaust, engine, cage: `Car Mandatory`, not paintable
 
 ## How to edit this car later — the breadcrumbs (v1.0, 2026-09-14)
 
-**Locked:** `releases/ray-ff1600/v1.0-2026-09-14/` (approved on the render;
-on track pending). Restore with
-`python src/restore.py v1.0-2026-09-14 --car ray-ff1600`. Do not change the
+**Ready-made paint:** `paints/ray-ff1600/` (approved on the render;
+on track pending). To get it back exactly, copy it from `paints/ray-ff1600/`. Do not change the
 design on a whim; anything experimental goes on a branch and a new release
 folder, never over v1.0.
 
@@ -166,8 +165,6 @@ rearward until its forward edge sits at 1095 — exactly the blister's rear edge
 `place_across_seam()` cuts it at `TUB_REAR_SEAM` 1342 and steps the aft half by
 `TUB_REAR_DY` 5.
 
-Record of both sides:
-`releases/ray-ff1600/v1.0-2026-09-14/closeups-wordmark-asymmetry.jpg`.
 **A future rebuild that restores matching coordinates is a regression, not a
 fix.**
 
@@ -196,8 +193,7 @@ tail's cut-off rear face (it is mostly engine and gearbox from behind).
 
 ## Spec map — VALIDATED 2026-09-14, B3 unchanged
 
-A/B at one lit pose, spec TGA present vs parked
-(`releases/ray-ff1600/v1.0-2026-09-14/closeups-spec-ab.jpg`), measured on a
+A/B at one lit pose, spec TGA present vs parked, measured on a
 patch of plain bodywork on the engine-cover crown: with B3 it reads an even
 satin (mean RGB 54/48/44, sd 14.5); with no spec map the same patch blows out
 to a specular hotspot (mean 64/60/61, sd 58.8) and the black reads

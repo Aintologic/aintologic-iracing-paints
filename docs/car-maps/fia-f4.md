@@ -9,7 +9,7 @@
 - Paint file: `car_<id>.tga`, where `<id>` is your iRacing customer ID (passed
   with `--id`). Nothing else lives in that folder.
 - Build: `src/team_f4.py`.
-  **Locked as `releases/fia-f4/v1.1-2026-09-14/` (approved on the render
+  **ready-made paint in `paints/fia-f4/` (approved on the render
   and ON TRACK, 2026-09-14; v1.0 is the same paint before the on-track
   sign-off).** The engine-cover spine island is deliberately unmapped and
   black — the twin ridge stripes were chosen over a spine stripe.
@@ -116,8 +116,7 @@ logo slot 1 mark.
 
 ## Spec map — VALIDATED 2026-09-14, B3 unchanged
 
-A/B at one top-lit pose, spec TGA present vs parked (`releases/fia-f4/
-v1.0-2026-09-14/closeups-spec-ab.jpg`): with B3 the body renders a neutral
+A/B at one top-lit pose, spec TGA present vs parked: with B3 the body renders a neutral
 satin (mean RGB 40/40/41, blue−red +1.6, no hotspot); without it the black
 goes glossy and picks up the sky (blue−red +6.2). White crisp, orange the pop.
 No ladder was needed on this car. The sim writes `car_spec_<id>.mip` ~3 s
@@ -125,8 +124,7 @@ after the TGA lands; that .mip is what Trading Paints takes.
 
 ## How to edit this car later — the breadcrumbs (v1.1, 2026-09-14)
 
-**Locked:** `releases/fia-f4/v1.1-2026-09-14/` (on-track verified). Restore
-with `python src/restore.py v1.1-2026-09-14 --car fia-f4`. Do not change the
+**Ready-made paint:** `paints/fia-f4/` (on-track verified). To get it back exactly, copy it from `paints/fia-f4/`. Do not change the
 design without sign-off; anything experimental goes on a branch and a new
 release folder, never over v1.1.
 
@@ -214,7 +212,7 @@ regenerates the wire / block pictures; `tools/f4_islands_gen.py` regenerates
   the response is non-linear: it lingers around the side views and rushes
   through the fronts/rears. Sweep 12 frames and pick; `tools/contact_sheet.py`
   tiles them with frame numbers.
-- Default zoom shows the car small; `view.ps1 -Wheel 5` (five ticks in) fills
+- Default zoom shows the car small; five mouse-wheel ticks in (by hand; `view2.ps1` doesn't zoom) fills
   the pane with a level side view. The viewer gets driven between calls (zoom
   and pose both change) — never assume a pose.
 - `-DragY -600` is level, `+600` top-down (pitch clamps). A top-down frame

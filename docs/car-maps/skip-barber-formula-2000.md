@@ -1,9 +1,7 @@
 # Skip Barber Formula 2000 (#1) — panel map
 
 Status: **Approved on the render 2026-10-08** ("approved", as first shown — no
-changes) and **locked as
-`releases/skip-barber-formula-2000/v1.0-2026-10-08/`** (tag
-`skip-barber-formula-2000/v1.0-2026-10-08`). On track pending — the account
+changes) and the ready-made paint is in `paints/skip-barber-formula-2000/`. On track pending — the account
 shows "License Required". Any pixel change is a v1.1, never an edit of v1.0.
 Spec is the B3 "Satin-True" set carried over without a per-car A/B.
 

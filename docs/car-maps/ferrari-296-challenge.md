@@ -11,7 +11,7 @@
 - Paint folder: `%USERPROFILE%\Documents\iRacing\paint\ferrari296challenge\`.
 - Paint file: `car_<id>.tga` (where `<id>` is your iRacing customer ID).
 - Build: `src/team_f296c.py`.
-- Status: **LOCKED as `releases/ferrari-296-challenge/v1.0-2026-09-16/`** —
+- Status: **ready-made paint in `paints/ferrari-296-challenge/`** —
   concept pass 1 approved on the render 2026-09-16 with no changes;
   on-track verification pending. A change is a new version, never an edit of v1.0.
 
@@ -185,9 +185,8 @@ probe (`probe-pass2-*.jpg`) and the rejected hood ladder
 
 ## How to edit this car later — the breadcrumbs (v1.0, 2026-09-16)
 
-**Locked:** `releases/ferrari-296-challenge/v1.0-2026-09-16/` (approved on the
-render; on track pending). Restore with
-`python src/restore.py v1.0-2026-09-16 --car ferrari-296-challenge`. Do not
+**Ready-made paint:** `paints/ferrari-296-challenge/` (approved on the
+render; on track pending). To get it back exactly, copy it from `paints/ferrari-296-challenge/`. Do not
 change the design on a whim; anything experimental goes on a branch and a
 new release folder (v1.1, v2.0 …), never over v1.0.
 
@@ -201,10 +200,7 @@ imports `src/teamscheme.py` (palette + marks) and `src/sponsors.py` (the two
 logo slots and the driver strip). No generated island table is needed on this
 car — every placement is a constant. Rebuilding with the same Pillow / font
 versions reproduced the release bytes at lock time (`10a378ed…` / `64a79345…`);
-another Pillow / font version will not — the release TGA is the lock. Lock a
-new version with
-`python tools/lock_release.py ferrari-296-challenge <version>-<date> ferrari296challenge`
-after the car has been loaded once in the viewer (so the sim writes the .mip).
+another Pillow / font version will not — the release TGA is the lock.
 
 **The one rule of the UV:** rows > 1236 are the car's LEFT (upright from a
 level left view, +x rearward, +y down); rows < 1236 the RIGHT; mirror

@@ -33,7 +33,8 @@ suspect the code.**
 
 ## 1. The ruler probe — what does this rect cover?
 
-`tools/flank_ruler.py`, `tools/valance_ruler.py`, `tools/nose_ruler.py`
+`tools/probe_ruler.py <module> NAME:x,y,w,h:X:100` (and again with `:Y:50`), or
+`tools/probe.py <module> rect x y w h --n 4`
 
 Labelled gridlines every 100 in x and 50 in y, painted **over the live livery**,
 read from a **level** camera (playbook Rule 3a — never top-down).
@@ -62,15 +63,15 @@ why claw slashes at 80% of car length kept landing on the door.
 
 ## 2. The column probe — where does each part of a rect land?
 
-`tools/valance_full.py` (good), `tools/valance_cols.py` (the sparse version
-that got it wrong)
+`tools/probe_ruler.py <module> NAME:x,y,w,h:X:<step>` with a small step, or
+`tools/probe.py <module> rect x y w h --n 10`
 
 Fat bars of distinct colour at known x, read from the surface.
 
 **Sample densely.** A five-column probe of the valance produced a scrambled
 mapping — plate recess at x 0..70, one corner at 150..220, the other at
-800..970 — and I painted the rear stripe as two patches on the corners because
-I believed there was no continuous run between them. A ten-bar probe across the
+800..970 — and the rear stripe was painted as two patches on the corners on
+the belief that there was no continuous run between them. A ten-bar probe across the
 same rect showed **x 0..940 runs straight across the tail in order**. The
 mapping was fine; the sampling was too sparse to see it.
 
@@ -98,18 +99,18 @@ always level and `+600` always top-down — if a capture is top-down, that is
 why. `contact.py --level` fixes it.
 
 This is how both MX-5 rear quarters were finally found in the valance rect
-(the car map has the story). The older single-purpose scripts below still
-work and are kept as examples of each question.
+(the car map has the story). Sections 1 to 5 are the questions it answers;
+each names the command to use.
 
 ## 3. Elimination — the panel isn't in any rect you know
 
-`tools/grid8.py`, then `tools/grid4.py` — or `probe.py ... grid --n 8`
+`tools/probe.py <module> grid --n 8`, then `--n 4`, or `tools/coord_grid.py <module>`
 
 Labelled cells over the **whole 2048 texture**, over the live livery. Look at
 the surface you care about, read which cell lands on it, then probe that region
 finely with quadrants.
 
-Use `grid8` to locate, `grid4` when the labels are too small to read on a
+Use `--n 8` to locate, `--n 4` when the labels are too small to read on a
 curved or distant panel (bigger cells, bigger type).
 
 This is how the MX-5's nose was found in unclaimed space, and how the second
@@ -124,7 +125,7 @@ assume a left/right pair exists just because the car is symmetric.
 
 ## 4. The height probe — where in the rect is the right height?
 
-`tools/quarter_height.py`
+`tools/probe.py <module> bands x y w h --n 5`, or `tools/probe_ruler.py` with axis `Y`
 
 Several horizontal bands of distinct colour stacked down the rect. Read which
 one lines up with the feature you are matching.
@@ -136,7 +137,9 @@ spec map's blue channel is — different trap, playbook Rule 8).
 
 ## 5. The transform probe — text vs geometry
 
-`tools/flank_l_probe.py`
+`tools/probe.py <module> rect x y w h --n 2`, or `tools/probe_multi.py`: every cell
+is marked with a red bar on its texture-top edge and a blue bar on its
+texture-left edge
 
 Paste a full-panel test image with **no transform at all**: NOSE at low x, TAIL
 at high x, red bar on the top edge, blue bar on the left edge. Whatever the car
@@ -167,7 +170,8 @@ If a design comes as an orthographic elevation and the target rect is a linear
 map of that surface, **resample the flat straight into the rect**. It removes
 every opportunity to eyeball a size, which is where the errors come from.
 
-`flank_from_flat()` in `src/build_aintologic_mx5.py` is the working example.
+The original working example was written for an early MX-5 builder that is
+not part of this repo.
 
 Things that still have to be handled in code, each learned the hard way:
 
@@ -189,7 +193,7 @@ Things that still have to be handled in code, each learned the hard way:
 The build guard exists because artwork drifts into them. But it must allow a
 **deliberate flat panel** — a real racing number panel *is* a flat fill under
 the stamped number, and painting one is how you get the design's look with the
-sim's number. The guard in `build_aintologic_mx5.py` permits base colour or the
+sim's number. The build guard (see `src/teamscheme.py`) permits base colour or the
 panel fill and fails on anything else.
 
 Check every rect you paint against **every** block, not just the obvious ones —
@@ -262,7 +266,7 @@ a car with ~20 islands.
   RSR's tail stripe the wrong way once; the fix came from the light bar /
   exhaust centre in a true dead-rear frame.
 - **The viewer's top-down pose crops the nose at working zoom.** Zoom out
-  (`view.ps1 -Wheel -4`) to see the whole hood from above; wheel ticks are
+  (four mouse-wheel ticks out, by hand) to see the whole hood from above; wheel ticks are
   sometimes swallowed — check the frame, repeat if unchanged.
 - **When the geometry defeats the recipe, say so early.** Five passes went
   into forcing a constant-width stripe through the RSR's hood louvres before

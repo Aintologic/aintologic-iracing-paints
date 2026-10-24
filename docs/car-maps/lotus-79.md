@@ -14,8 +14,7 @@
 - Paint file: `car_<id>.tga`, where `<id>` is your iRacing customer ID (pass it
   with `--id`).
 - Build: `src/team_l79.py`.
-- Status: **LOCKED as `releases/lotus-79/v1.0-2026-09-17/`** (tag
-  `lotus-79/v1.0-2026-09-17`) — the first concept was approved on the render
+- Status: **ready-made paint in `paints/lotus-79/`** — the first concept was approved on the render
   2026-09-17 with no changes; spec B3 A/B-validated; on-track verification
   pending (needs the licence). A change is a new version, never an edit of
   v1.0. **The historic Formula 1 adaptation** in the reference set.
@@ -127,9 +126,8 @@ sash, tub/cover sides beyond logo slot 2, endplate inner faces, skirts.
 
 ## How to edit this car later — the breadcrumbs (v1.0, 2026-09-17)
 
-**Locked:** `releases/lotus-79/v1.0-2026-09-17/` (approved on the render; spec
-A/B-validated; on track pending). Restore with
-`python src/restore.py v1.0-2026-09-17 --car lotus-79`. Do not change the design
+**Ready-made paint:** `paints/lotus-79/` (approved on the render; spec
+A/B-validated; on track pending). To get it back exactly, copy it from `paints/lotus-79/`. Do not change the design
 without sign-off; anything experimental goes on a branch and a new release
 folder, never over v1.0.
 
@@ -190,7 +188,7 @@ reads from the car's side). Set all three Car Number chips to `#0C0C0D`.
 
 **Spec treatment:** B3 "Satin-True" — body (0,170,200), white (0,55,30), papaya
 (0,35,16) with a 3-texel halo, logo faces (0,120,150), number blocks (0,60,110).
-A/B at a level-left pose: `releases/lotus-79/v1.0-2026-09-17/closeups-spec-ab.jpg`.
+Validated with an A/B comparison at a level-left pose.
 
 **Hidden / occluded — don't put anything that matters here:**
 - tub side rows below ~1520 (under the pod top) and the nose underside;

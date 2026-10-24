@@ -44,7 +44,7 @@ Do these in order. Skipping ahead is what causes rework.
 7. **Only then** build the spec map. Rule 8.
 8. **Lock the build** as soon as you approve it on the render. Rule 10.
 9. **Verify on track** (when you race it), not just the viewer. Rule 9.
-   Clean → update the `releases/INDEX.md` row to "on track verified, <date>".
+   Clean → record it in the car's map (`docs/car-maps/<car>.md`) as "on track verified, <date>".
    A problem → fix it as the next version; the locked one stays as it is.
 
 ---
@@ -84,10 +84,10 @@ That loop is the entire job. Everything else is arranging to run it faster.
 
 Automate it. Keep these in a scratch folder:
 
-- `view.ps1` — focuses the iRacing window, sends Ctrl+R, optionally drags to
-  rotate (`-Drag`, `-DragY`) or scrolls to zoom (`-Wheel`), then captures the
+- `view2.ps1` - focuses the iRacing window, sends Ctrl+R, optionally drags to
+  rotate (`-Drag`, `-DragY`), then captures the
   window to a PNG. One call per iteration.
-- `crop2.ps1` — crops and upscales a region of a capture, for reading detail.
+- `zoom.py` - crops and upscales a region of a capture, for reading detail.
 
 Two gotchas worth keeping:
 
@@ -162,7 +162,7 @@ finely. That is how the MX-5's nose was found in unclaimed texture space at
 
 The nose band was fixed twice and still wrong. Starting at x=1024 width 768 left
 BOTH bumper corners short. Widening only the high-x end fixed one corner and left
-the other bare — visibly lopsided head-on, and I reported it as fixed. **When a
+the other bare — visibly lopsided head-on, and it was reported as fixed. **When a
 band spans a symmetric panel, check both ends before declaring it done.**
 
 ## Rule 4 — The two flanks. This is the subtlest trap in the whole job.
@@ -233,8 +233,8 @@ whole point of this rule.
 
 The MX-5 hood renders rotated 90° CW; build in car-space then `ROTATE_90`.
 
-The trap: the hood mark looked wrong for three iterations and I changed the
-**rotation** each time. The rotation (`ROTATE_180` before the panel's `ROTATE_90`
+The trap: the hood mark looked wrong for three iterations and the
+**rotation** was changed each time. The rotation (`ROTATE_180` before the panel's `ROTATE_90`
 compensation) had been correct from the start. The actual defect was **size** —
 at 470px wide on a 706px panel it ran off the front of the bonnet and read as a
 cropped slab. At 300px it reads perfectly.
@@ -270,8 +270,8 @@ against every block, not just the obvious ones.
 
 Set in **Paint Shop → Paint Your Car → Car Number**, three chips. Which chip
 drives which number is **per car and not documented**. On the MX-5, chip 1 drives
-the hood number and **chip 3 drives the flank number** — I guessed chip 2 twice
-and was wrong both times.
+the hood number and **chip 3 drives the flank number** — chip 2 was guessed twice,
+wrong both times.
 
 **Prove it, don't reason about it:** paint the number blocks bright magenta on
 top of the livery and reload. The stamp renders over the magenta and you can read
@@ -375,7 +375,7 @@ likely to differ. Get screenshots from a replay before calling a paint done.
 **When (decided 2026-09-26): lock first, track second.** A car is
 locked as soon as you approve it on the render — that protects the approved
 pixels. The on-track check comes later, whenever you race it. If the track is
-clean, update the car's `releases/INDEX.md` row to "on track verified,
+clean, record it in the car's map (`docs/car-maps/<car>.md`) as "on track verified,
 <date>". If the track shows a problem, the fix is the **next version**; the
 locked one is never edited. (Five cars were locked this way before the rule was
 written down; this makes the docs match the practice.)
@@ -397,23 +397,23 @@ does not guarantee the same pixels — rebuilding an older MX-5 commit from
 unchanged source produced ~18,000 differing pixels because Pillow's text
 antialiasing had moved. Fonts, Pillow and the code all drift.
 
-Freeze three things per approved build, in `releases/<car>/<version>-<date>/`:
+Freeze two things per approved build:
 
 1. **The exact TGA bytes**, with a sha256. This is what gets restored.
-2. **A preview image** — a six-angle contact sheet — so a build is recognisable
+2. **A preview image** - a six-angle contact sheet - so a build is recognisable
    on sight without loading it.
-3. **A git tag** on the source, for reading and branching, not for rebuilding.
 
-`src/restore.py --list` / `src/restore.py <version>` copies the frozen artifact
-back into the paint folder. Add a row to `releases/INDEX.md` so builds can be
-recalled by date and picked by picture.
+In this repo the approved paint for each measured car is already frozen in
+`paints/<car>/`. Copy it into iRacing's paint folder to get exactly those
+pixels back, whatever Pillow or font version you have.
 
 ## Rule 11 — Artwork is source code.
 
 Keep the livery as a script plus vector marks so it retargets to the next car by
 changing only the panel map. A flattened PSD cannot be reused.
 
-Put reusable marks in `src/marks.py` (brand marks) and `src/furniture.py`
+Put reusable marks in `src/teamscheme.py` (brand marks such as the wordmark and roundel) and
+`src/furniture.py`
 (race-car furniture: roundels, tech plates, decal text). Both take colours as
 parameters, which is what lets the same code emit the colour map and the spec map
 from one geometry pass — pass brand colours for one, material values for the other.

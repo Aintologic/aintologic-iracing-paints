@@ -10,7 +10,7 @@
   creates it when the car is first viewed; nothing else lives there).
 - Paint file: `car_<id>.tga` (your iRacing customer ID, `--id`).
 - Build: `src/team_rsr.py`.
-- Status: **LOCKED as `releases/porsche-911-rsr/v1.0-2026-09-14/`** (approved on the
+- Status: **ready-made paint in `paints/porsche-911-rsr/`** (approved on the
   render 2026-09-14 evening; on-track verification pending — a change is a new version).
 
 Every row below was read off the car in iRacing's car viewer from labelled
@@ -99,9 +99,8 @@ not paintable.
 
 ## How to edit this car later — the breadcrumbs (v1.0, 2026-09-14)
 
-**Locked:** `releases/porsche-911-rsr/v1.0-2026-09-14/` (approved on the
-render; on track pending). Restore with
-`python src/restore.py v1.0-2026-09-14 --car porsche-911-rsr`. Keep anything
+**Ready-made paint:** `paints/porsche-911-rsr/` (approved on the
+render; on track pending). To get it back exactly, copy it from `paints/porsche-911-rsr/`. Keep anything
 experimental on a branch and a new release folder, never over v1.0.
 
 **Build entrypoint:** `python src/team_rsr.py` (writes `car_<id>.tga` +
@@ -112,8 +111,7 @@ and `--logo2` the two logo images, `--here` for the cwd, `--png` for a flat PNG,
 in each logo slot and a blank driver strip. It imports `src/teamscheme.py`
 (palette + marks) and `src/sponsors.py` (logo slots, driver strip, logo
 loader). Rebuilding on the same Pillow/font reproduces the release bytes; on
-another it will not — the release TGA is the lock. Lock a new version with
-`tools/lock_release.py <car> <version> <folder>`.
+another it will not — the release TGA is the lock.
 
 **Every placement is a constant at the top of `src/team_rsr.py`.** Side
 elements are in LEFT texture coordinates; the right side is the mirror

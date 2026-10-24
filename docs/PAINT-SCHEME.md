@@ -1,6 +1,6 @@
-# THE TEAM PAINT SCHEME — every car AÏntologic races
+# The example paint scheme
 
-**Read this before painting any car for the team.** This is the scheme. A new
+**Read this before putting the example scheme on a car.** This is the scheme. A new
 car gets *this*, placed on *that car's* panel map. Nothing here is re-designed
 per car; only the placements change.
 
@@ -14,33 +14,25 @@ strip, so it renders cleanly out of the box and is obviously yours to fill in.
 Adopted 13 September 2026; **re-cut 14 September 2026 as v4.0** — the full-length
 ribbon stripe was scrapped for a Sebring/Cobra language (fender
 sashes + centred stripes through the hood roundel). First car: Global Mazda
-MX-5 Cup (#67), locked as `releases/mx5-2016-global-cup/v4.1-2026-09-14/` — **the gold master** (v4.0 was the same design before the spec map, the logo slot 2 treatment and the quarter placement were finished).
+MX-5 Cup (#67), ready-made paint in `paints/mx5-2016-global-cup/` — **the gold master** (v4.0 was the same design before the spec map, the logo slot 2 treatment and the quarter placement were finished).
 (v3.0 was the papaya-body first pass, "much too orange"; v3.4–v3.6 were the
-ribbon.) **Second car: FIA F4 (#148), locked as
-`releases/fia-f4/v1.1-2026-09-14/`** — the approved open-wheel adaptation
-of this language. **Third car: Porsche 911 RSR (#102), locked as
-`releases/porsche-911-rsr/v1.0-2026-09-14/`** — the approved GT adaptation.
-**Fourth car: Ray FF1600 (#163), locked as
-`releases/ray-ff1600/v1.0-2026-09-14/`** — the approved wingless / Formula
+ribbon.) **Second car: FIA F4 (#148), ready-made paint in `paints/fia-f4/`** — the approved open-wheel adaptation
+of this language. **Third car: Porsche 911 RSR (#102), ready-made paint in `paints/porsche-911-rsr/`** — the approved GT adaptation.
+**Fourth car: Ray FF1600 (#163), ready-made paint in `paints/ray-ff1600/`** — the approved wingless / Formula
 Ford adaptation, and the car that established the per-side placement rule
 (section "The reference cars" below). **Fifth car: Ferrari 296 Challenge
-(#203), locked as `releases/ferrari-296-challenge/v1.0-2026-09-16/`** — the
-approved modern-GT adaptation. **Sixth car: Lotus 79 (#25), locked as
-`releases/lotus-79/v1.0-2026-09-17/`** — the approved historic Formula 1
-adaptation. **Seventh car: HPD ARX-01c (#39), locked as
-`releases/hpd-arx-01c/v1.0-2026-09-17/`** — the approved **sports-prototype**
+(#203), ready-made paint in `paints/ferrari-296-challenge/`** — the
+approved modern-GT adaptation. **Sixth car: Lotus 79 (#25), ready-made paint in `paints/lotus-79/`** — the approved historic Formula 1
+adaptation. **Seventh car: HPD ARX-01c (#39), ready-made paint in `paints/hpd-arx-01c/`** — the approved **sports-prototype**
 adaptation, and the car that proved a chassis can have *no usable rear-facing
-surface at all*. **Eighth car: SCCA Spec Racer Ford (#23), locked as
-`releases/spec-racer-ford/v1.0-2026-09-28/`** — the approved **small
+surface at all*. **Eighth car: SCCA Spec Racer Ford (#23), ready-made paint in `paints/spec-racer-ford/`** — the approved **small
 sports-racer** adaptation, approved on track. **Ninth car: Skip Barber
-Formula 2000 (#1), locked as
-`releases/skip-barber-formula-2000/v1.0-2026-10-08/`** — the approved
+Formula 2000 (#1), ready-made paint in `paints/skip-barber-formula-2000/`** — the approved
 **Formula 2000 school car** adaptation (the Ray layout on a car with small
 wings), approved on the render. **Tenth car: Aston Martin Vantage GT3 EVO
-(#206), locked as
-`releases/aston-martin-vantage-gt3-evo/v1.1-2026-10-10/`** — the
-approved **modern-GT3** adaptation, approved on track. Next car: not
-chosen — start at `docs/NEXT-CAR-HANDOFF.md`.
+(#206), ready-made paint in `paints/aston-martin-vantage-gt3-evo/`** — the
+approved **modern-GT3** adaptation, approved on track. To put the
+scheme on another car, start with "Measuring a new car" in `AGENTS.md`.
 
 Why: the scheme takes its cue from McLaren's F1 colours — McLaren-style **black
 with papaya as the accent** and white type — built around the AÏntologic logo
@@ -336,9 +328,10 @@ the MX-5's UV layout and is wrong on any other chassis. A formula car, a GT
 car or a prototype needs: new UV discovery, new panel mapping, new stripe
 routing (where does the "sash" live on a car with no front fender? where
 can a centre stripe run?), new sponsor regions, and chassis-specific tuning
-on the render. The MX-5 is the gold-master *visual reference* — the release
-`preview.png` is what the next car must *feel* like. `docs/NEXT-CAR-HANDOFF.md`
-is the starting point for that job.
+on the render. The MX-5 is the gold-master *visual reference* — its gallery
+picture (`docs/gallery/mx5-2016-global-cup.jpg`) is what the next car must
+*feel* like. "Measuring a new car" in `AGENTS.md` is the starting point for
+that job.
 
 ---
 
@@ -364,7 +357,8 @@ is the starting point for that job.
 6. Number blocks must PASS. Don't mask — move geometry.
 7. `tools/contact.py` six angles → look at every one zoomed with
    `tools/zoom.py`. Then on track.
-8. Lock: `releases/<car>/v1.0-<date>/` with TGA + sha256 + preview + tag.
+8. Save the approved paint: the exact TGA bytes with a sha256, plus a preview
+   image, so it can be restored pixel for pixel.
 
 ### Things the MX-5 taught that will bite the next car
 

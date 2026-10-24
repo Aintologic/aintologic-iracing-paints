@@ -2,8 +2,7 @@
 
 ## Status — LOCKED v1.1, ON TRACK VERIFIED (2026-10-10)
 
-- **Current:** `releases/aston-martin-vantage-gt3-evo/v1.1-2026-10-10/`,
-  tag `aston-martin-vantage-gt3-evo/v1.1-2026-10-10`, from commit `ecac9ad`.
+- **Current:** v1.1. The ready-made paint is in `paints/aston-martin-vantage-gt3-evo/`.
   Accepted — looks good in the viewer and on track.
 - **v1.1 vs v1.0:** one change. The rear-deck stripe is one constant stripe,
   x 1550..1862 on row 1249 at the full recipe. v1.0 drew the part behind the
@@ -183,9 +182,8 @@ texture space (rows > 1260); `place()` / `mirror_geometry()` do the right.
 
 ## How to edit this car later
 
-Any change is a new version: **v1.2** next. Branch
-`feat/aston-martin-vantage-gt3-evo-v1.2`, and lock with
-`python tools/lock_release.py aston-martin-vantage-gt3-evo v1.2-<date> amvantageevogt3 --based-on v1.1-2026-10-10 --title "Aston Martin Vantage GT3 EVO #206" --build-cmd "python src/team_amv.py"`.
+Any change is a new version: **v1.2** next. Keep the
+approved v1.1 paint untouched and build the change as a separate version.
 
 1. **Build:** `python src/team_amv.py` writes colour + spec to the paint
    folder (`--here` for the cwd, `--no-spec`, `--png`) and refuses to write if
@@ -194,7 +192,7 @@ Any change is a new version: **v1.2** next. Branch
    (your two logo images); with no flags it writes a neutral `YOUR LOGO`
    placeholder in both slots and a blank driver strip.
 2. **Restore the approved car first** if the paint folder holds anything
-   else: `python src/restore.py v1.1-2026-10-10 --car aston-martin-vantage-gt3-evo`.
+   else: copy the ready-made paint from `paints/aston-martin-vantage-gt3-evo/`.
 3. **Every placement is a named constant at the top of `src/team_amv.py`:**
    - UV rule: `MIRROR` 2520, `CL` 1260 (centre row), `FCX` 543.5 (bumper
      centre column), `CENTRE_MASK` (`assets/amv-centre-mask.png`).

@@ -12,6 +12,14 @@ scheme (papaya / black / white). Personalize it with your own customer ID
 with no flags the output carries a neutral "YOUR LOGO" placeholder and a blank
 driver strip.
 
+**About the script names in this map.** This is the working log from the
+first car painted. Many of the one-off probe scripts and early builder files
+it names (for example `probeN.py`, `calib.py`, `view.ps1`,
+`build_aintologic_mx5.py`, `stripepath.py`) were written for this car alone
+and are
+not in this repo. The general tools described in `docs/PANEL-PROBING.md` do
+the same jobs on any car.
+
 Every row was verified by eye in iRacing's car viewer. Nothing here is inferred
 from the wireframe alone.
 
@@ -831,7 +839,8 @@ build, capture level sides, read"). The current numbers are in
   continuous; the QA dilates the orange mask by 7 px so a 2-3 px modelled
   seam doesn't count as a gap, and anything wider still fails.
 
-The gate: `python tools\qa_stripe.py` — RESULT: PASS on v3.5 (100% / 99%).
+The check: the stripe's continuity was measured on the live car and passed on
+v3.5 (100% / 99%).
 Rule learned again, expensively: **a seam that "should" line up by the
 numbers is unverified until a probe on the live car says so.**
 
@@ -849,9 +858,8 @@ What changed, and the rule that comes out of it:
   rows are not the same physical width on the door, the quarter and the
   fender neck.  `stripepath.render()` now takes a per-island width factor
   (a number or an `[(X, factor)]` table) that scales the stroke and the
-  border offset together.  The factors are MEASURED: `tools/qa_shape.py`
-  traces the rendered stripe column by column and prints width / door
-  width; factor = old factor / measured ratio; two or three passes converge.
+  border offset together.  The factors are MEASURED: trace the rendered
+  stripe column by column and compare its width with the door width; factor = old factor / measured ratio; two or three passes converge.
   Tables in `team_mx5.py`: FENDER_WA/WB (the two flanks differ - one is
   ROTATE_180 and its fender-to-door neck compresses differently), F_W, J_W,
   K_W, L_W.  A factor of 2.2 at the fender neck (X -45..-25) is real.
@@ -873,12 +881,10 @@ What changed, and the rule that comes out of it:
   and the union is thicker than either.
 - The roundel moved up (y 14) so its ring clears the stripe's border.
 
-The gate now has two halves: `qa_stripe.py` = connectivity (unchanged) +
-`qa_shape.py` = width, border, step and kink checks on the same two level
-frames; the level frames are found by nudging the camera until the
-silhouette is longest (`qa_quick.py` is the fast loop: 8 coarse frames +
-refinement, ~2 min).  Read the `*_shape.png` it writes: cyan = traced
-edges, green = centre line, red boxes = failing spans, profile underneath.
+The check now has two halves: connectivity (unchanged), plus width, border,
+step and kink checks on the same two level frames. The level frames are found
+by nudging the camera until the silhouette is longest. (The scripts that ran
+these checks were written for the MX-5 only and are not part of this repo.)
 QA_DUMP=1 prints the profile every 10 px.
 
 Known limits: a level side view foreshortens the bumper corners and the

@@ -5,8 +5,7 @@ are abandoned; every number below was measured again on this car, from the
 template and from the render. Nothing here is inherited from the MX-5, F4, RSR,
 Ray, Ferrari or Lotus.
 
-Status: **Approved 2026-09-17 and LOCKED as
-`releases/hpd-arx-01c/v1.0-2026-09-17/`** (tag `hpd-arx-01c/v1.0-2026-09-17`).
+Status: **Approved 2026-09-17.** The ready-made paint is in `paints/hpd-arx-01c/`.
 Any pixel change is a v1.1, never an edit of v1.0. Spec map is the unmodified
 B3 "Satin-True" hierarchy, carried over without a per-car A/B. On-track
 verification still pending.

@@ -20,8 +20,8 @@ Every ``src/team_*.py`` builder exposes the same options through this module:
 
     --id       the iRacing customer ID that names the output files (car_<id>.tga)
     --driver   the name in the cockpit driver strip (blank strip when omitted)
-    --logo1    the Cats-Don't-Suck-position logo slot
-    --logo2    the FreakFarm-position logo slot
+    --logo1    logo spot 1
+    --logo2    logo spot 2
     --out      the output folder (default ./out)
     --profile  load a saved profile from profiles/<name>.json (local only)
 
@@ -70,10 +70,10 @@ def add_args(ap):
     ap.add_argument("--driver", default=None,
                     help="driver name for the cockpit strip (blank strip if omitted)")
     ap.add_argument("--logo1", default=None,
-                    help="logo slot 1 (Cats Don't Suck position): an image file, or a token "
+                    help="logo spot 1: an image file, or a token "
                          "placeholder/cats_dont_suck/freakfarm")
     ap.add_argument("--logo2", default=None,
-                    help="logo slot 2 (FreakFarm position): an image file, or a token "
+                    help="logo spot 2: an image file, or a token "
                          "placeholder/cats_dont_suck/freakfarm")
     ap.add_argument("--out", default=None,
                     help="output folder (default: ./out)")
