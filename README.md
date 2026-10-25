@@ -221,6 +221,30 @@ with a blank name strip and "YOUR LOGO" placeholders. All ten are in
 
 ![Aston Martin Vantage GT3 EVO](docs/gallery/aston-martin-vantage-gt3-evo.jpg)
 
+## Versions
+
+Each release of this project has a version number in three parts, like
+`1.0.0`. Which part goes up tells you what kind of change it is:
+
+- **The last number** is for fixes. If a logo landed in the wrong place and
+  that got fixed, the next version would be `1.0.1`.
+- **The middle number** is for something new that doesn't change anything you
+  already do, such as another measured car or a new build option: `1.1.0`.
+- **The first number** is for a change you'd have to adjust to, such as a
+  build option being renamed: `2.0.0`. We try hard not to need one.
+
+When one number goes up, the numbers after it go back to 0: after `1.0.3`
+comes `1.1.0`.
+
+What changed in each version is in [`CHANGELOG.md`](CHANGELOG.md).
+
+Each car's paint design also has its own revision number, and that is
+separate from the project's version. The Aston Martin's design, for example,
+is at `v1.1`, as the top of its
+[car map](docs/car-maps/aston-martin-vantage-gt3-evo.md) says. A car's design
+revision only goes up when that car's paint changes. The project's version goes
+up with every release, whether or not any paint changed.
+
 ## Getting involved
 
 Questions, problems and ideas are welcome as
