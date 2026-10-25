@@ -14,13 +14,13 @@
 # <https://www.gnu.org/licenses/>.
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""Tile the numbered frames of a tools/walk.ps1 sweep into one labelled sheet.
+"""Tile the numbered frames of a tools/walk.py sweep into one labelled sheet.
 
     python tools/contact_sheet.py scratch/w_ 12 scratch/w_sheet.jpg [cols] [tile_width]
 
 Reads <prefix><i>.jpg for i in 0..N-1, stamps the frame number on each tile
 (so a frame can be named when picking the level side / dead front / top),
-and writes one JPEG.  Companion of walk.ps1; tools/sheet.py is the older
+and writes one JPEG.  Companion of walk.py; tools/sheet.py is the older
 variant that takes explicit file names and crops by box.
 """
 import os, sys

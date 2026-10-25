@@ -93,16 +93,16 @@ Wheels, suspension, floor, exhaust, engine, cage: `Car Mandatory`, not paintable
 
 ## Viewer loop — Ray specifics (2026-09-14)
 
-- `tools/view2.ps1`, `tools/walk.ps1`, `tools/walk_top.ps1`,
+- `tools/view2.py`, `tools/walk.py`, `tools/walk_top.py`,
   `tools/contact_sheet.py` and `tools/zoom.py` all work unchanged. Window
   1728 px wide.
 - **Ctrl+R does NOT reset the camera pose** on this car either — it is
   cumulative, and you drive it too. Sweep and pick, never assume a pose.
-- A horizontal drag of ~55 px is roughly 25–30°, non-linear; `-DragY -600` is
-  always level, `+600` always top-down.
-- The car is small in the pane at the default zoom: `tools/view2.ps1 -Wheel 4`
-  fills it for a level side; back out ~3 ticks for a top-down that shows the
-  whole car.
+- A horizontal drag of ~55 px is roughly 25–30°, non-linear; `--drag-y -600`
+  is always level, `+600` always top-down.
+- The car is small in the pane at the default zoom:
+  `python tools/view2.py --no-reload --wheel 4` fills it for a level side;
+  back out ~3 ticks for a top-down that shows the whole car.
 - Reading the probes: on a level RIGHT-side view every label is upside down
   (the islands render ROTATE_180). Zoom before concluding anything about
   order — a reversed reading order is the rotation, not a mirrored UV.
@@ -208,8 +208,8 @@ Paint Your Car (per car).
 then `... 4:E:10,1 2:B:5,6 ...` (masked island grids), `tools/probe_ruler.py`
 (numbered bands, centre lines and where a blister sits),
 `tools/island_edges.py` to regenerate `src/ray_islands.py`, and
-`tools/mirror_row.py` to re-measure the mirror; then `tools/walk.ps1` /
-`tools/walk_top.ps1` + `tools/contact_sheet.py` + `tools/zoom.py`, read from
+`tools/mirror_row.py` to re-measure the mirror; then `tools/walk.py` /
+`tools/walk_top.py` + `tools/contact_sheet.py` + `tools/zoom.py`, read from
 level sides / dead front / dead rear / top. `tools/template_layers.py <zip>
 <dir>` regenerates the wire / block pictures.
 

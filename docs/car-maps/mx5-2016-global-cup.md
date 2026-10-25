@@ -14,7 +14,7 @@ driver strip.
 
 **About the script names in this map.** This is the working log from the
 first car painted. Many of the one-off probe scripts and early builder files
-it names (for example `probeN.py`, `calib.py`, `view.ps1`,
+it names (for example `probeN.py`, `calib.py`,
 `build_aintologic_mx5.py`, `stripepath.py`) were written for this car alone
 and are
 not in this repo. The general tools described in `docs/PANEL-PROBING.md` do
@@ -117,9 +117,11 @@ Car Numbers" on, and Trading Paints requires **Pro** for custom numbers.
 
 ## Viewer loop
 
-- `view.ps1 -Reload` — focuses iRacing, sends Ctrl+R, captures the
-  window to `shot.png`. `-Drag 520` rotates ~180° to see the other side.
-- `crop2.ps1 -In <png> -x -y -w -h -scale` — zoom crop.
+- `python tools/view2.py` — focuses iRacing, sends Ctrl+R twice, captures the
+  window to `shot.png` (or `--out <file>`). `--drag 520` rotates ~180° to see
+  the other side.
+- `python tools/zoom.py <in> <out> --box l t r b` — zoom crop; the box is
+  fractions of the frame (default: the middle of the 3D view).
 - A file bridge that returns PNG/JPG directly needs no base64 step.
 
 ## Rear quarter and rear valance — PARTIAL, 2026-08-14
@@ -146,9 +148,9 @@ Not yet resolved, do not guess:
   shuffles and flattens panels" problem the painting tutorial warns about.
 
 Blocker on finishing this: the car viewer needs a level, straight-on rear view
-to read the orientation bars, and `view.ps1 -Drag` orbits with a
-downward pitch, so it lands on a top-down three-quarter instead. Either fix the
-drag or set the view by hand before the next pass.
+to read the orientation bars, and the old viewer script's sideways drag
+orbits with a downward pitch, so it lands on a top-down three-quarter instead.
+Either fix the drag or set the view by hand before the next pass.
 
 ### Why this matters
 
@@ -176,8 +178,9 @@ in-game appearance. Test spec alone, on a plain body, in a replay on track.
 
 The "badly stretched, thin diagonal bands" note above was **wrong**. It came from
 reading a near-top-down view where everything foreshortens. Re-read from a level
-rear three-quarter (`view.ps1 -DragY -170`), the same patches are clean, large
-rectangles and the `BF` label renders perfectly upright and undistorted.
+rear three-quarter (`python tools/view2.py --no-reload --drag-y -170`), the
+same patches are clean, large rectangles and the `BF` label renders perfectly
+upright and undistorted.
 
 Verified from the rear:
 
@@ -702,8 +705,8 @@ there rendered "TOW" on the mirror. No tow arrow on the nose.
 
 ### Viewer
 
-- `tools/view2.ps1 -Drag 260` is ~90° of orbit; 130 is ~45°.
-- Pitch clamps: `-DragY -600` is always level, `+600` always top-down.
+- `python tools/view2.py --drag 260` is ~90° of orbit; 130 is ~45°.
+- Pitch clamps: `--drag-y -600` is always level, `+600` always top-down.
   If a capture comes out top-down, that is why — level it first.
 - `tools/contact.py <out> --level --pre 130` gives side / front ¾ / front /
   far side / rear ¾ / rear from wherever the camera is.
@@ -761,10 +764,10 @@ the mirror caps, not bodywork; keep the stripe off it.
 
 ## Viewer captures — reliable way
 
-`tools/view2.ps1 -Drag 87` six times = one lap in ~45° steps from wherever
-the camera is; `tools/sheet.py` tiles them. Level first (`-DragY -600`).
-`contact.py`'s "reset" drag drifts; use this when you need to see one
-specific joint again.
+`python tools/view2.py --drag 87` six times = one lap in ~45° steps from
+wherever the camera is; `tools/sheet.py` tiles them. Level first
+(`--drag-y -600`). `contact.py`'s "reset" drag drifts; use this when you need
+to see one specific joint again.
 
 
 ## THE SIDE STRIPE IS ONE PATH — the island model, CALIBRATED 2026-09-13
@@ -986,12 +989,12 @@ written alongside as `car_spec_<id>_B1.tga` / `_B2.tga`.
 
 ### Viewer notes learned the hard way
 
-- The camera is cumulative across `view2.ps1` calls and the drag→angle
+- The camera is cumulative across `view2.py` calls and the drag→angle
   response is non-linear; sweep in small steps and pick frames.
-- `-DragY` past the zenith flips the yaw; the viewer may also be driven by
+- `--drag-y` past the zenith flips the yaw; the viewer may also be driven by
   hand between automated calls. Never assume a pose — capture and look.
-- The paint dialog closed once mid-session; `clickwin.ps1 -X 1041
-  -Y 455` reopens it (View Car), then `view.ps1 -Wheel N` to re-zoom.
+- The paint dialog closed once mid-session; reopen it by clicking View Car
+  (by hand), then `python tools/view2.py --no-reload --wheel N` to re-zoom.
 
 
 ## v4.1 — GOLD MASTER, 2026-09-14 evening. Supersedes v4.0 where they differ.

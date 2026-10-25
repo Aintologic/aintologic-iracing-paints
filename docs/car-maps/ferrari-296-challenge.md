@@ -93,11 +93,17 @@ mirrors the geometry, and composites text afterwards (playbook Rule 4).
 
 - Car Info / Car Model tabs are HTML: a bare `mouse_event` click is ignored —
   move the cursor across the target first (a small local click helper).
-- `tools/view2.ps1`, `walk.ps1`, `walk_top.ps1`, `contact_sheet.py` work
+- `tools/view2.py`, `walk.py`, `walk_top.py`, `contact_sheet.py` work
   unchanged; window 1728x1037. Ctrl+R does not reset the camera.
-- A local scratch `sweep` script (`<prefix>`) = reload + 12 level + 8 top frames
-  (~2.5 min — start in the background and poll). A companion `preview` script
-  is the zoomed 16-level / 8-elevated / 8-top preview sweep.
+- The standard sweep = reload + 12 level + 8 top frames:
+  `python tools/walk.py --prefix <scratch>/<p>_l --step 65 --frames 12
+  --reload --drag-y -600`, then `python tools/walk_top.py --prefix
+  <scratch>/<p>_t --step 90 --frames 8`, each tiled with
+  `tools/contact_sheet.py`; run each in the background and wait for its
+  `DONE` line. The zoomed preview sweep: `python tools/view2.py --wheel 2`,
+  16 level frames (`walk.py --step 49 --frames 16 --drag-y -600`), 8 elevated
+  (`walk.py --step 98 --frames 8 --drag-y 220`), `python tools/view2.py
+  --no-reload --wheel -2`, 8 top (`walk_top.py --step 98 --frames 8`).
 - `python tools/island_runs.py <tpl> y:<x>:<y0>:<y1> x:<y>:<x0>:<x1>`
   (committed) prints which island owns each run of a texture column / row —
   used here for the tail band height, the rear-arch cutout and the
@@ -244,8 +250,9 @@ B3's body (0,170,200) / orange (0,35,16) / white (0,55,30); everything else
 `python tools/probe_islands.py team_f296c <tpl-dir> list`, masked grids
 (`... 0:R:12,4 2:M:4,4 ...`), `tools/probe_multi.py team_f296c NAME:x,y,w,h:c,r`
 for the hood, `tools/island_runs.py` for edges, `tools/mirror_row.py <tpl-dir>
-2460 2485 1/0 16/15 ...` for the mirror; then `tools/walk.ps1 -DragY -600` /
-`tools/walk_top.ps1` + `tools/contact_sheet.py`, reading from level sides,
+2460 2485 1/0 16/15 ...` for the mirror; then
+`python tools/walk.py --drag-y -600` / `python tools/walk_top.py` +
+`tools/contact_sheet.py`, reading from level sides,
 dead front, dead rear and top, and **judging text orientation from full-res
 crops only**. Check nobody else is using the iRacing UI before driving it —
 the viewer scripts click into the window.

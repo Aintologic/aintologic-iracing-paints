@@ -15,16 +15,17 @@ full rebuild passes on a single car.
 
 ## 0. FIRST: make sure the viewer is actually reloading
 
-`tools/view2.ps1`, not a bare Ctrl+R.
+`tools/view2.py`, not a bare Ctrl+R.
 
 The old reload silently did nothing whenever the iRacing window did not take
 focus, so renders being judged were **stale**. Several "the fix didn't work"
 conclusions were wrong for this reason alone, and led to changes that made
-things worse. `view2.ps1` takes focus, verifies it took, clicks into the 3D
-pane, sends Ctrl+R twice, and waits before capturing.
+things worse. `view2.py` takes focus, verifies it took (prints NOFOCUS and
+stops if not), clicks into the 3D pane, sends Ctrl+R twice, and waits before
+capturing.
 
-    powershell -ExecutionPolicy Bypass -File tools\view2.ps1 -Out <scratch>\a.png
-    powershell -ExecutionPolicy Bypass -File tools\view2.ps1 -NoReload -Drag 900 -Out <scratch>\b.png
+    python tools/view2.py --out <scratch>/a.png
+    python tools/view2.py --no-reload --drag 900 --out <scratch>/b.png
 
 If a change appears to have had no effect, **suspect the reload before you
 suspect the code.**
@@ -94,9 +95,19 @@ bar on its texture-left edge. Then `tools/contact.py` for six angles, and
 `tools/zoom.py` to crop and upscale the one you need to read. The build
 module only needs `build(spec=False)`, `PAINT_DIR` and `CUSTOMER`.
 
-**Camera:** `view2.ps1 -Drag 260` is ~90°. Pitch clamps, so `-DragY -600` is
-always level and `+600` always top-down — if a capture is top-down, that is
-why. `contact.py --level` fixes it.
+**Camera:** `view2.py --drag 260` is ~90°. Pitch clamps, so `--drag-y -600`
+is always level and `+600` always top-down — if a capture is top-down, that
+is why. `contact.py --level` fixes it.
+
+- **Ctrl+R does not reset the camera** (checked 2026-10-24: pixel-identical
+  before and after a reload). ONE drag can be undone exactly: `--drag -260`
+  after `--drag 260` returns a pixel-identical pose. A sequence cannot: two
+  `+65` drags then two `-65` landed ~1° off, and two poses that look
+  pixel-identical can answer the next drag differently, depending on how
+  they were reached. So never undo a sweep and assume you are back —
+  re-capture. When you compare two captures by pixels, compare the 3D pane
+  only: the blurred car list below the Car Info dialog can shift between
+  captures.
 
 This is how both MX-5 rear quarters were finally found in the valance rect
 (the car map has the story). Sections 1 to 5 are the questions it answers;
@@ -216,7 +227,7 @@ a car with ~20 islands.
   and a blue left bar. Three reloads mapped the whole F4 (8x8 elimination,
   6x2/8x2 island grids, 10x4/12x5 fine grids). Keep labels big; the 8-colour
   palette repeats.
-- **`tools/walk.ps1` + `tools/contact_sheet.py`** — sweep the camera in
+- **`tools/walk.py` + `tools/contact_sheet.py`** — sweep the camera in
   fixed drags, crop the 3D pane proportionally, tile the numbered frames,
   pick the level side / dead front / top by eye. The drag→angle response is
   non-linear and the operator moves the camera between calls: sweep and
@@ -266,8 +277,9 @@ a car with ~20 islands.
   RSR's tail stripe the wrong way once; the fix came from the light bar /
   exhaust centre in a true dead-rear frame.
 - **The viewer's top-down pose crops the nose at working zoom.** Zoom out
-  (four mouse-wheel ticks out, by hand) to see the whole hood from above; wheel ticks are
-  sometimes swallowed — check the frame, repeat if unchanged.
+  (`python tools/view2.py --no-reload --wheel -4`) to see the whole hood
+  from above; wheel ticks are sometimes swallowed — check the frame, repeat
+  if unchanged.
 - **When the geometry defeats the recipe, say so early.** Five passes went
   into forcing a constant-width stripe through the RSR's hood louvres before
   the designer changed the hood to a V. If a panel's openings, lips or recesses
@@ -353,9 +365,9 @@ a car with ~20 islands.
   flap continues from the trailing edge at the OTHER end of the island.
   A band at the top-surface trailing edge was invisible from dead rear. Probe
   the chord with x bands and read them from a dead-rear and a dead-front frame.
-- **Long walks exceed the bridge's 60 s.** Launch `walk.ps1` detached
-  (`Start-Process powershell ... -WindowStyle Hidden`, write a `.done` file)
-  and poll.
+- **Long walks exceed the bridge's 60 s.** A 12-frame walk with `--reload`
+  took 65.5 s on 2026-10-24. Run `python tools/walk.py` in the background
+  and wait for its `DONE 12 frames` line, or split the walk.
 - `tools/template_layers.py` also accepts `Number Block Locations` /
   `Sponsor Block Locations` as block-layer names.
 

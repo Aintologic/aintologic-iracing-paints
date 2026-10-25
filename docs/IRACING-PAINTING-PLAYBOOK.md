@@ -82,14 +82,26 @@ on another, some upside down.
 **Ctrl+R reloads the paint instantly.** Overwrite the TGA, press Ctrl+R, look.
 That loop is the entire job. Everything else is arranging to run it faster.
 
-Automate it. Keep these in a scratch folder:
+Automate it. These are repo tools (Windows, Python + Pillow only):
 
-- `view2.ps1` - focuses the iRacing window, sends Ctrl+R, optionally drags to
-  rotate (`-Drag`, `-DragY`), then captures the
-  window to a PNG. One call per iteration.
-- `zoom.py` - crops and upscales a region of a capture, for reading detail.
+- `tools/view2.py` - focuses the iRacing window (and stops, printing
+  `NOFOCUS`, if Windows did not really give it focus), clicks into the 3D
+  view, sends Ctrl+R twice (unless `--no-reload`), optionally drags to rotate
+  (`--drag`, `--drag-y`) or scrolls to zoom (`--wheel`), then captures the
+  window to a PNG. One call per iteration:
+  `python tools/view2.py --drag 260 --out <scratch>/a.png`.
+  Drags add up and Ctrl+R does NOT reset the camera; a single drag can be
+  undone with the same drag reversed (`--drag -260` after `--drag 260`),
+  a whole sweep cannot (it drifts a degree or two).
+- `tools/walk.py` / `tools/walk_top.py` - sweep the camera in small drags
+  (level / top-down) and save every frame; `tools/contact_sheet.py` tiles the
+  frames into one numbered sheet. A 12-frame walk with `--reload` takes
+  ~65 s; if your tool bridge cuts calls off at ~60 s, run it in the
+  background and wait for its `DONE 12 frames` line.
+- `tools/zoom.py` - crops and upscales a region of a capture, for reading
+  detail.
 
-Two gotchas worth keeping:
+Two gotchas worth keeping (`tools/view2.py` already handles both):
 
 - `mouse_event`'s wheel delta must be declared `int`, not `uint`, or negative
   (zoom-out) scrolls throw.

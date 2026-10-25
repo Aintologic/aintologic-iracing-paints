@@ -95,12 +95,13 @@ Wheels, suspension, gearbox, radiators, mirrors: `Car_Mandatory`, not paintable.
 ## Viewer loop — Lotus specifics (2026-09-17)
 
 - The Car Info dialog may carry a "License Required" banner; the 3D pane still
-  works. `tools/view2.ps1` / `walk.ps1` / `contact_sheet.py` / `zoom.py` work
+  works. `tools/view2.py` / `walk.py` / `contact_sheet.py` / `zoom.py` work
   unchanged (window 1728x1037).
-- `tools/view2.ps1 -Wheel 4` then `-Wheel -2` gives a size where the whole car
-  fits a top-down frame and a level side reads.
-- A 12-frame walk can take longer than a short shell-bridge call limit: launch
-  it detached and poll for the `.done` file.
+- `python tools/view2.py --no-reload --wheel 4` then `--wheel -2` gives a size
+  where the whole car fits a top-down frame and a level side reads.
+- A 12-frame walk (~65 s with `--reload`) can take longer than a short
+  shell-bridge call limit: run `python tools/walk.py ...` in the background
+  and wait for its `DONE 12 frames` line.
 - `probe_islands.py` labels are NAME + cell number — a flood probe named "4"
   reads "41". Name floods with letters.
 
@@ -207,8 +208,9 @@ zip> <tpl-dir>`, then
 `... 5:P:8,2 2:T:8,3 ...` (masked grids), `python tools/probe_bands.py team_l79
 <tpl-dir> 0:X:0:520:25 line:1,10:1259 blocks` (texel rulers, centre line, stamp
 positions), `python tools/mirror_row.py <tpl-dir> 2505 2530 2/3 5/4 6/7` (the
-mirror). Sweep with `tools/walk.ps1` (level, `-DragY -600`) and top
-(`-DragY 600`), tile with `tools/contact_sheet.py`, read with `tools/zoom.py`.
+mirror). Sweep with `tools/walk.py` (level, `--drag-y -600`) and top
+(`--drag-y 600`), tile with `tools/contact_sheet.py`, read with
+`tools/zoom.py`.
 **Rebuild the livery after any probe** — probes overwrite the paint file.
 
 ## Tried / to remember

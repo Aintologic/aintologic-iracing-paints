@@ -178,7 +178,7 @@ is the crease between the spine strip and the upper slope — hang things off
 centre row 1128 is also the global mirror axis (1128.5).
 
 **To probe again:** `python tools/probe_multi.py team_f4 NAME:x,y,w,h:cols,rows ...`
-then `tools/walk.ps1` + `tools/contact_sheet.py` (+ `tools/zoom.py`), read
+then `python tools/walk.py` + `tools/contact_sheet.py` (+ `tools/zoom.py`), read
 from level sides / dead front / top. `tools/template_layers.py <zip> <dir>`
 regenerates the wire / block pictures; `tools/f4_islands_gen.py` regenerates
 `src/f4_islands.py` from that wire.
@@ -204,20 +204,23 @@ regenerates the wire / block pictures; `tools/f4_islands_gen.py` regenerates
 
 ## Viewer loop — F4 specifics (2026-09-14)
 
-- `tools/view2.ps1` works unchanged. The iRacing window was 1296 px wide at
+- `tools/view2.py` works unchanged. The iRacing window was 1296 px wide at
   the start of the session and 1728 px wide after that — crop the 3D pane
-  PROPORTIONALLY (`tools/walk.ps1`: 3%..97% of the width, 18%..87% of the
+  PROPORTIONALLY (`tools/walk.py`: 3%..97% of the width, 18%..87% of the
   height), never with fixed pixels.
 - With the wide window a horizontal drag of **65 px ~ 30 deg** on average, but
   the response is non-linear: it lingers around the side views and rushes
   through the fronts/rears. Sweep 12 frames and pick; `tools/contact_sheet.py`
   tiles them with frame numbers.
-- Default zoom shows the car small; five mouse-wheel ticks in (by hand; `view2.ps1` doesn't zoom) fills
-  the pane with a level side view. The viewer gets driven between calls (zoom
+- Default zoom shows the car small;
+  `python tools/view2.py --no-reload --wheel 5` (five ticks in) fills the
+  pane with a level side view. The viewer gets driven between calls (zoom
   and pose both change) — never assume a pose.
-- `-DragY -600` is level, `+600` top-down (pitch clamps). A top-down frame
+- `--drag-y -600` is level, `+600` top-down (pitch clamps). A top-down frame
   with the nose at the frame's LEFT has the car's RIGHT side at the frame's
   TOP.
 - If your shell/file bridge answers within ~60 s per call, anything longer
-  (a 12-frame walk is ~70 s) must be started, then polled with its
-  read-output / a follow-up sleep call.
+  (a 12-frame walk was ~70 s with the old PowerShell walk, 65.5 s with
+  `python tools/walk.py --reload` on 2026-10-24) must be started in the
+  background, then polled with its read-output / a follow-up sleep call
+  until it prints `DONE 12 frames`.

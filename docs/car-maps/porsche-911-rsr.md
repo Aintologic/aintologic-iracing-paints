@@ -88,14 +88,17 @@ not paintable.
 
 ## Viewer loop — RSR specifics (2026-09-14)
 
-- `tools/view2.ps1` works unchanged. Window 1728 px wide.
+- `tools/view2.py` works unchanged. Window 1728 px wide.
 - **Ctrl+R does NOT reset the camera pose** — it is cumulative across
   reloads and you move it too. Sweep and pick, never assume a pose.
-- `tools/walk.ps1 -DragY -600` (level, 12 frames) and the new
-  `tools/walk_top.ps1` (top-down, 8 frames) tile with `tools/contact_sheet.py`;
-  a reload + both sweeps takes ~2.5 min — start it in the background and poll.
-- The viewer-zoom helper (`-Wheel N`) zooms; +3 from the default fills the pane
-  with a level side; top-down needs −2 back out to fit the car.
+- `python tools/walk.py --reload --drag-y -600` (level, 12 frames) and
+  `python tools/walk_top.py` (top-down, 8 frames) tile with
+  `tools/contact_sheet.py`. The walk alone takes a little over a minute
+  (65.5 s with `--reload`): run the sweeps in the background, one at a time,
+  and wait for each one's `DONE` line.
+- `python tools/view2.py --no-reload --wheel N` zooms; +3 from the
+  default fills the pane with a level side; top-down needs −2 back out to
+  fit the car.
 
 ## How to edit this car later — the breadcrumbs (v1.0, 2026-09-14)
 
@@ -162,7 +165,7 @@ Shop → Paint Your Car (per car).
 **To probe again:** `python tools/probe_multi.py team_rsr NAME:x,y,w,h:cols,rows ...`
 (island grids), `tools/probe_ruler.py` (numbered bands, centre lines),
 `tools/probe_ticks.py` (ticks across the live stripe for width measurement),
-then `tools/walk.ps1` / `tools/walk_top.ps1` + `tools/contact_sheet.py`, read
+then `tools/walk.py` / `tools/walk_top.py` + `tools/contact_sheet.py`, read
 from level sides / dead front / dead rear / top. `tools/template_layers.py
 <zip> <dir>` regenerates the wire / block pictures.
 

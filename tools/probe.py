@@ -27,7 +27,7 @@ bands  N horizontal bands of distinct colour down one rect (height probe)
 Each cell carries its label, a RED bar on its texture-TOP edge and a BLUE
 bar on its texture-LEFT edge, so rotation and mirroring read in one look
 (playbook Rule 3).  The build module must expose build(spec=False),
-PAINT_DIR and CUSTOMER.  Then run view2.ps1 / contact.py and READ FROM A
+PAINT_DIR and CUSTOMER.  Then run view2.py / contact.py and READ FROM A
 LEVEL CAMERA.
 """
 import argparse, importlib, os, sys

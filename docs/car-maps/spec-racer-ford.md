@@ -148,7 +148,9 @@ All named constants at the top of `src/team_srf.py`.
    (see "The sash"). Anything that must be continuous across the crease or the
    14/12 seam needs the car-frame treatment.
 4. **The sill and undertray are not paintable** — the grey strip is the sim's.
-5. The 12-frame `walk.ps1` takes ~110 s here — run it detached and poll.
+5. The 12-frame walk took ~110 s here with the old walk tool; `tools/walk.py`
+   is faster (65.5 s against 80.2 s on the MX-5, 2026-10-24) but still over a
+   minute — run it in the background and wait for its `DONE 12 frames` line.
 
 ## How to edit this car later
 

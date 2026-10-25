@@ -18,7 +18,7 @@
 
     python tools/contact.py scratch/preview.png [--no-reload] [--step 260]
 
-Drives tools/view2.ps1: one reload + capture, then five more captures each
+Drives tools/view2.py: one reload + capture, then five more captures each
 after a horizontal drag of --step px (the viewer keeps its orbit between
 calls, so the drags accumulate into a walk around the car), then one from a
 raised camera.  Crops each capture to the 3D pane and tiles them 3x2.
@@ -29,15 +29,15 @@ import argparse, os, subprocess, sys
 from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-VIEW = os.path.join(HERE, "view2.ps1")
+VIEW = os.path.join(HERE, "view2.py")
 TMP = r"scratch\contact"
 
 
 def shot(out, drag=0, dragy=0, reload=False):
-    cmd = ["powershell", "-ExecutionPolicy", "Bypass", "-File", VIEW,
-           "-Out", out, "-Drag", str(drag), "-DragY", str(dragy)]
+    cmd = [sys.executable, VIEW, "--out", out,
+           "--drag=%d" % drag, "--drag-y=%d" % dragy]
     if not reload:
-        cmd.append("-NoReload")
+        cmd.append("--no-reload")
     r = subprocess.run(cmd, capture_output=True, text=True)
     if "OK" not in r.stdout:
         sys.exit("viewer capture failed: %s %s" % (r.stdout, r.stderr))
@@ -57,7 +57,7 @@ def main():
     ap.add_argument("--no-reload", action="store_true")
     ap.add_argument("--level", action="store_true",
                     help="pitch the camera level first (the viewer clamps: "
-                         "-DragY -600 is always level, +600 always top-down)")
+                         "--drag-y -600 is always level, +600 always top-down)")
     ap.add_argument("--pre", type=int, default=0,
                     help="horizontal drag before the first frame, to reach "
                          "the side view")

@@ -176,9 +176,12 @@ texture space (rows > 1260); `place()` / `mirror_geometry()` do the right.
 4. **The wing's top surface is the LOW-x half of island 2** (x 1699..~1860,
    +x forward). A wordmark at x 1960 rendered nothing — that is the underside.
 5. **Two number blocks are dead** (N1, N3 — no mesh).
-6. **Driving the viewer:** `tools/view2.ps1` clicks into the pane; `+` wheel
-   ticks zoom IN (a small wheel helper in your scratch folder). A 16-frame
-   walk takes ~110 s — run it detached and poll.
+6. **Driving the viewer:** `python tools/view2.py` clicks into the pane; `+`
+   wheel ticks zoom IN (`python tools/view2.py --no-reload --wheel N`). A
+   16-frame walk took ~110 s with the old PowerShell walk;
+   `python tools/walk.py --reload` did 12 frames in 65.5 s (2026-10-24) —
+   still over a 60-s tool-bridge call, so run it in the background and wait
+   for its `DONE <n> frames` line.
 
 ## How to edit this car later
 
@@ -210,7 +213,7 @@ approved v1.1 paint untouched and build the change as a separate version.
      (logo slot 2).
    - Spec: `SPEC_DEFAULT` ("B3") and the table above `spec_from_colour()`.
 4. **Verify on the 3D car**, not the flat texture: Ctrl+R twice in the viewer
-   (`tools/view2.ps1`), then walk it (`tools/walk.ps1`,
+   (`python tools/view2.py`), then walk it (`python tools/walk.py`,
    `tools/contact_sheet.py`) and compare against the v1.1 `preview.png`.
 5. **Re-probe** only if a placement lands somewhere unexpected:
    `python tools/template_layers.py 206_template_AMGT3.zip <scratch>/tpl`,
