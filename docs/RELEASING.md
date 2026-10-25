@@ -72,8 +72,9 @@ python src/team_<builder>.py --out out/release-check/<builder>
 `team_<builder>.py` is the builder named in the README's table, for example
 `team_mx5.py`. Compare `car_CUSTOMERID.tga` and `car_spec_CUSTOMERID.tga` with
 the same files in that car's folder in `paints/` (for `team_mx5.py`, that is
-`paints/mx5-2016-global-cup/`) by SHA-256 hash. Compare only those two files;
-some builders write extra files next to them.
+`paints/mx5-2016-global-cup/`) by SHA-256 hash. A default build writes only
+those two files; if a folder holds anything else, find out why before going
+on.
 
 ### 3. Run the privacy check
 
@@ -87,7 +88,7 @@ it. Report what you changed and wait for the result before going further.
 Add the new version at the top of [`CHANGELOG.md`](../CHANGELOG.md): what is
 new or fixed and why it matters to the reader, then any known issues. Write
 the release notes in a file that is never committed, for example
-`out/release/notes-vX.Y.Z.md` (the `out` folder is never uploaded), in this
+`out/release/notes-vX.Y.Z.md` (git ignores the `out` folder, so it's never committed), in this
 order:
 
 1. what this is, in a few plain sentences (while the first number is 0, say
@@ -109,8 +110,7 @@ Name it `iracing-paints-vX.Y.Z-ready-made-paints.zip` and build it under
   `paints/LICENSE.txt`;
 - `INSTALL.txt` at the top: extracting the zip, renaming the files with your
   customer ID, the iRacing paint folder for each car (from the README's
-  table), where to copy them, turning on custom paints, and opening the car
-  viewer fresh;
+  table), where to copy them, and opening the car in the car viewer fresh;
 - `TRADEMARKS.md` and `NOTICE.txt` at the top. The notice says the project is
   unofficial, isn't affiliated with iRacing or any car manufacturer, and that
   you should use only logos you own or have permission to use.

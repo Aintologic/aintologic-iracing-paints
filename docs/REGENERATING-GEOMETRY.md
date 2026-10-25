@@ -32,7 +32,7 @@ template and writes the geometry where the builder reads it:
 Then build the car as usual:
 
 ```
-python src/team_f4.py --id <your-id> --out .
+python src/team_f4.py --id <your-id>
 ```
 
 Needs `psd-tools`, `numpy`, `scipy`, `Pillow` (all in `requirements.txt`).

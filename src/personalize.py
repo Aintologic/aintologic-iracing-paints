@@ -14,7 +14,7 @@
 # <https://www.gnu.org/licenses/>.
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""Personalization for the team-scheme builders: one code path, private or public.
+"""Personalization for the team-scheme builders: one code path for every car.
 
 Every ``src/team_*.py`` builder exposes the same options through this module:
 
@@ -22,7 +22,8 @@ Every ``src/team_*.py`` builder exposes the same options through this module:
     --driver   the name in the cockpit driver strip (blank strip when omitted)
     --logo1    logo spot 1
     --logo2    logo spot 2
-    --out      the output folder (default ./out)
+    --out      the output folder (default: out in the project folder, wherever
+               the builder is run from)
     --profile  load a saved profile from profiles/<name>.json (local only)
 
 Defaults are neutral: a placeholder ID in the filename, a blank driver strip,
@@ -35,9 +36,9 @@ last two are drawn by src/sponsors.py). ``resolve_logo`` turns a slot value into
 a ``f(width, **kwargs) -> RGBA`` callable that the builders drop in exactly where
 their fixed per-car logo placements expect it.
 
-profiles/ is excluded from the public export (tools/export_public.py); it holds
-personal IDs and names. The example tokens let a profile reproduce a locked
-build without storing any image path.
+profiles/ is ignored by git: it holds your customer ID and name, so it stays on
+your computer. The example tokens let a profile reproduce a build without
+storing any image path.
 """
 import json
 import os
@@ -76,9 +77,15 @@ def add_args(ap):
                     help="logo spot 2: an image file, or a token "
                          "placeholder/cats_dont_suck/freakfarm")
     ap.add_argument("--out", default=None,
-                    help="output folder (default: ./out)")
+                    help="output folder (default: out in the project folder)")
     ap.add_argument("--profile", default=None,
                     help="load a saved profile for the above (local only)")
+
+
+def default_out_dir():
+    """The project's own out folder (git ignores it), whichever folder the
+    builder is run from."""
+    return os.path.join(_ROOT, "out")
 
 
 def load_profile(name):
@@ -91,7 +98,7 @@ def load_profile(name):
 
 
 def profile_id(name, default=DEFAULT_ID):
-    """The customer ID stored in a profile (used by tools/lock_release.py)."""
+    """The customer ID stored in a profile."""
     try:
         return load_profile(name).get("id", default)
     except SystemExit:

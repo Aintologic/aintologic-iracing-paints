@@ -11,10 +11,10 @@ Use them two ways:
 
 ```
 # by the built-in example tokens (cats_dont_suck uses assets/CatsDontSuck.png):
-python src/team_mx5.py --id 123456 --logo1 cats_dont_suck --logo2 freakfarm --out .
+python src/team_mx5.py --id 123456 --logo1 cats_dont_suck --logo2 freakfarm
 
 # or by any image file of your own:
-python src/team_mx5.py --id 123456 --logo1 examples/logos/cats-dont-suck.png --logo2 mylogo.png --out .
+python src/team_mx5.py --id 123456 --logo1 examples/logos/cats-dont-suck.png --logo2 mylogo.png
 ```
 
 Swap in your own PNGs the same way. With no `--logo1`/`--logo2`, every car

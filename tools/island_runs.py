@@ -16,7 +16,7 @@
 
 """Which UV island owns each run of one texture column or row?
 
-    python tools/island_runs.py scratch/f296c/tpl y:555:0:320 x:1236:0:2048
+    python tools/island_runs.py out/tpl/f296c y:555:0:320 x:1236:0:2048
 
 `y:X:Y0:Y1` walks texture COLUMN X from row Y0 to Y1; `x:Y:X0:X1` walks
 texture ROW Y from column X0 to X1.  Prints (island index, first, last) for

@@ -27,7 +27,10 @@ Usage
     python src/calibrate.py rects  --rects "A,12,880,706,732" ...
                                                        named rectangles + F-glyph
 
-Every mode writes car_<CUSTOMER_ID>.tga. Copy it to
+Every mode writes car_<CUSTOMER_ID>.tga into out/calibrate/ in the project
+folder, no matter which folder you run it from, or into the folder given with
+--out.
+Copy it to
   %USERPROFILE%\\Documents\\iRacing\\paint\\<carfolder>\\   then press Ctrl+R in the car viewer.
 
 Reading the result
@@ -42,11 +45,12 @@ rotation and mirroring in one look:
     F mirrored                                  -> the panel is UV-mirrored
                                                    (usually the far side of the car)
 """
-import argparse, colorsys, os, sys
+import argparse, colorsys, os
 from PIL import Image, ImageDraw, ImageFont
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from marks import F_GEO
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# the label font, named here so this tool needs no other module
+F_GEO = os.path.join(ROOT, "fonts", "Poppins-Bold.ttf")
 
 SIZE = 2048
 BG = (14, 14, 16)
@@ -137,6 +141,8 @@ def main():
                     help='"NAME,x,y,w,h" entries (rects mode)')
     ap.add_argument("--n", type=int, default=8, help="grid divisions")
     ap.add_argument("--id", default=os.environ.get("IRACING_CUSTOMER_ID", "CUSTOMERID"))
+    ap.add_argument("--out", default=os.path.join(ROOT, "out", "calibrate"),
+                    help="folder to write the test texture to (default: %(default)s)")
     a = ap.parse_args()
 
     if a.mode == "grid":
@@ -151,7 +157,8 @@ def main():
             specs.append((p[0], int(p[1]), int(p[2]), int(p[3]), int(p[4])))
         im = rects(specs)
 
-    out = f"car_{a.id}.tga"
+    os.makedirs(a.out, exist_ok=True)
+    out = os.path.join(a.out, f"car_{a.id}.tga")
     im.save(out, compression="tga_rle")
     print("wrote", out)
 

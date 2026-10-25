@@ -27,7 +27,7 @@ src/teamscheme.py and src/sponsors.py; this file holds ONLY this car's
 geometry and placements.  Nothing here is inherited from another car - every
 constant was measured on this car (probes 2026-10-08).
 
-    python src/team_sbf2000.py            -> the iRacing paint folder
+    python src/team_sbf2000.py            -> out/ in the project folder
     python src/team_sbf2000.py --here     -> the cwd instead
     python src/team_sbf2000.py --no-spec  -> colour map only
 
@@ -412,7 +412,7 @@ if __name__ == "__main__":
     CUSTOMER = cfg.id
     DRIVER_NAME = cfg.driver
     LOGO1, LOGO2 = cfg.logo1, cfg.logo2
-    out_dir = cfg.out_dir or (os.getcwd() if args.here else os.path.join(os.getcwd(), "out"))
+    out_dir = cfg.out_dir or (os.getcwd() if args.here else personalize.default_out_dir())
     os.makedirs(out_dir, exist_ok=True)
     colour = build(spec=False)
     print("number blocks:")
@@ -435,4 +435,4 @@ if __name__ == "__main__":
         with open(s, "rb") as fh:
             head = fh.read(18)
         assert head[2] == 10 and head[16] == 24, "bad spec TGA header: %r" % head[:18]
-        print("wrote", s, "(spec B3 Satin-True WORKING PREVIEW, RLE 24-bit, header verified)")
+        print("wrote", s, "(spec B3 Satin-True, RLE 24-bit, header verified)")

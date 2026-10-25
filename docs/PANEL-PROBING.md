@@ -24,8 +24,8 @@ things worse. `view2.py` takes focus, verifies it took (prints NOFOCUS and
 stops if not), clicks into the 3D pane, sends Ctrl+R twice, and waits before
 capturing.
 
-    python tools/view2.py --out <scratch>/a.png
-    python tools/view2.py --no-reload --drag 900 --out <scratch>/b.png
+    python tools/view2.py --out out/a.png
+    python tools/view2.py --no-reload --drag 900 --out out/b.png
 
 If a change appears to have had no effect, **suspect the reload before you
 suspect the code.**
@@ -94,6 +94,19 @@ Every cell carries its label, a red bar on its texture-top edge and a blue
 bar on its texture-left edge. Then `tools/contact.py` for six angles, and
 `tools/zoom.py` to crop and upscale the one you need to read. The build
 module only needs `build(spec=False)`, `PAINT_DIR` and `CUSTOMER`.
+`probe.py` writes into the car's iRacing paint folder through
+`src/paintfolder.py`, which first copies the file that's there into
+`out/backup/<paint folder>/` and prints where; a rerun over its own test
+pattern isn't copied again. Every probe and `coord_grid.py`, `spec_flat.py`
+and `spec_ladder.py` do the same.
+
+**Known problem (0.2.0):** the probes save their test pattern as
+`car_CUSTOMERID.tga` (the builder's placeholder name), which iRacing doesn't
+load, and look for the paint folder under the `Documents` folder in your
+home folder. If a probe seems to have no effect, check the file name before
+you blame the reload. Until it's fixed, copy the test pattern to
+`car_<your customer ID>.tga` in the same folder after each probe, with
+`paintfolder.copy_in()` so your own paint is backed up first.
 
 **Camera:** `view2.py --drag 260` is ~90°. Pitch clamps, so `--drag-y -600`
 is always level and `+600` always top-down — if a capture is top-down, that

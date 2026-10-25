@@ -16,9 +16,9 @@
 
 """Labelled-cell probe that paints ONLY inside a real UV island.
 
-    python tools/template_layers.py <zip> scratch/ray/tpl      # once
-    python tools/probe_islands.py team_ray scratch/ray/tpl list
-    python tools/probe_islands.py team_ray scratch/ray/tpl 4:A:4,2 7:B:3,2 ...
+    python tools/template_layers.py <zip> out/tpl/ray      # once
+    python tools/probe_islands.py team_ray out/tpl/ray list
+    python tools/probe_islands.py team_ray out/tpl/ray 4:A:4,2 7:B:3,2 ...
 
 `list` prints every island the template's GREEN wire outlines enclose, sorted
 by area, with its index, bbox and centroid.  Each later spec is
@@ -36,6 +36,7 @@ Ray FF1600, 2026-09-14.
 
 The build module must expose build(spec=False), PAINT_DIR and CUSTOMER.
 Read the result from a LEVEL camera (playbook Rule 3a).
+Any paint file already there is backed up into out/backup/ first.
 """
 import importlib, os, sys
 import numpy as np
@@ -111,6 +112,9 @@ def main():
             cy, cx = ndimage.center_of_mass(lab == l)
             print("%-4d %6d %6d %6d %6d %9d  (%d,%d)" % (k, x, y, w, h, area, cx, cy))
         return
+    # imported here, not at the top: body_mask, island_runs, mirror_row and
+    # island_id_mask import this module only for islands()
+    from paintfolder import save_tga
     by_idx = {k: (l, x, y, w, h) for k, l, x, y, w, h, a in isl}
     img = B.build(spec=False).convert("RGB")
     a = np.asarray(img).copy()
@@ -153,7 +157,7 @@ def main():
         d.text((cx - (bb[2] - bb[0]) / 2 - bb[0], cy - (bb[3] - bb[1]) / 2 - bb[1]),
                t, font=f, fill=(0, 0, 0))
     out = os.path.join(B.PAINT_DIR, "car_%s.tga" % B.CUSTOMER)
-    img.save(out, compression="tga_rle")
+    save_tga(img, out)
     print("wrote probe to", out)
 
 

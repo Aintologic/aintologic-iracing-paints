@@ -17,7 +17,7 @@ verification still pending.
 | car id | **#39** (paint folder and template both confirm it) |
 | template | your own iRacing template — `39_template_ARX.zip` → **`Honda Performance Development ARX01C.psd`**, 2048×2048 |
 | paint folder | `%USERPROFILE%\Documents\iRacing\paint\hpdarx01c\` (created by the sim) |
-| file | `car_<id>.tga` — written for the iRacing customer ID you pass with `--id`. Each build writes one output file |
+| file | `car_<id>.tga` and `car_spec_<id>.tga` (the finish), written for the iRacing customer ID you pass with `--id` |
 | build | `src/team_hpd.py` |
 
 The car viewer titles the dialog **“Car Info: HPD ARX-01c”**, which is what

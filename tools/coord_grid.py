@@ -34,12 +34,14 @@ layer is blank. Read it from LEVEL side / dead front / dead rear / top frames
 
 Coordinates are COL,ROW in units of `cell`; texel x = COL * cell.
 The build module must expose build(spec=False), PAINT_DIR and CUSTOMER.
+Any paint file already there is backed up into out/backup/ first.
 """
 import importlib, os, sys
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
+from paintfolder import save_tga
 FONT = os.path.join(ROOT, "fonts", "ArchivoBlack-Regular.ttf")
 TINTS = [(250, 250, 250), (255, 210, 120), (150, 235, 255), (200, 255, 190)]
 
@@ -68,7 +70,7 @@ def main():
                     y0 + cell / 2 - (bb[3] - bb[1]) / 2 - bb[1]),
                    t, font=f, fill=(0, 0, 0))
     out = os.path.join(B.PAINT_DIR, "car_%s.tga" % B.CUSTOMER)
-    img.save(out, compression="tga_rle")
+    save_tga(img, out)
     print("wrote", out, "- cell", cell, "->", n, "x", n,
           "; labels are COL,ROW in units of", cell)
 

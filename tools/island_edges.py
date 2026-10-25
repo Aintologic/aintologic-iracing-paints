@@ -16,7 +16,7 @@
 
 """Write a per-column edge table for named UV islands, from a template's wire.
 
-    python tools/island_edges.py scratch/ray/tpl src/ray_islands.py 2053 \\
+    python tools/island_edges.py out/tpl/ray src/ray_islands.py 2053 \\
            NOSE_TIP=7 NOSE=4 COWL=8 DECK=20 FLANK=2 REAR=6 LOWER=11 POD=0 SILL=13
 
 Island indices are the ones `tools/probe_islands.py <mod> <tpl> list` prints.

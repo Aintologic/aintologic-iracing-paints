@@ -96,9 +96,9 @@ mirrors the geometry, and composites text afterwards (playbook Rule 4).
 - `tools/view2.py`, `walk.py`, `walk_top.py`, `contact_sheet.py` work
   unchanged; window 1728x1037. Ctrl+R does not reset the camera.
 - The standard sweep = reload + 12 level + 8 top frames:
-  `python tools/walk.py --prefix <scratch>/<p>_l --step 65 --frames 12
+  `python tools/walk.py --prefix out/<p>_l --step 65 --frames 12
   --reload --drag-y -600`, then `python tools/walk_top.py --prefix
-  <scratch>/<p>_t --step 90 --frames 8`, each tiled with
+  out/<p>_t --step 90 --frames 8`, each tiled with
   `tools/contact_sheet.py`; run each in the background and wait for its
   `DONE` line. The zoomed preview sweep: `python tools/view2.py --wheel 2`,
   16 level frames (`walk.py --step 49 --frames 16 --drag-y -600`), 8 elevated

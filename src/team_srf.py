@@ -16,7 +16,7 @@
 
 """TEAM SCHEME - SCCA Spec Racer Ford (#23).  Eighth car.  v1.0 LOCKED 2026-09-28.
 
-APPROVED by the designer ON TRACK 2026-09-28 (raced, P26 -> P4); frozen as
+APPROVED by the designer ON TRACK 2026-09-28; frozen as
 releases/spec-racer-ford/v1.0-2026-09-28-claude/ (tag
 spec-racer-ford/v1.0-2026-09-28-claude).  Any pixel change is a v1.1.
 
@@ -26,7 +26,7 @@ src/teamscheme.py and src/sponsors.py; this file holds ONLY this car's
 geometry and placements.  Nothing here is inherited from the MX-5, F4, RSR,
 Ray, Ferrari, Lotus or HPD - every constant was measured on this car.
 
-    python src/team_srf.py            -> the iRacing paint folder
+    python src/team_srf.py            -> out/ in the project folder
     python src/team_srf.py --here     -> the cwd instead
     python src/team_srf.py --no-spec  -> colour map only
 
@@ -436,7 +436,7 @@ if __name__ == "__main__":
     CUSTOMER = cfg.id
     DRIVER_NAME = cfg.driver
     LOGO1, LOGO2 = cfg.logo1, cfg.logo2
-    out_dir = cfg.out_dir or (os.getcwd() if args.here else os.path.join(os.getcwd(), "out"))
+    out_dir = cfg.out_dir or (os.getcwd() if args.here else personalize.default_out_dir())
     os.makedirs(out_dir, exist_ok=True)
     colour = build(spec=False)
     print("number blocks (config 3):")
@@ -459,4 +459,4 @@ if __name__ == "__main__":
         with open(s, "rb") as fh:
             head = fh.read(18)
         assert head[2] == 10 and head[16] == 24, "bad spec TGA header: %r" % head[:18]
-        print("wrote", s, "(spec B3 Satin-True WORKING PREVIEW, RLE 24-bit, header verified)")
+        print("wrote", s, "(spec B3 Satin-True, RLE 24-bit, header verified)")

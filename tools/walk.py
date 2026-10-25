@@ -16,8 +16,8 @@
 
 """Walk the camera around the car in iRacing's car viewer and save every frame.
 
-    python tools/walk.py --prefix w_ --step 65 --frames 12 --drag-y -600
-    python tools/walk.py --prefix w_ --reload --drag-y -600
+    python tools/walk.py --prefix out/viewer/w_ --step 65 --frames 12 --drag-y -600
+    python tools/walk.py --prefix out/viewer/w_ --reload --drag-y -600
 
 Frame 0 is captured where the camera is (after --drag-y: -600 = level, +600 =
 top-down; --reload first reloads the paint - it does NOT move the camera).
@@ -27,7 +27,9 @@ tools/view2.py capture, with all its safety checks.
 
 Writes <prefix><i>.png (the whole iRacing window) and <prefix><i>.jpg (just the
 3D view, cropped PROPORTIONALLY - the iRacing window changes size). Tile the
-.jpg frames into one sheet with tools/contact_sheet.py.
+.jpg frames into one sheet with tools/contact_sheet.py. Without --prefix they
+go to out/viewer/ in the project folder (w_0.png, w_0.jpg, ...; git ignores
+out/, so nothing in it is ever committed), whichever folder you run this from.
 
 F4 lesson (2026-09-14): with a 1728-px-wide window 65 px is ~30 deg on average
 but non-linear - sweep 12 frames and pick, never assume a pose. A frame takes
@@ -36,6 +38,7 @@ about 5 s, so 12 frames is just over a minute (65 s with --reload, measured
 background and wait for its "DONE" line, or split the walk.
 """
 import argparse
+import os
 import sys
 
 from PIL import Image
@@ -97,5 +100,6 @@ def run(argv, description, defaults, crop, with_reload):
 
 if __name__ == "__main__":
     sys.exit(run(None, "Walk the camera around the car and save every frame.",
-                 {"prefix": "w_", "frames": 12, "drag_y": 0},
+                 {"prefix": os.path.join(view2.OUT_DIR, "w_"), "frames": 12,
+                  "drag_y": 0},
                  CROP, with_reload=True))

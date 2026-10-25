@@ -22,13 +22,18 @@ from src/teamscheme.py; this file holds ONLY the MX-5's geometry and
 placements.  Copy this file as the pattern for the F4 and the RSR - change
 the rects and the placements, nothing else.
 
-    python src/team_mx5.py --id <id>    -> ./out/car_<id>.tga, blank driver, YOUR LOGO slots
+    python src/team_mx5.py --id <id>    -> out/car_<id>.tga in the project folder, blank driver, YOUR LOGO slots
     python src/team_mx5.py --id <id> --driver "A. DRIVER" --logo1 cds.png --logo2 ff.png
-    python src/team_mx5.py --here       -> write to the cwd instead of ./out
+    python src/team_mx5.py --here       -> write to the cwd instead of out/
     python src/team_mx5.py --no-spec    -> colour map only
     python src/team_mx5.py --png        -> also write the flat texture as PNG
+    python src/team_mx5.py --spec-variant B1   -> put test finish B1 in car_spec_<id>.tga
+    python src/team_mx5.py --finish-tests      -> also write the four test finishes
+                                                  as car_spec_<id>_B1.tga .. _B4.tga
 
-Writes car_<id>.tga (+ car_spec_<id>.tga).  The personalization flags
+Writes car_<id>.tga (+ car_spec_<id>.tga, the approved B3 finish).  Nothing
+else unless you ask: the four test finishes were for comparing finishes during
+development and are written only with --finish-tests.  The personalization flags
 (--id/--driver/--logo1/--logo2/--out/--profile) are defined in src/personalize.py.
 """
 import argparse, os, sys
@@ -771,7 +776,9 @@ if __name__ == "__main__":
     ap.add_argument("--no-spec", action="store_true")
     ap.add_argument("--png", action="store_true")
     ap.add_argument("--spec-variant", default=SPEC_DEFAULT, choices=sorted(SPEC_VARIANTS),
-                    help="which Option B finish goes in car_spec_<id>.tga (all variants are also written as car_spec_<id>_<V>.tga)")
+                    help="which finish goes in car_spec_<id>.tga (default %s, the approved one)" % SPEC_DEFAULT)
+    ap.add_argument("--finish-tests", action="store_true",
+                    help="also write the four test finishes as car_spec_<id>_B1.tga .. _B4.tga, to compare them")
     personalize.add_args(ap)
     args = ap.parse_args()
     args.debug = False
@@ -779,7 +786,7 @@ if __name__ == "__main__":
     CUSTOMER = cfg.id
     DRIVER_NAME = cfg.driver
     LOGO1, LOGO2 = cfg.logo1, cfg.logo2
-    out_dir = cfg.out_dir or (os.getcwd() if args.here else os.path.join(os.getcwd(), "out"))
+    out_dir = cfg.out_dir or (os.getcwd() if args.here else personalize.default_out_dir())
     os.makedirs(out_dir, exist_ok=True)
     colour = build(spec=False)
     if args.debug:
@@ -798,11 +805,14 @@ if __name__ == "__main__":
     print("wrote", out, "(RLE 24-bit, header verified)")
     if args.png:
         colour.save(os.path.join(out_dir, "car_%s.png" % CUSTOMER))
+    if args.no_spec and args.finish_tests:
+        print("note: --finish-tests does nothing with --no-spec; no finish files written")
     if not args.no_spec:
-        for v in sorted(SPEC_VARIANTS):
-            sv = os.path.join(out_dir, "car_spec_%s_%s.tga" % (CUSTOMER, v))
-            spec_from_colour(colour, v).save(sv, compression="tga_rle")
-            print("wrote", sv)
+        if args.finish_tests:       # the development test finishes, only when asked
+            for v in sorted(SPEC_VARIANTS):
+                sv = os.path.join(out_dir, "car_spec_%s_%s.tga" % (CUSTOMER, v))
+                spec_from_colour(colour, v).save(sv, compression="tga_rle")
+                print("wrote", sv)
         s = os.path.join(out_dir, "car_spec_%s.tga" % CUSTOMER)
         spec_from_colour(colour, args.spec_variant).save(s, compression="tga_rle")
         with open(s, "rb") as fh:

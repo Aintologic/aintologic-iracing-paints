@@ -17,10 +17,10 @@
 """Reload the paint in iRacing's car viewer, optionally move the camera, and
 take a screenshot of the iRacing window.
 
-    python tools/view2.py --out a.png
-    python tools/view2.py --no-reload --drag 900 --out b.png
-    python tools/view2.py --no-reload --drag-y -600 --out level.png
-    python tools/view2.py --no-reload --wheel 4 --out zoom.png
+    python tools/view2.py --out out/viewer/a.png
+    python tools/view2.py --no-reload --drag 900 --out out/viewer/b.png
+    python tools/view2.py --no-reload --drag-y -600 --out out/viewer/level.png
+    python tools/view2.py --no-reload --wheel 4 --out out/viewer/zoom.png
 
 Open the car first (iRacing -> My Content -> View Car -> Car Model), so the 3D
 view is on screen. Then this tool, in order:
@@ -37,6 +37,9 @@ view is on screen. Then this tool, in order:
      level and +600 always top-down);
   5. --wheel N: N mouse-wheel ticks over the car (+ zooms in, - zooms out);
   6. saves a PNG of the whole iRacing window and prints "OK <file> <w>x<h>".
+     Without --out it goes to out/viewer/shot.png in the project folder (git
+     ignores out/, so nothing in it is ever committed), whichever folder you
+     run this from.
 
 The camera stays where it is between runs, so drags add up - and Ctrl+R does
 NOT reset it (checked 2026-10-24: a reload leaves the pose exactly as it was).
@@ -54,6 +57,9 @@ import time
 from ctypes import wintypes
 
 from PIL import ImageGrab
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+OUT_DIR = os.path.join(ROOT, "out", "viewer")  # default home of every capture
 
 user32 = ctypes.WinDLL("user32", use_last_error=True)
 kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
@@ -345,7 +351,7 @@ EXPLAIN = {
 def main(argv=None):
     ap = argparse.ArgumentParser(
         description="Reload the paint in iRacing's car viewer and take a screenshot.")
-    ap.add_argument("--out", default="shot.png",
+    ap.add_argument("--out", default=os.path.join(OUT_DIR, "shot.png"),
                     help="where to save the PNG (default: %(default)s)")
     ap.add_argument("--drag", type=int, default=0,
                     help="drag the camera this many px sideways (260 is ~90 degrees)")

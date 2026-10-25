@@ -16,7 +16,7 @@
 
 """Write a committed body mask: the union of the UV islands that actually mirror.
 
-    python tools/body_mask.py scratch/hpd3/tpl assets/hpd-body-mask.png 0 1 6 7
+    python tools/body_mask.py out/tpl/hpd3 assets/hpd-body-mask.png 0 1 6 7
 
 A car whose two sides are a texture mirror is painted by drawing one side and
 reflecting it. That is only safe for the islands that really are mirrors of each

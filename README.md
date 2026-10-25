@@ -17,12 +17,18 @@ If you can describe a car to a friend, you can do this. You don't need to draw
 or write code. You do need to install a few free programs yourself; each one is
 explained below. Nothing in this project installs itself.
 
+> **New here? Start with the [getting-started guide](docs/GETTING-STARTED.md).**
+> It covers three ways in, from just downloading a paint (nothing to install)
+> to working with an AI assistant, and shows where to find your iRacing
+> customer ID and paint folder. What the tools read and write on your computer
+> is on the [trust and safety](docs/TRUST-AND-SAFETY.md) page.
+
 > **Where it stands today.** Ten cars are already measured and painted. They
 > were chosen to cover the main kinds of car: formula cars, a prototype, GT
 > cars and road-based cup cars. Any other car takes one extra step: the AI
-> measures it first. On any car you can put your name, two logos of your own and
-> your iRacing customer ID on an example design. Picking your own colors and
-> layout isn't in this version yet; it's planned for a later one.
+> measures it first. On any car you can put your name and two logos of your own
+> on an example design, saved under your iRacing customer ID. Picking your own
+> colors and layout isn't in this version yet; it's planned for a later one.
 
 ## What and why
 
@@ -49,8 +55,8 @@ the tools can do. Nobody has to drive around in our colors.
   it's new to the project, run the build tools in this folder, show you a
   preview, and write the finished files to the `out` folder.
 - **It doesn't:** install software, change files outside this folder without
-  asking you first, upload anything, add logos you don't own, or put flames on
-  your hood because it was feeling creative.
+  asking you first, publish your paint anywhere, add logos you don't own, or
+  put flames on your hood because it was feeling creative.
 - **You stay in charge.** Nothing is final until you approve the preview. AI
   assistants can make mistakes, so check the preview before you race.
 
@@ -76,8 +82,15 @@ Everything here is free. Install it yourself, in this order.
 are written in it, so your computer needs Python to run them.
 
 **Get it from:** [python.org/downloads](https://www.python.org/downloads/).
-On Windows, tick **"Add python.exe to PATH"** on the first screen of the
-installer.
+
+- **On Windows,** the main button there is **Download Python install
+  manager**. Open the file you downloaded and click **Install**. Then open
+  PowerShell (press Start, type **PowerShell**, press Enter) and type
+  `python --version`: the first time, it installs the newest Python for you.
+  If it asks whether to add a folder to PATH, either answer is fine for this
+  project. (If you use the standalone installer instead, tick
+  **Add python.exe to PATH** on its first screen.)
+- **On a Mac or Linux,** type `python3` wherever this page says `python`.
 
 ### 2. Four Python add-ons
 
@@ -96,13 +109,30 @@ Enter) and type each command, one at a time, in this order:
 Each add-on's name links to its own website, so you can see who makes it and
 what it does before you install it.
 
-If `python` isn't recognized, use `py` instead, for example
+If `python` isn't recognized on Windows, use `py` instead, for example
 `py -m pip install "numpy>=1.24"`.
+
+pip may print a yellow WARNING that some scripts are "not on PATH", or a
+notice that a newer pip is available. Neither matters for this project; you
+don't need to change anything.
 
 numpy goes first because scipy and psd-tools are built on it. The same four
 add-ons are listed in `requirements.txt` for reference. We don't ask you to
 install from that file: installing each one by name lets you see exactly what
 goes onto your computer.
+
+To see what you already have, run this in the project folder (once you've
+downloaded the project, as described under
+[Three ways to use it](#three-ways-to-use-it)):
+
+```
+python tools/check_setup.py
+```
+
+It only looks; it doesn't install or change anything. It lists your Python
+version and each of the four add-ons (present or missing), whether it found
+your iRacing paint folder, and which cars still need their one-time setup
+step, and it says where to get anything that's missing.
 
 ### 3. For a car the project hasn't measured yet
 
@@ -119,42 +149,42 @@ chat window that can't see your files won't be able to build the paint.
 
 ## Three ways to use it
 
-### 1. Paint it with an AI assistant (recommended)
+These are the same three paths as in the
+[getting-started guide](docs/GETTING-STARTED.md), which has every step in
+full.
 
-1. Download this project: the green **Code** button at the top of this page,
-   then **Download ZIP**. Unzip it somewhere easy to find.
-2. Open the unzipped folder in your AI assistant.
-3. Tell it what you want, for example: *"Read AGENTS.md. I'd like a paint for
-   the Toyota GR86 with my name and my team logo on it."*
-4. If the car is new to the project, the AI measures it first and shows you
-   check pictures along the way. This takes longer than a car that's already
-   measured.
-5. Answer its questions, look at the preview, and say when you're happy.
-6. It builds the final files into the `out` folder and tells you where to copy
-   them. It only copies them into iRacing for you if you say yes.
-7. Open the car in iRacing's car viewer. A new paint shows up when the viewer is
-   opened fresh, so copy the paint first, then open the car. If you don't own
-   the car, you can open it from the car's page in iRacing's Shop.
-
-### 2. Use a ready-made paint (no AI, nothing to install)
+### Path 1. Just the paints (nothing to install)
 
 Each measured car comes with a ready-made paint in the example design, with a
 blank name strip and a "YOUR LOGO" placeholder in both logo spots.
 
-1. Open `paints/<car>/` and take `car_CUSTOMERID.tga`.
-2. Rename it to `car_<your iRacing customer ID>.tga`, for example
-   `car_123456.tga`. Your customer ID is shown on your iRacing account page.
-3. Copy it into iRacing's paint folder for that car, `Documents\iRacing\paint\<paint folder>\`.
-   The paint folder names are in the table below.
-4. In iRacing, make sure custom paints are turned on.
+1. On the [Releases page](https://github.com/Aintologic/aintologic-iracing-paints/releases),
+   download the zip whose name ends in `ready-made-paints.zip` from the newest
+   release. (The same files are in `paints/<car>/` in this project.)
+2. Extract it and follow `INSTALL.txt` inside: rename `car_CUSTOMERID.tga`
+   to `car_<your iRacing customer ID>.tga`, for example `car_123456.tga`, and
+   copy it into iRacing's paint folder for that car,
+   `Documents\iRacing\paint\<paint folder>\`. The paint folder names are in
+   the table below. If Windows hides file endings, don't type the `.tga`
+   yourself. If a file with the same name is already there, move it
+   somewhere safe first: copying replaces it.
+3. Your customer ID is on the **My Account** page of the iRacing app: click
+   your picture in the top-right corner, then **Account**.
+4. Open the car in iRacing's car viewer: **My Content** (under **Racing** on
+   the left), then **View Car** next to the car on the **My Licensed Cars**
+   tab, then the **Car Model** tab.
 
 Optional: rename `car_spec_CUSTOMERID.tga` the same way, to
 `car_spec_<your ID>.tga`, and put it in the same folder for the satin and gloss
 finish.
 
-### 3. Run the commands yourself (measured cars)
+### Path 2. Personalize with a command (measured cars)
 
-Build a measured car with your details:
+Download this project (the green **Code** button at the top of this page, then
+**Download ZIP**), extract it, and open a terminal in the extracted folder:
+the inner one, with `README.md` and a `tools` folder in it (the
+[getting-started guide](docs/GETTING-STARTED.md#path-2-personalize-with-a-command)
+shows how). Then build a measured car with your details:
 
 ```
 python src/team_mx5.py --id 123456 --driver "A. DRIVER" --logo1 mylogo1.png --logo2 mylogo2.png --out out
@@ -165,8 +195,24 @@ python src/team_mx5.py --id 123456 --driver "A. DRIVER" --logo1 mylogo1.png --lo
 | `--id` | your iRacing customer ID; names the file `car_<id>.tga` |
 | `--driver` | the name on the cockpit strip (leave it out for a blank strip) |
 | `--logo1`, `--logo2` | your own PNG images for the two logo spots (leave them out for the "YOUR LOGO" placeholder) |
-| `--out` | the folder the files are written to (default `out`) |
+| `--out` | the folder the files are written to (default: `out` in the project folder) |
 | `--profile` | load saved settings from `profiles/<name>.json` instead of typing them each time |
+
+A profile is a small text file such as `profiles/me.json` holding
+`{"id": "123456", "driver": "A. DRIVER", "logo1": "mylogo1.png"}`. Git
+ignores the `profiles` folder, so it stays on your computer.
+
+A build writes exactly two files into the `--out` folder:
+
+| file | what it is |
+|---|---|
+| `car_<id>.tga` | the paint |
+| `car_spec_<id>.tga` | the finish: which parts are satin and which are glossy |
+
+Nothing else, unless you ask for it: `--png` also writes the paint as a flat
+picture (`car_<id>.png`), and `--no-spec` leaves out the finish file. On the
+MX-5, `--finish-tests` also writes four test finishes, `car_spec_<id>_B1.tga`
+to `car_spec_<id>_B4.tga`, for comparing finishes.
 
 Swap `team_mx5.py` for the builder of the car you want (see the table below).
 Six cars need a one-time setup step first:
@@ -179,6 +225,24 @@ See [`docs/REGENERATING-GEOMETRY.md`](docs/REGENERATING-GEOMETRY.md). Measuring 
 new car is a longer, hands-on process; the method is in
 [`docs/IRACING-PAINTING-PLAYBOOK.md`](docs/IRACING-PAINTING-PLAYBOOK.md) and
 [`docs/PANEL-PROBING.md`](docs/PANEL-PROBING.md).
+
+### Path 3. Work with an AI assistant
+
+1. Download this project: the green **Code** button at the top of this page,
+   then **Download ZIP**. Unzip it somewhere easy to find.
+2. Open the unzipped folder in your AI assistant (the folder with `AGENTS.md`
+   in it).
+3. Tell it what you want, for example: *"Read AGENTS.md. I'd like a paint for
+   the Toyota GR86 with my name and my team logo on it."*
+4. If the car is new to the project, the AI measures it first and shows you
+   check pictures along the way. This takes longer than a car that's already
+   measured.
+5. Answer its questions, look at the preview, and say when you're happy.
+6. It builds the final files into the `out` folder and tells you where to copy
+   them. It only copies them into iRacing for you if you say yes.
+7. Open the car in iRacing's car viewer. A new paint shows up when the viewer is
+   opened fresh, so copy the paint first, then open the car. If you don't own
+   the car, you can open it from the car's page in iRacing's Shop.
 
 ## Cars measured so far
 
@@ -272,6 +336,10 @@ Questions, problems and ideas are welcome as
 [issues](https://github.com/Aintologic/aintologic-iracing-paints/issues). Read
 [`CONTRIBUTING.md`](CONTRIBUTING.md) first; it explains how issues are written
 here and how changes get in.
+
+Found something that could put someone at risk, such as a tool replacing a
+file without a backup? Please report it privately instead of in an issue:
+[`SECURITY.md`](SECURITY.md) explains how.
 
 ## Notice
 

@@ -28,12 +28,13 @@ Each cell carries its label, a RED bar on its texture-TOP edge and a BLUE
 bar on its texture-LEFT edge, so rotation and mirroring read in one look
 (playbook Rule 3).  The build module must expose build(spec=False),
 PAINT_DIR and CUSTOMER.  Then run view2.py / contact.py and READ FROM A
-LEVEL CAMERA.
+LEVEL CAMERA.  Any paint file already there is backed up into out/backup/ first.
 """
 import argparse, importlib, os, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 from PIL import ImageDraw, ImageFont
+from paintfolder import save_tga
 
 FONT = os.path.join(ROOT, "fonts", "ArchivoBlack-Regular.ttf")
 PAL = [(255, 0, 220), (0, 255, 90), (255, 230, 0), (0, 200, 255),
@@ -90,7 +91,7 @@ def main():
             print("bands:", [(i + 1, y + i * bh, y + (i + 1) * bh - 1)
                              for i in range(a.n)])
     out = os.path.join(B.PAINT_DIR, "car_%s.tga" % B.CUSTOMER)
-    img.save(out, compression="tga_rle")
+    save_tga(img, out)
     print("wrote probe to", out)
 
 

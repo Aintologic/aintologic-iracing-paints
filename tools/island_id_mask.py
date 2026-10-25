@@ -16,7 +16,7 @@
 
 """Write a committed island-ID mask: each chosen UV island's texels = a value.
 
-    python tools/island_id_mask.py srf/tpl assets/srf-sash-islands.png 1=1 14=14 12=12
+    python tools/island_id_mask.py out/tpl/srf assets/srf-sash-islands.png 1=1 14=14 12=12
 
 Each argument is ISLAND=VALUE (indices as `tools/probe_islands.py ... list`
 prints them; VALUE 1..255).  Unlike tools/body_mask.py (a union, one bit) this

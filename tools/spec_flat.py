@@ -14,20 +14,25 @@
 # <https://www.gnu.org/licenses/>.
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""Write a uniform spec map: python spec_flat.py R G B   (or 'none' to remove)"""
+"""Write a uniform spec map: python spec_flat.py R G B   (or 'none' to remove)
+
+Backs up any spec map already there into out/backup/ first; 'none' moves it there."""
 from PIL import Image
 import sys, os
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, "src"))
+from paintfolder import move_aside, save_tga
 
 DEST = os.path.join(os.path.expanduser("~"), "Documents", "iRacing", "paint", "mx5 mx52016")
 TGA = os.path.join(DEST, "car_spec_CUSTOMERID.tga")
 MIP = os.path.join(DEST, "car_spec_CUSTOMERID.mip")
 
 if sys.argv[1] == "none":
-    for p in (TGA, MIP):
-        if os.path.exists(p):
-            os.replace(p, os.path.join(r"scratch", "parked_" + os.path.basename(p)))
-    print("spec map removed (parked in scratch)")
+    moved = [p for p in (TGA, MIP) if move_aside(p)]
+    print("spec map removed (kept in out/backup/)" if moved
+          else "no spec map there - nothing to remove")
 else:
     r, g, b = (int(v) for v in sys.argv[1:4])
-    Image.new("RGB", (2048, 2048), (r, g, b)).save(TGA, compression="tga_rle")
+    save_tga(Image.new("RGB", (2048, 2048), (r, g, b)), TGA)
     print("uniform spec map (%d,%d,%d) -> %s" % (r, g, b, TGA))

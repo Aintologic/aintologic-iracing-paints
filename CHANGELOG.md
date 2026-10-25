@@ -4,6 +4,97 @@ What changed in each version of iRacing Paints, newest first. How the version
 numbers work is explained in the README's [Versions](README.md#versions)
 section.
 
+## 0.2.0 (2026-10-25)
+
+Still an early preview. This version is about newcomers: getting started
+without writing code, knowing exactly what the tools touch on your computer,
+and getting only the files you need. The ready-made paints are unchanged,
+byte for byte.
+
+### What's new
+
+- **A getting-started guide,**
+  [`docs/GETTING-STARTED.md`](docs/GETTING-STARTED.md), for anyone who has
+  never written code. It has three ways in: just the paints (nothing to
+  install), a few commands, or an AI assistant. It also says which computers
+  work: building a paint works anywhere Python runs, but seeing it in iRacing
+  needs a Windows PC. And it shows where the iRacing app keeps your customer
+  ID, and where your paint folder is. The menu names were checked in the app,
+  and `templates/README.md` now says where to download a car's template.
+  ([#3](https://github.com/Aintologic/aintologic-iracing-paints/issues/3))
+- **A setup check.** `python tools/check_setup.py` says in plain words what's
+  installed and what's missing: Python, the four add-ons, your iRacing paint
+  folder, and the one-time setup step for six cars. It only looks. It never
+  installs anything; for anything missing, it says what it is and where to
+  get it.
+  ([#3](https://github.com/Aintologic/aintologic-iracing-paints/issues/3))
+- **A trust and safety page,**
+  [`docs/TRUST-AND-SAFETY.md`](docs/TRUST-AND-SAFETY.md): what the tools read
+  and write, that they never ask for your iRacing login, never connect to the
+  internet and never install anything, and what the viewer tools do with your
+  mouse.
+  ([#4](https://github.com/Aintologic/aintologic-iracing-paints/issues/4))
+- **Backups before anything in iRacing's paint folder is replaced.** The
+  measuring tools paint test patterns onto a car so its panels can be read in
+  the car viewer. They used to replace the file there (`car_CUSTOMERID.tga`)
+  without keeping a copy. Now they save it to `out\backup` first, and say
+  where it is and how to put it back.
+  ([#4](https://github.com/Aintologic/aintologic-iracing-paints/issues/4))
+- **A way to report security problems privately,** in
+  [`SECURITY.md`](SECURITY.md).
+  ([#4](https://github.com/Aintologic/aintologic-iracing-paints/issues/4))
+
+### What changed
+
+- **An MX-5 build now writes two files instead of six.** It used to write
+  four extra finish files, `car_spec_<id>_B1.tga` to `_B4.tga`, next to your
+  paint. They were left over from choosing the MX-5's finish during
+  development and made it hard to tell which file to use. Now it writes only
+  the paint and its finish file, like the other nine cars always did. Add
+  `--finish-tests` if you want the four test finishes to compare. The paint
+  and finish files themselves haven't changed, byte for byte.
+  ([#11](https://github.com/Aintologic/aintologic-iracing-paints/issues/11))
+- **Working files stay in the `out` folder.** `tools/contact.py` used to keep
+  its working pictures in a `scratch\contact` folder under whichever folder
+  you ran it from. Now they go to `out\contact` in the project folder (or a
+  folder you choose with `--work-dir`). The other viewer tools' screenshots,
+  the setup step's unpacked template, and the test paints from
+  `src/calibrate.py` moved into `out` the same way. The builders now write to
+  the project's `out` folder even when you run them from somewhere else;
+  before, they made a new `out` folder wherever you were.
+  ([#15](https://github.com/Aintologic/aintologic-iracing-paints/issues/15))
+- **`src/calibrate.py` starts again.** It needed a file the project doesn't
+  ship, so it stopped with an error before doing anything. It doesn't need
+  that file any more.
+- **One unusable tool removed.** `tools/extract_band.py` read a picture from
+  an early design that was never part of this project, so it couldn't run.
+- **The iRacing steps were checked in the app.** The README and the zip's
+  `INSTALL.txt` now say where to find your customer ID and how to open the
+  car viewer. The old step "make sure custom paints are turned on" is gone:
+  the app has no such switch, and the car viewer showed a custom paint
+  without one.
+- **Three guide corrections.** The Skip Barber car map no longer says a
+  reload can reset the viewer's camera (it never does). `AGENTS.md` now says
+  plainly that previews, screenshots and check pictures go in the `out`
+  folder, which git ignores, so nothing in it is ever committed. It also no
+  longer lists the MX-5 logo spot 2 problem, which was fixed in 0.1.0.
+  ([#16](https://github.com/Aintologic/aintologic-iracing-paints/issues/16))
+
+### Known issues
+
+- **Measuring a new car doesn't work as the guides describe yet.** The
+  measuring tools save their test pattern as `car_CUSTOMERID.tga`, a name
+  iRacing doesn't load, so the car viewer keeps showing the old paint. They
+  also look for iRacing's paint folder only under the `Documents` folder in
+  your home folder, so they miss it if Windows has moved Documents, for
+  example into OneDrive. Building the ten measured cars isn't affected.
+  Until it's fixed, `AGENTS.md` tells your AI assistant how to work around
+  the file name; if Windows has moved your Documents folder, measuring a new
+  car doesn't work yet.
+- Choosing your own colors isn't in yet. Every car carries the example black,
+  papaya and white design.
+  ([#5](https://github.com/Aintologic/aintologic-iracing-paints/issues/5))
+
 ## 0.1.0 (2026-10-25)
 
 The first public preview. It covers everything the project offers today. The

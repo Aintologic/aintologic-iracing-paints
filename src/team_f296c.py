@@ -26,7 +26,7 @@ src/teamscheme.py and src/sponsors.py; this file holds ONLY this car's
 geometry and placements.  Structure copied from src/team_rsr.py (a closed
 body) with every RSR number deleted - no UV is shared with any other car.
 
-    python src/team_f296c.py            -> the iRacing paint folder
+    python src/team_f296c.py            -> out/ in the project folder
     python src/team_f296c.py --here     -> the cwd instead
     python src/team_f296c.py --no-spec  -> colour map only
     python src/team_f296c.py --png      -> also write the flat texture as PNG
@@ -344,7 +344,7 @@ if __name__ == "__main__":
     CUSTOMER = cfg.id
     DRIVER_NAME = cfg.driver
     LOGO1, LOGO2 = cfg.logo1, cfg.logo2
-    out_dir = cfg.out_dir or (os.getcwd() if args.here else os.path.join(os.getcwd(), "out"))
+    out_dir = cfg.out_dir or (os.getcwd() if args.here else personalize.default_out_dir())
     os.makedirs(out_dir, exist_ok=True)
     colour = build(spec=False)
     print("number blocks:")

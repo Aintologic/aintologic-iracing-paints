@@ -43,13 +43,16 @@ as the product, and never assume the client wants it.
 ### Before you start
 
 1. Read `README.md`, then this file.
-2. Check what is installed: `python --version`, then whether `numpy`, `PIL`
-   (Pillow), `scipy` and `psd_tools` import. If something is missing, show the
-   client the "What you need" section of the README and let them install it.
-   **Do not install anything yourself.** Never run `pip install -r
-   requirements.txt`, and never suggest an add-on that isn't on that list
-   without explaining what it is and why, and getting a yes.
-3. Ask which car they want.
+2. Check what is installed: run `python tools/check_setup.py` and tell the
+   client what it found, in plain words. It only looks; it reports Python, the
+   four add-ons, the iRacing paint folder and the one-time setup step. If
+   something is missing, show the client the "What you need" section of the
+   README and let them install it. **Do not install anything yourself.** Never
+   run `pip install -r requirements.txt`, and never suggest an add-on that
+   isn't on that list without explaining what it is and why, and getting a
+   yes.
+3. Ask which car they want. If they need their customer ID or paint folder,
+   use the steps in `docs/GETTING-STARTED.md`.
 
 ### Is the car already measured?
 
@@ -88,7 +91,16 @@ cup car (`team_mx5.py`).
    (`docs/IRACING-PAINTING-PLAYBOOK.md`, Rule 2).
 5. **Never guess a panel.** Measure each one with the probe tools in `tools/`,
    following `docs/PANEL-PROBING.md`: what it covers, which way it runs, and
-   where it sits on both sides of the car.
+   where it sits on both sides of the car. Known problem in this version: the
+   probes save their test pattern as `car_CUSTOMERID.tga`, a name iRacing
+   doesn't load, and look for the paint folder under the `Documents` folder in
+   the user's home folder. Tell the client, and after each probe copy that file
+   to `car_<their customer ID>.tga` in the same folder with
+   `paintfolder.copy_in()`, which backs up their own paint first. Tell them
+   their own paint is replaced by test patterns while you measure, where the
+   backup is, and offer to put it back when you stop. If `check_setup.py` found
+   their paint folder somewhere else (for example in OneDrive), the probes
+   can't reach it yet: say so and stop measuring.
 6. Show the client check pictures as you go, so they can confirm things look
    right.
 7. Record what you measured in a new `docs/car-maps/<car>.md`, so nobody has to
@@ -109,9 +121,11 @@ cup car (`team_mx5.py`).
 5. **Build the final files** with their customer ID: `car_<id>.tga`, and
    `car_spec_<id>.tga` for the finish.
 6. **Deliver.** Tell them the exact folder to copy into:
-   `Documents\iRacing\paint\<paint folder>\`. Offer to copy the files yourself.
-   If a file with the same name is already there, copy it to `out\backup\` first
-   and tell them.
+   `Documents\iRacing\paint\<paint folder>\`. Offer to copy the files yourself,
+   and if they say yes, copy each one with `copy_in(src, dst)` from
+   `src/paintfolder.py` (`dst` is the file's full path in the paint folder): it backs up any file with the same name into
+   `out\backup\<paint folder>\` first, with the date and time in its name, and
+   prints where the copy is. Tell them.
 7. **Help them check it.** In iRacing, open the car in the car viewer after the
    file is in place; a new paint only loads when the viewer is opened fresh. If
    they don't own the car, they can open it from the car's page in iRacing's
@@ -122,9 +136,23 @@ cup car (`team_mx5.py`).
 - **Nothing installs itself.** Tell the client what they need, what it is, and
   how to get it. They install it.
 - **Stay in the project folder.** Write your work to `out`, plus any new builder
-  or car map you create. Write anywhere else, including iRacing's paint folder,
-  only after the client says yes. Never delete or overwrite a file you didn't
-  create without asking and making a backup.
+  or car map you create. All previews, screenshots and check pictures go in
+  `out` too: git ignores it, so nothing in it is ever committed or
+  published with this project. Write anywhere else, including
+  iRacing's paint folder, only after the client says yes. Never delete or
+  overwrite a file you didn't create without asking and making a backup.
+- **Back up before writing into iRacing's paint folder,** and tell the client
+  where the backup is. The measuring tools do this themselves through
+  `src/paintfolder.py`; when you copy files in, use its `copy_in()` too. The
+  builders don't back up, so never point `--out` or `--here` at the paint
+  folder: build into `out` and copy the files in.
+- **Ask before running anything that moves the mouse or presses keys.** The
+  viewer tools (`tools/view2.py`, `walk.py`, `walk_top.py`, `contact.py`)
+  bring iRacing to the front and click and drag inside its car viewer;
+  `view2.py` and `contact.py` also press Ctrl+R (`walk.py` only with
+  `--reload`). Say what they will do and wait for a yes.
+- **Never ask for, store or type the client's iRacing login** or any account
+  details. Nothing in this project needs them.
 - **Logos.** Use only logos the client owns or has written permission to use.
   iRacing's Custom Paint Policy bans third-party trademarks without written
   permission, and political, offensive, tobacco, alcohol and drug content. If a
@@ -146,16 +174,12 @@ cup car (`team_mx5.py`).
 
 ### Be honest about limits
 
-Today every car carries the example design, with the client's name, two logos
-and customer ID. Their own colors and layouts are planned but not built yet.
+Today every car carries the example design, with the client's name and two
+logos, saved under their customer ID. Their own colors and layouts are planned
+but not built yet.
 If the client asks for that, say so plainly and offer
 what is possible today. If they want to experiment anyway, work on a copy and
 tell them the result is unsupported.
-
-Known problems:
-
-- On the MX-5, a large logo in logo spot 2 can be oversized and cropped. Check
-  the preview, and suggest a smaller or wider, shorter logo if it clips.
 
 ### Commands
 
@@ -165,6 +189,8 @@ Build a measured car (the same options work for every builder):
 python src/team_<car>.py --id <customer ID> --driver "<name>" --logo1 <image> --logo2 <image> --out out
 ```
 
+- It writes exactly two files into the `--out` folder: `car_<id>.tga` (the
+  paint) and `car_spec_<id>.tga` (the finish).
 - Leave out `--id` while previewing; the file is then named `car_CUSTOMERID.tga`.
 - Leave out `--driver` for a blank strip, and `--logo1` / `--logo2` for the
   "YOUR LOGO" placeholder.
@@ -177,6 +203,8 @@ One-time setup for six measured cars:
 python tools/first_run.py <f4|ray|hpd|srf|sbf2000|amv> <template.zip>
 ```
 
-Further reading: `docs/IRACING-PAINTING-PLAYBOOK.md` (method),
+Further reading: `docs/GETTING-STARTED.md` (the client's side of the job),
+`docs/TRUST-AND-SAFETY.md` (what the tools read and write; keep it true when
+you add or change a tool), `docs/IRACING-PAINTING-PLAYBOOK.md` (method),
 `docs/PANEL-PROBING.md` (measuring panels), `docs/REGENERATING-GEOMETRY.md`
 (setup step), `docs/car-maps/` (per-car panel maps).

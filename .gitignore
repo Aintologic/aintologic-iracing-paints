@@ -20,7 +20,19 @@ Thumbs.db
 .idea/
 
 # iRacing templates are iRacing's property. Download your own and keep them out of git.
-# The extracted-template working folder used when regenerating car geometry:
-tpl/
 *.psd
 *_template_*.zip
+# An extracted-template folder, if you make one by hand (the setup step uses out/setup/):
+tpl/
+
+# Made from your own iRacing template by the one-time setup step
+# (tools/first_run.py), so they stay on your computer too:
+src/f4_islands.py
+src/ray_islands.py
+assets/hpd-body-mask.png
+assets/amv-centre-mask.png
+assets/sbf2000-centre-mask.png
+assets/sbf2000-pod-islands.png
+assets/srf-centre-mask.png
+assets/srf-side-mask.png
+assets/srf-sash-islands.png

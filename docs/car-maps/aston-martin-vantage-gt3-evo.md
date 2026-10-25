@@ -42,7 +42,7 @@ Mirror-symmetric about texture row **1260**:
 Measured by mask correlation on twelve island pairs (0/1, 10/9, 17/16, 19/18,
 26/27, 35/34, 37/36, 41/40, 48/47, 71/70, 65/66, 74/73) — every one peaks at
 **M = 2520**, overlap 99.4–100 % (19/18, the hood vents, 91.8 %):
-`python tools/mirror_row.py <scratch>/tpl 2505 2535 0/1 10/9 ...`.
+`python tools/mirror_row.py out/tpl 2505 2535 0/1 10/9 ...`.
 
 - **rows > 1260 = the car's LEFT side**, upright from a level left view
 - **rows < 1260 = the car's RIGHT side**, ROTATE_180 from a level right view
@@ -63,8 +63,8 @@ from behind with ROTATE_270 (its +x runs FORWARD).
 
 ## Islands that matter
 
-`python tools/probe_islands.py team_amv <scratch>/tpl list` (98 islands).
-Named with a whole-inventory flood (a flood script in your scratch folder) and
+`python tools/probe_islands.py team_amv out/tpl list` (98 islands).
+Named with a whole-inventory flood (a one-off flood script, not in this project) and
 read from level sides, dead front, dead rear and top.
 
 | idx | bbox (x,y,w,h) | what it is |
@@ -216,11 +216,11 @@ approved v1.1 paint untouched and build the change as a separate version.
    (`python tools/view2.py`), then walk it (`python tools/walk.py`,
    `tools/contact_sheet.py`) and compare against the v1.1 `preview.png`.
 5. **Re-probe** only if a placement lands somewhere unexpected:
-   `python tools/template_layers.py 206_template_AMGT3.zip <scratch>/tpl`,
-   `python tools/probe_islands.py team_amv <scratch>/tpl list`,
+   `python tools/template_layers.py 206_template_AMGT3.zip out/tpl`,
+   `python tools/probe_islands.py team_amv out/tpl list`,
    `python tools/coord_grid.py team_amv 128`, then masked probes
    (`tools/probe_bands.py`, `tools/probe_islands.py`).
-6. **Mask:** `python tools/body_mask.py <scratch>/tpl assets/amv-centre-mask.png 3 5 14 4 6 leak:1390,940,470,640`
+6. **Mask:** `python tools/body_mask.py out/tpl assets/amv-centre-mask.png 3 5 14 4 6 leak:1390,940,470,640`
    regenerates `assets/amv-centre-mask.png` (template-derived, not shipped).
 
 ## Milestone-1 pictures

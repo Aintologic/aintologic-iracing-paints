@@ -54,8 +54,7 @@ marks, nothing from them ships as raster).
 
 Every mark is drawn in code from `fonts/Orbitron-Variable.ttf` (OFL) at
 weight 800, plus geometry. `teamscheme.py` run on its own writes a proof
-sheet of every mark on black and on papaya to `scheme_proof.png` in a scratch
-folder.
+sheet of every mark on black and on papaya to `out/scheme_proof.png`.
 
 ## Palette
 

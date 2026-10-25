@@ -25,11 +25,13 @@ x as a label beside the stripe.  AXIS Y: the same with the roles swapped.
 Purpose (RSR, 2026-09-14): measure the RENDERED width of the existing stripe
 per texture column, so the band widths can be set per column and the stripe
 reads one width through islands of different texel density.
+Any paint file already there is backed up into out/backup/ first.
 """
 import importlib, os, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 from PIL import Image, ImageDraw, ImageFont
+from paintfolder import save_tga
 
 FONT = os.path.join(ROOT, "fonts", "ArchivoBlack-Regular.ttf")
 HALF = 110
@@ -57,7 +59,7 @@ def main():
                     d.text((c + HALF + 4, v - 10), str(v), font=f, fill=col)
         print(name, "ticks", a, "..", b, "step", step)
     out = os.path.join(B.PAINT_DIR, "car_%s.tga" % B.CUSTOMER)
-    img.convert("RGB").save(out, compression="tga_rle")
+    save_tga(img.convert("RGB"), out)
     print("wrote probe to", out)
 
 

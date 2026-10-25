@@ -89,7 +89,7 @@ Automate it. These are repo tools (Windows, Python + Pillow only):
   view, sends Ctrl+R twice (unless `--no-reload`), optionally drags to rotate
   (`--drag`, `--drag-y`) or scrolls to zoom (`--wheel`), then captures the
   window to a PNG. One call per iteration:
-  `python tools/view2.py --drag 260 --out <scratch>/a.png`.
+  `python tools/view2.py --drag 260 --out out/a.png`.
   Drags add up and Ctrl+R does NOT reset the camera; a single drag can be
   undone with the same drag reversed (`--drag -260` after `--drag 260`),
   a whole sweep cannot (it drifts a degree or two).

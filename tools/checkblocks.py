@@ -14,12 +14,25 @@
 # <https://www.gnu.org/licenses/>.
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-from PIL import Image
-import numpy as np, sys
+"""Check that the MX-5's three number blocks are left plain black.
 
+    python tools/checkblocks.py [paint.tga]
+
+Written for the first MX-5 liveries (v1.x), which left the blocks black. The
+team scheme paints white number panels into N1 and N2, so a team-scheme MX-5
+reports those two DIRTY by design. Without a file it reads
+out/car_CUSTOMERID.tga in the project folder (a builder's default output when
+run from there).
+"""
+from PIL import Image
+import numpy as np, os, sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BLACK = (11, 12, 14)
 BLOCKS = {"N1": (493, 577, 123, 105), "N2": (493, 1810, 123, 105), "N3": (777, 214, 89, 74)}
-p = sys.argv[1] if len(sys.argv) > 1 else r"scratch\mx5build\car_CUSTOMERID.tga"
+p = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "out", "car_CUSTOMERID.tga")
+if not os.path.isfile(p):
+    sys.exit("no paint file at %s - give the path of the paint to check" % p)
 a = np.asarray(Image.open(p).convert("RGB")).astype(int)
 bad = 0
 for n, (x, y, w, h) in BLOCKS.items():

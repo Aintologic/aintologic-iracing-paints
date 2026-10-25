@@ -16,21 +16,27 @@
 
 """Six-angle contact sheet straight out of the iRacing car viewer.
 
-    python tools/contact.py scratch/preview.png [--no-reload] [--step 260]
+    python tools/contact.py out/preview.png [--no-reload] [--step 260]
 
 Drives tools/view2.py: one reload + capture, then five more captures each
 after a horizontal drag of --step px (the viewer keeps its orbit between
 calls, so the drags accumulate into a walk around the car), then one from a
 raised camera.  Crops each capture to the 3D pane and tiles them 3x2.
 
-Used for releases/<car>/<version>/preview.png and for judging a build.
+The single captures are working files.  They go in out/contact/ in the
+project folder (git ignores out/, so nothing in it is ever committed),
+whichever folder you run this from;
+--work-dir puts them in another folder instead.
+
+Used for preview pictures and for judging a build.
 """
 import argparse, os, subprocess, sys
 from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(HERE)
 VIEW = os.path.join(HERE, "view2.py")
-TMP = r"scratch\contact"
+TMP = os.path.join(ROOT, "out", "contact")  # the working captures (--work-dir)
 
 
 def shot(out, drag=0, dragy=0, reload=False):
@@ -61,10 +67,13 @@ def main():
     ap.add_argument("--pre", type=int, default=0,
                     help="horizontal drag before the first frame, to reach "
                          "the side view")
+    ap.add_argument("--work-dir", default=TMP,
+                    help="folder for the single captures (default: %(default)s)")
     a = ap.parse_args()
-    os.makedirs(TMP, exist_ok=True)
+    work = os.path.abspath(a.work_dir)
+    os.makedirs(work, exist_ok=True)
     if a.level or a.pre:
-        shot(os.path.join(TMP, "pre.png"), drag=a.pre,
+        shot(os.path.join(work, "pre.png"), drag=a.pre,
              dragy=(-600 if a.level else 0))
     # MEASURED: a 260px drag is ~90 deg of orbit, so 130 is ~45.  Frames:
     # side, front 3/4, front, far side, rear 3/4, rear.
@@ -72,15 +81,16 @@ def main():
     drags = [0, s, s, 2 * s, s, s]
     frames = []
     for i, d in enumerate(drags):
-        frames.append(pane(shot(os.path.join(TMP, "%d.png" % i), drag=d,
+        frames.append(pane(shot(os.path.join(work, "%d.png" % i), drag=d,
                                 reload=(i == 0 and not a.no_reload))))
     # put the camera back where it started (one more 45 closes the circle)
-    shot(os.path.join(TMP, "reset.png"), drag=2 * s)
+    shot(os.path.join(work, "reset.png"), drag=2 * s)
     tw = 640
     th = int(frames[0].height * tw / frames[0].width)
     sheet = Image.new("RGB", (tw * 3, th * 2), (20, 20, 20))
     for i, f in enumerate(frames):
         sheet.paste(f.resize((tw, th), Image.LANCZOS), ((i % 3) * tw, (i // 3) * th))
+    os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
     sheet.save(a.out)
     print("wrote", a.out)
 

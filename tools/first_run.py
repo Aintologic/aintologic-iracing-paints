@@ -31,18 +31,26 @@ reads them (under --root, default the repository root):
     sbf2000  -> assets/sbf2000-centre-mask.png, assets/sbf2000-pod-islands.png
     srf      -> assets/srf-centre-mask.png, assets/srf-side-mask.png, assets/srf-sash-islands.png
 
-Then build the car as usual, e.g.  python src/team_f4.py --id <id> --out .
+Then build the car as usual, e.g.  python src/team_f4.py --id <id>
 
 It first extracts the template's layers with tools/template_layers.py (needs
 psd-tools, numpy, scipy, Pillow), then runs the per-car extractors below. The
 island indices are the ones tools/probe_islands.py prints for the reference
 templates; if iRacing has repacked a template, confirm them (see
 docs/REGENERATING-GEOMETRY.md and the car's docs/car-maps/ entry).
+
+The extracted layers are working files made from iRacing's template: they go
+in out/setup/<car> under --root (git ignores out/, so nothing in it is ever
+committed) and that folder is deleted at the end, even when a step fails,
+unless --keep-tpl. --tpl puts them in a folder of your choice instead; then
+only the files this run added to it are deleted.
 """
 import argparse
 import os
+import shutil
 import subprocess
 import sys
+import zipfile
 
 TOOLS = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(TOOLS)
@@ -91,8 +99,10 @@ def main():
     ap.add_argument("car", help="f4 / ray / hpd / srf / sbf2000 / amv (or the full slug)")
     ap.add_argument("template", help="your iRacing template .zip for this car")
     ap.add_argument("--root", default=ROOT, help="where to write src/ and assets/ (default: the repo)")
-    ap.add_argument("--tpl", default=None, help="extracted-template folder (default: <root>/tpl/<car>)")
+    ap.add_argument("--tpl", default=None, help="extracted-template folder (default: <root>/out/setup/<car>)")
     ap.add_argument("--keep-tpl", action="store_true", help="keep the extracted template folder")
+    ap.add_argument("--any-name", action="store_true",
+                    help="use the zip even if its name doesn't start with this car's ID")
     a = ap.parse_args()
 
     car = ALIASES.get(a.car, a.car)
@@ -101,14 +111,63 @@ def main():
     if not os.path.isfile(a.template):
         sys.exit("no such template zip: %s" % a.template)
     hint, steps = RECIPES[car]
-    if hint.split("_")[0] not in os.path.basename(a.template):
-        print("note: expected a template like %s; got %s (continuing)"
-              % (hint, os.path.basename(a.template)))
+    name = os.path.basename(a.template)
+    if name.split("_")[0] != hint.split("_")[0] and not a.any_name:
+        sys.exit("This doesn't look like the template for this car: the %s setup needs\n"
+                 "%s (car #%s), and this file is %s. Nothing was changed.\n"
+                 "Using another car's template is the most expensive mistake in this\n"
+                 "project. If you're sure it's the right one, run again with --any-name."
+                 % (car, hint, hint.split("_")[0], name))
+    if not zipfile.is_zipfile(a.template):
+        sys.exit("%s isn't a complete zip file: download the template again\n"
+                 "(templates/README.md says how). Nothing was changed." % name)
 
     root = os.path.abspath(a.root)
-    tpl = os.path.abspath(a.tpl) if a.tpl else os.path.join(root, "tpl", car)
+    own = not a.tpl                 # our own working folder: always cleaned up
+    tpl = os.path.abspath(a.tpl) if a.tpl else os.path.join(root, "out", "setup", car)
+    existed = os.path.isdir(tpl)
+    before = set(os.listdir(tpl)) if existed and not own else set()
     os.makedirs(tpl, exist_ok=True)
+    try:
+        written = _regenerate(a, root, tpl, steps)
+    finally:                        # on success and on failure alike
+        if a.keep_tpl:
+            print("kept the unpacked template in %s - it is iRacing's; delete it "
+                  "when you're done" % tpl)
+        else:
+            _clean(tpl, own, existed, before)
 
+    print("\nOK - regenerated %d file(s) for %s:" % (len(written), car))
+    for w in written:
+        print("    " + w)
+    print("now build it, e.g.  python src/team_%s.py --id <id>   (the files go to "
+          "out/ in the project folder)"
+          % {"f4": "f4", "ray": "ray", "hpd": "hpd", "srf": "srf",
+             "sbf2000": "sbf2000", "amv": "amv"}[car])
+
+
+def _clean(tpl, own, existed, before):
+    """Delete the unpacked template: all of our own working folder, but only
+    what this run added to a folder the user chose with --tpl."""
+    if own:
+        shutil.rmtree(tpl, ignore_errors=True)
+        return
+    for name in set(os.listdir(tpl)) - before:
+        p = os.path.join(tpl, name)
+        if os.path.isdir(p):
+            shutil.rmtree(p, ignore_errors=True)
+        else:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+    if not existed and not os.listdir(tpl):
+        os.rmdir(tpl)
+
+
+def _regenerate(a, root, tpl, steps):
+    """Unpack the template into `tpl`, run the car's extractors, and return
+    the files written (paths relative to `root`)."""
     print("extracting template layers -> %s" % tpl)
     r = subprocess.run([sys.executable, os.path.join(TOOLS, "template_layers.py"),
                         os.path.abspath(a.template), tpl], capture_output=True, text=True)
@@ -125,17 +184,7 @@ def main():
         if r.returncode != 0 or not os.path.isfile(out_abs):
             sys.exit("%s did not run. Output:\n%s" % (tool, r.stderr or r.stdout))
         written.append(out_rel)
-
-    if not a.keep_tpl:
-        import shutil
-        shutil.rmtree(tpl, ignore_errors=True)
-
-    print("\nOK - regenerated %d file(s) for %s:" % (len(written), car))
-    for w in written:
-        print("    " + w)
-    print("now build it, e.g.  python src/team_%s.py --id <id> --out ."
-          % {"f4": "f4", "ray": "ray", "hpd": "hpd", "srf": "srf",
-             "sbf2000": "sbf2000", "amv": "amv"}[car])
+    return written
 
 
 if __name__ == "__main__":

@@ -16,8 +16,8 @@
 
 """Numbered colour bands MASKED to one UV island, over the live livery.
 
-    python tools/probe_bands.py team_l79 scratch/lotus/tpl 0:X:0:520:25 1:X:40:610:50 0:Y:0:480:40
-    python tools/probe_bands.py team_l79 scratch/lotus/tpl 1:X:40:610:50 line:1,10:1259 blocks
+    python tools/probe_bands.py team_l79 out/tpl/lotus 0:X:0:520:25 1:X:40:610:50 0:Y:0:480:40
+    python tools/probe_bands.py team_l79 out/tpl/lotus 1:X:40:610:50 line:1,10:1259 blocks
 
 Each spec is IDX:X|Y:start:stop:step - bands every `step` texels along x (or
 y) of island IDX (indices as `tools/probe_islands.py ... list` prints them),
@@ -34,6 +34,7 @@ that the rear wing's rear face is the LOW-x end of the wing island, where a
 trailing-edge band drawn on the top surface had been invisible from behind.
 The build module must expose build(spec=False), PAINT_DIR, CUSTOMER and
 (for `blocks`) NUMBER_BLOCKS.
+Any paint file already there is backed up into out/backup/ first.
 """
 import importlib, os, sys
 import numpy as np
@@ -43,6 +44,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(os.path.dirname(HERE), "src"))
 import probe_islands as P
+from paintfolder import save_tga
 
 
 def main():
@@ -91,7 +93,7 @@ def main():
         d.text((cx - (bb[2] - bb[0]) / 2 - bb[0], cy - (bb[3] - bb[1]) / 2 - bb[1]),
                t, font=f, fill=(0, 0, 0))
     out = os.path.join(B.PAINT_DIR, "car_%s.tga" % B.CUSTOMER)
-    img.save(out, compression="tga_rle")
+    save_tga(img, out)
     print("wrote probe to", out, "- rebuild the livery afterwards")
 
 

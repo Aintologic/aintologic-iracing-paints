@@ -98,7 +98,7 @@ Current build FAILS this. Measured on the built TGA, not eyeballed:
     N2 DIRTY   5066/12915 px   forest [13,49,48]
     N3 clean       0/6586 px
 
-`checkblocks.py` (in your scratch build folder) is the checker. Run it before
+`tools/checkblocks.py` is the checker. Run it before
 every deploy.
 
 ## The stamped number
@@ -118,7 +118,7 @@ Car Numbers" on, and Trading Paints requires **Pro** for custom numbers.
 ## Viewer loop
 
 - `python tools/view2.py` — focuses iRacing, sends Ctrl+R twice, captures the
-  window to `shot.png` (or `--out <file>`). `--drag 520` rotates ~180° to see
+  window to `out/viewer/shot.png` (or `--out <file>`). `--drag 520` rotates ~180° to see
   the other side.
 - `python tools/zoom.py <in> <out> --box l t r b` — zoom crop; the box is
   fractions of the frame (default: the middle of the 3D view).
@@ -239,12 +239,12 @@ mirrored. Do not re-litigate.
 ## Current livery layout
 
 - **Hood** — AI mark, 300px, centred, reads from the front.
-- **Door** — AINTOLOGIC wordmark. Door is otherwise kept clear.
+- **Door** — AÏNTOLOGIC wordmark. Door is otherwise kept clear.
 - **Sill** — forest wedge with gold pinstripe, running the full length from the
   nose and rising toward the tail. Clears N1/N2 by geometry, not by masking.
 - **Rear quarter + tail** — valance band rising at both outer columns to meet
   the sill wedge, flat across the middle so the stamped number stays readable.
-- **Rear deck** — AINTOLOGIC wordmark, 320px, centred, with a gold rule under it.
+- **Rear deck** — AÏNTOLOGIC wordmark, 320px, centred, with a gold rule under it.
 
 ## Front bumper / nose — VERIFIED 2026-08-14
 
@@ -293,9 +293,9 @@ valance rect), rear deck, rear bumper.
 ## The livery, as built
 
 Base, approved and unchanged: warm near-black, forest wedge along the sill,
-gold-and-bone twin coachline, AINTOLOGIC on the doors, AI mark on the hood.
+gold-and-bone twin coachline, AÏNTOLOGIC on the doors, AI mark on the hood.
 
-**The concept.** AINTOLOGIC is an AI company taking the piss out of AI. The car
+**The concept.** AÏNTOLOGIC is an AI company that pokes fun at AI. The car
 is quietly, deliberately wrong in the specific ways AI is wrong - but every
 joke lives inside real race car furniture: scrutineering roundels, contingency
 decals, tech plates, a rear-facing line. Correct racing typography, correct
@@ -309,7 +309,7 @@ If it only looks technical, it was cut.
 
 | where | what | why it is funny |
 |---|---|---|
-| sill, forward | AINTOLOGIC again, small, one letter gone soft | the wordmark is correct on the doors. This one is almost right. The classic generated-text tell |
+| sill, forward | AÏNTOLOGIC again, small, one letter gone soft | the wordmark is correct on the doors. This one is almost right. The classic generated-text tell |
 | sill, middle | tech plate: "TECH / 97% CONFIDENT" | certification format, uncertain content |
 | sill, rear | roundel: a hand with six fingers, rust ring | the oldest tell in image generation, as the most mundane sticker on a race car |
 | rear bumper | "I MAY MAKE MISTAKES" | the literal AI disclaimer, aimed at the driver behind. Race cars have a tradition of one rear-facing line. This is the one |
@@ -318,7 +318,7 @@ Rust `#C0552A` appears exactly twice and both are deliberate: the diaeresis dots
 in the marks, and the ring of the roundel. One warm point on a cool car.
 
 At 100mph the car reads as black, green wedge, gold-and-bone coachline, big AI,
-AINTOLOGIC. Every joke above is invisible at that distance. They live at walking
+AÏNTOLOGIC. Every joke above is invisible at that distance. They live at walking
 pace, which is the whole point.
 
 ## Spec map — SOLVED 2026-08-15. Read this before touching `car_spec_*.tga`.
@@ -373,7 +373,7 @@ are chrome.
 
 Never guess global values. `spec_ladder.py` for a stepped read off the car, then
 `spec_flat.py R G B` to sweep one axis at a time against a no-spec control. Both
-live in the scratch build dir; move them into `src/` if they get used again.
+are in `tools/`.
 
 
 ## Rear deck — CORRECTED 2026-08-17. The old note was wrong twice.
@@ -478,7 +478,7 @@ they are rotation-tolerant. Leaving the boot clear and carrying the brand
 elsewhere is also a safe choice.
 
 
-## AINTOLOGIC v2 concept build — measured 2026-08-23
+## AÏNTOLOGIC v2 concept build — measured 2026-08-23
 
 Built from the approved concept pack onto this map, as
 `src/build_aintologic_mx5.py`. What the pass measured:
@@ -515,7 +515,7 @@ than up against the cowl. At canvas centre it reads as a cowl mark.
 ### Rear valance — the (560,292) wordmark spot needs a caveat
 
 The verified "340px mark centred at local (560,292)" clears N3, but it assumes
-a mark whose art box is all cap height. The AINTOLOGIC wordmark carries the
+a mark whose art box is all cap height. The AÏNTOLOGIC wordmark carries the
 diaeresis above the caps, so centring its **box** at y=292 drops the letters
 onto the number-plate recess and the recess splits the word — exactly the
 symptom the map warns about. **Centre at (560,268)** for a mark with the dots.
@@ -564,7 +564,7 @@ Every earlier version of this file recorded panel **rects and transforms** and
 nothing about **scale**: how much of the car a panel covers. Without that there
 is no way to turn "the wordmark is 32% of car length" into a pixel width, so it
 gets eyeballed, and eyeballing it cost three full rebuild passes on the
-AINTOLOGIC v2 car before anyone measured.
+AÏNTOLOGIC v2 car before anyone measured.
 
 Probe: `flank_ruler.py` paints labelled gridlines every 100 in x and 50
 in y across the flank rect, over the live livery, read from a LEVEL side camera.
@@ -598,7 +598,7 @@ the sill at `flat_sill`:
     flank_x = (f - 0.206) / 0.509 * 884
     flank_y = (flat_y - flat_belt) * 271 / (flat_sill - flat_belt)
 
-For the AINTOLOGIC flat (2012x782, body x 60..1960, belt y=300, sill y=620)
+For the AÏNTOLOGIC flat (2012x782, body x 60..1960, belt y=300, sill y=620)
 that reduces to:
 
     flank_x = (flat_x - 451) * 0.913
@@ -984,8 +984,11 @@ anti-aliased edges inherit a neighbour's material) and writes two variants:
     B1  body (0,115,16) satin | papaya (0,45,16) gloss | white (0,80,16) | vinyl (0,95,16) | number blocks (0,40,16)
     B2  same, papaya (255,45,16) metallic
 
-`car_spec_<id>.tga` is B1 unless built with `--spec-variant B2`; both are
-written alongside as `car_spec_<id>_B1.tga` / `_B2.tga`.
+Superseded the same week: B3 "Satin-True" (B4 is B3 with a metallic papaya)
+is the default, and B1/B2/B4 stay in `SPEC_VARIANTS` as history.
+`car_spec_<id>.tga` is B3 unless built with `--spec-variant`. A normal build
+writes only that one finish file; add `--finish-tests` to also write all four
+as `car_spec_<id>_B1.tga` … `_B4.tga` for comparing finishes.
 
 ### Viewer notes learned the hard way
 

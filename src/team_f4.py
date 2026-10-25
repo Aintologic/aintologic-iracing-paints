@@ -22,7 +22,7 @@ src/sponsors.py; this file holds ONLY the F4's geometry and placements.
 Copied from the MX-5 gold master (src/team_mx5.py) with every MX-5 number
 deleted - the F4 is an open-wheel car and shares no UV with it.
 
-    python src/team_f4.py            -> the iRacing paint folder
+    python src/team_f4.py            -> out/ in the project folder
     python src/team_f4.py --here     -> the cwd instead
     python src/team_f4.py --no-spec  -> colour map only
     python src/team_f4.py --png      -> also write the flat texture as PNG
@@ -378,7 +378,7 @@ if __name__ == "__main__":
     CUSTOMER = cfg.id
     DRIVER_NAME = cfg.driver
     LOGO1, LOGO2 = cfg.logo1, cfg.logo2
-    out_dir = cfg.out_dir or (os.getcwd() if args.here else os.path.join(os.getcwd(), "out"))
+    out_dir = cfg.out_dir or (os.getcwd() if args.here else personalize.default_out_dir())
     os.makedirs(out_dir, exist_ok=True)
     colour = build(spec=False)
     print("number blocks:")

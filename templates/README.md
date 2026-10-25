@@ -13,6 +13,15 @@ The templates are iRacing's property, so they are **not included** in this
 project. Download your own from iRacing. Keep it on your computer and don't
 share it or commit it to git.
 
+### Where to get it
+
+iRacing's own help page,
+[How do I custom paint my iRacing cars?](https://support.iracing.com/support/solutions/articles/31000133480-how-do-i-custom-paint-my-iracing-cars-),
+gives the steps in the iRacing app: **My Content**, then **Car Manager**, then
+**Download Template**. (**Car Manager** is a button at the top right of the
+My Content page.) The file is a zip named after the car's ID, for example
+`148_template_iR04.zip` for the FIA F4.
+
 Measured cars that need it for setup: FIA F4, Ray FF1600, HPD ARX-01c, SCCA
 Spec Racer Ford, Skip Barber Formula 2000 and Aston Martin Vantage GT3 EVO. The
 other four measured cars build without one.

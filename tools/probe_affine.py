@@ -28,10 +28,12 @@ onto the texels - see rear_quarter_ff_affine() in src/team_mx5.py.
 Why: the MX-5's rear quarters are different islands on the two sides, with
 different scale, orientation and anisotropy.  Placing by eye per island
 never matched; fitting the mapping did (2026-09-14).
+Any paint file already there is backed up into out/backup/ first.
 """
 import sys, os, colorsys, importlib
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
 from PIL import Image, ImageDraw
+from paintfolder import save_tga
 
 if len(sys.argv) < 5:
     sys.exit(__doc__)
@@ -48,5 +50,5 @@ for r in range(rows):
         rgb = tuple(int(255 * v) for v in colorsys.hsv_to_rgb(i / float(N), 1.0, 1.0))
         d.rectangle([x0 + c * cw + 2, y0 + r * ch + 2, x0 + c * cw + cw - 3, y0 + r * ch + ch - 3], fill=rgb)
 out = os.path.join(B.PAINT_DIR, "car_%s.tga" % B.CUSTOMER)
-img.save(out, compression="tga_rle")
+save_tga(img, out)
 print("wrote", out, "-", N, "cells of", cw, "x", ch, "texels; reload the viewer and capture")

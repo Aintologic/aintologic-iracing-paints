@@ -26,7 +26,7 @@ panel map (docs/car-maps/lotus-79.md).  Every mark comes from src/teamscheme.py
 and src/sponsors.py; this file holds ONLY the Lotus's geometry and placements.
 No MX-5 / F4 / RSR / Ray / Ferrari coordinate is reused.
 
-    python src/team_l79.py            -> the iRacing paint folder
+    python src/team_l79.py            -> out/ in the project folder
     python src/team_l79.py --here     -> the cwd instead
     python src/team_l79.py --no-spec  -> colour map only
     python src/team_l79.py --png      -> also write the flat texture as PNG
@@ -338,7 +338,7 @@ if __name__ == "__main__":
     CUSTOMER = cfg.id
     DRIVER_NAME = cfg.driver
     LOGO1, LOGO2 = cfg.logo1, cfg.logo2
-    out_dir = cfg.out_dir or (os.getcwd() if args.here else os.path.join(os.getcwd(), "out"))
+    out_dir = cfg.out_dir or (os.getcwd() if args.here else personalize.default_out_dir())
     os.makedirs(out_dir, exist_ok=True)
     colour = build(spec=False)
     print("number blocks:")

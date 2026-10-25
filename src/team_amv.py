@@ -27,7 +27,7 @@ car's geometry and placements.  Structure follows src/team_f296c.py (a closed
 body); every number here was measured on THIS car - no UV is shared with any
 other car.
 
-    python src/team_amv.py            -> the iRacing paint folder
+    python src/team_amv.py            -> out/ in the project folder
     python src/team_amv.py --here     -> the cwd instead
     python src/team_amv.py --no-spec  -> colour map only
     python src/team_amv.py --png      -> also write the flat texture as PNG
@@ -355,7 +355,7 @@ if __name__ == "__main__":
     CUSTOMER = cfg.id
     DRIVER_NAME = cfg.driver
     LOGO1, LOGO2 = cfg.logo1, cfg.logo2
-    out_dir = cfg.out_dir or (os.getcwd() if args.here else os.path.join(os.getcwd(), "out"))
+    out_dir = cfg.out_dir or (os.getcwd() if args.here else personalize.default_out_dir())
     os.makedirs(out_dir, exist_ok=True)
     colour = build(spec=False)
     print("number blocks:")

@@ -27,11 +27,13 @@ texture x=v (AXIS X) or y=v (AXIS Y) - use it to check a centre line.
 Written 2026-09-14 for the RSR, whose hood / bumper / tail islands needed
 "which texel column is the centre line and where does the panel end" rather
 than which-island-is-which (that is tools/probe_multi.py).
+Any paint file already there is backed up into out/backup/ first.
 """
 import importlib, os, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 from PIL import Image, ImageDraw, ImageFont
+from paintfolder import save_tga
 
 FONT = os.path.join(ROOT, "fonts", "ArchivoBlack-Regular.ttf")
 PAL = [(255, 0, 220), (255, 230, 0), (0, 200, 255)]
@@ -92,7 +94,7 @@ def main():
                 d.rectangle([x, centre - 1, x + w - 1, centre + 1], fill=(0, 0, 0, 255))
         print("%s: %d bands of %d along %s from %d" % (name, n, step, axis, x if axis == "X" else y))
     out = os.path.join(B.PAINT_DIR, "car_%s.tga" % B.CUSTOMER)
-    img.convert("RGB").save(out, compression="tga_rle")
+    save_tga(img.convert("RGB"), out)
     print("wrote probe to", out)
 
 

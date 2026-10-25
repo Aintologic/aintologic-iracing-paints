@@ -1,7 +1,7 @@
 # SCCA Spec Racer Ford (#23) — panel map
 
-Status: **approved on track 2026-09-28** (tested, accepted and raced —
-started 26th, finished 4th) and **locked as `v1.0`**. Approved as first built,
+Status: **approved on track 2026-09-28** (tested, accepted and raced) and
+**locked as `v1.0`**. Approved as first built,
 with no changes. Any pixel change is a v1.1, never an edit of v1.0.
 Spec is the B3 "Satin-True" set carried over without a per-car A/B.
 

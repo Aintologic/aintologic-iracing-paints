@@ -16,7 +16,7 @@
 
 """Open an iRacing template zip and write the layers a paint job needs.
 
-    python tools/template_layers.py 148_template_iR04.zip scratch/f4/tpl
+    python tools/template_layers.py 148_template_iR04.zip out/tpl/f4
 
 Writes to OUT_DIR: Wire.png, Number_Blocks.png, Sponsor_Blocks.png, Mask.png,
 Car_Mandatory.png, Base.png, Car_decal.png (each on a transparent 2048 canvas,

@@ -25,11 +25,13 @@ so orientation and mirroring read in one look.  Written 2026-09-14 for the
 F4, whose UV has ~20 islands worth probing - one rect per reload (probe.py)
 would have cost a reload per island.  The build module must expose
 build(spec=False), PAINT_DIR and CUSTOMER.  Read from a LEVEL camera.
+Any paint file already there is backed up into out/backup/ first.
 """
 import importlib, os, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 from PIL import ImageDraw, ImageFont
+from paintfolder import save_tga
 
 FONT = os.path.join(ROOT, "fonts", "ArchivoBlack-Regular.ttf")
 PAL = [(255, 0, 220), (0, 255, 90), (255, 230, 0), (0, 200, 255),
@@ -65,7 +67,7 @@ def main():
                 k += 1
         print("%s: %dx%d cells of %dx%d at (%d,%d)" % (name, cols, rows, cw, ch, x, y))
     out = os.path.join(B.PAINT_DIR, "car_%s.tga" % B.CUSTOMER)
-    img.save(out, compression="tga_rle")
+    save_tga(img, out)
     print("wrote probe to", out)
 
 

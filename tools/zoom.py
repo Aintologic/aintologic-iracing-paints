@@ -16,10 +16,10 @@
 
 """Crop the car out of a viewer capture and upscale it, for reading detail.
 
-    python tools/zoom.py scratch/contact/1.png scratch/z1.png [--box l t r b]
+    python tools/zoom.py out/contact/1.png out/z1.png [--box l t r b]
 
 Default box is the middle of the 3D pane where the car sits.  Output is
-resized to 1400 wide so Desktop Commander's read_file can return it.
+resized to 1400 wide, small enough for tools that limit picture size.
 """
 import argparse
 from PIL import Image

@@ -24,7 +24,7 @@ Milestone-1 renders and probe sheets:
 | car id | **#1** — Car Info read 2026-10-08, dialog titled **"Car Info: Skip Barber Formula 2000"**, `#1` top right (`car-info-1.jpg`). The account shows **"License Required"**; the viewer takes custom paint anyway (Lotus lesson) |
 | template | your own iRacing Skip Barber template, `1_template_SBRS.zip` → **`Formula Skip Barber 2000.psd`**, 2048×2048 — the only Skip Barber template in the iRacing collection. Extract it to a scratch folder to work from |
 | paint folder | `%USERPROFILE%\Documents\iRacing\paint\rt2000\` — created by the sim when you first open the car; a coordinate grid written there rendered on the car, which settles it |
-| file | `car_<id>.tga` — named for your iRacing customer ID (`--id`). The build writes this one file |
+| file | `car_<id>.tga` and `car_spec_<id>.tga` (the finish), named for your iRacing customer ID (`--id`) |
 | build | `src/team_sbf2000.py` |
 | layers | `Paintable Area` (`BaseColour`, `Car Patterns`, `Pitbox`, `Car_Decal`), `Turn Off Before Exporting TGA` (`Car_Mandatory`, `Sponsor Blocks`, `Number Blocks`, `license`, `Mask`, `Wire`), `Custom Spec Map`. `tools/template_layers.py` reads it unchanged |
 
@@ -197,16 +197,17 @@ LEFT texture space (y > 1347); `place()` does the right side
 8. **Viewer quirks:** switching Car Info → Car Model once collapsed the 3D
    pane to zero height; closing the dialog and reopening the car from the shop
    list fixed it. Keep the viewer window maximised and unobstructed so captures
-   are clean. A reload sometimes resets the camera to a front 3/4, sometimes
-   not — sweep and pick.
+   are clean. A reload never moves the camera (checked 2026-10-24:
+   pixel-identical before and after); only a drag does. It keeps whatever
+   pose it was left in, so sweep and pick.
 
 ## How to edit this car later
 
 1. `python src/team_sbf2000.py` writes colour + spec and refuses to write if
    artwork lands in a number block.
 2. Every placement is a named constant at the top of the file.
-3. Re-probe: `python tools/template_layers.py <zip> <scratch>\sbf2000\tpl`,
-   then `python tools/probe_islands.py team_sbf2000 <scratch>\sbf2000\tpl list`;
+3. Re-probe: `python tools/template_layers.py <zip> out\sbf2000\tpl`,
+   then `python tools/probe_islands.py team_sbf2000 out\sbf2000\tpl list`;
    for any "which texel is this", `python tools/coord_grid.py team_sbf2000 128`.
 4. Masks: `python tools/body_mask.py <tpl> assets/sbf2000-centre-mask.png 47 3 96 6 17 18`,
    `python tools/island_id_mask.py <tpl> assets/sbf2000-pod-islands.png 8=8 5=5`.

@@ -16,7 +16,7 @@
 
 """Tile the numbered frames of a tools/walk.py sweep into one labelled sheet.
 
-    python tools/contact_sheet.py scratch/w_ 12 scratch/w_sheet.jpg [cols] [tile_width]
+    python tools/contact_sheet.py out/viewer/w_ 12 out/viewer/w_sheet.jpg [cols] [tile_width]
 
 Reads <prefix><i>.jpg for i in 0..N-1, stamps the frame number on each tile
 (so a frame can be named when picking the level side / dead front / top),

@@ -16,7 +16,7 @@
 
 """Measure a car's UV mirror row instead of guessing it from bounding boxes.
 
-    python tools/mirror_row.py scratch/ray/tpl 2040 2065 6/5 2/1 13/12 20/19
+    python tools/mirror_row.py out/tpl/ray 2040 2065 6/5 2/1 13/12 20/19
 
 For each island pair (indices as `tools/probe_islands.py ... list` prints
 them) it flips the second island's mask about every candidate row M in the

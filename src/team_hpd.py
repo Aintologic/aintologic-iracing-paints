@@ -30,7 +30,7 @@ The AINTOLOGIC team livery (docs/PAINT-SCHEME.md) on the HPD's panel map
 (docs/car-maps/hpd-arx-01c.md).  Marks come from src/teamscheme.py and
 src/sponsors.py; this file holds ONLY the HPD's geometry and placements.
 
-    python src/team_hpd.py            -> the iRacing paint folder
+    python src/team_hpd.py            -> out/ in the project folder
     python src/team_hpd.py --here     -> the cwd instead
     python src/team_hpd.py --no-spec  -> colour map only
 
@@ -414,7 +414,7 @@ if __name__ == "__main__":
     CUSTOMER = cfg.id
     DRIVER_NAME = cfg.driver
     LOGO1, LOGO2 = cfg.logo1, cfg.logo2
-    out_dir = cfg.out_dir or (os.getcwd() if args.here else os.path.join(os.getcwd(), "out"))
+    out_dir = cfg.out_dir or (os.getcwd() if args.here else personalize.default_out_dir())
     os.makedirs(out_dir, exist_ok=True)
     colour = build(spec=False)
     print("number blocks:")

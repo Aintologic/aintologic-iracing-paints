@@ -23,7 +23,7 @@ No MX-5 / F4 / RSR coordinate is reused - a Formula Ford shares no UV with
 any of them, and it has NO WINGS, so the F4's endplate placements do not
 exist here.
 
-    python src/team_ray.py            -> the iRacing paint folder
+    python src/team_ray.py            -> out/ in the project folder
     python src/team_ray.py --here     -> the cwd instead
     python src/team_ray.py --no-spec  -> colour map only
     python src/team_ray.py --png      -> also write the flat texture as PNG
@@ -440,7 +440,7 @@ if __name__ == "__main__":
     CUSTOMER = cfg.id
     DRIVER_NAME = cfg.driver
     LOGO1, LOGO2 = cfg.logo1, cfg.logo2
-    out_dir = cfg.out_dir or (os.getcwd() if args.here else os.path.join(os.getcwd(), "out"))
+    out_dir = cfg.out_dir or (os.getcwd() if args.here else personalize.default_out_dir())
     os.makedirs(out_dir, exist_ok=True)
     colour = build(spec=False)
     print("number blocks:")

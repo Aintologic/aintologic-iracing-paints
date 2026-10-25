@@ -28,8 +28,15 @@ NOSE, so band 1 is at the nose on both sides.
 
 Channels per the painting tutorial: R = metallic, G = roughness (low = glossy),
 B = clear coat.
+
+Any spec map already there is backed up into out/backup/ first.
 """
+import os, sys
 from PIL import Image, ImageDraw
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, "src"))
+from paintfolder import save_tga
 
 OUT = os.path.join(os.path.expanduser("~"), "Documents", "iRacing", "paint", "mx5 mx52016", "car_spec_CUSTOMERID.tga")
 FLANK_R = (386, 1679, 884, 306)
@@ -46,7 +53,7 @@ for rect, b in ((FLANK_R, 255), (FLANK_L, 0)):
     for i, (r, g) in enumerate(PAIRS):
         d.rectangle([x + i * bw, y, x + (i + 1) * bw - 1, y + h - 1], fill=(r, g, b))
 
-img.save(OUT, compression="tga_rle")
+save_tga(img, OUT)
 print("spec ladder ->", OUT)
 print("bands nose->tail:", PAIRS)
 print("right flank B=255, left flank B=0")
