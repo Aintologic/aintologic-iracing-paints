@@ -255,6 +255,10 @@ comes `0.2.0`.
 
 What changed in each version is in [`CHANGELOG.md`](CHANGELOG.md).
 
+The ready-made paints for each version are on the
+[Releases page](https://github.com/Aintologic/aintologic-iracing-paints/releases),
+as one zip with install steps inside.
+
 Each car's paint design also has its own revision number, and that is
 separate from the project's version. The Aston Martin's design, for example,
 is at `v1.1`, as the top of its
