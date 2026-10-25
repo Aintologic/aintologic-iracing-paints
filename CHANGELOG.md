@@ -4,9 +4,17 @@ What changed in each version of iRacing Paints, newest first. How the version
 numbers work is explained in the README's [Versions](README.md#versions)
 section.
 
-## 1.0.0 (2026-10-25)
+## 0.1.0 (2026-10-25)
 
-The first numbered release. It covers everything the project offers today.
+The first public preview. It covers everything the project offers today. The
+tools and the ten ready-made paints work, but the project isn't finished, and
+things may still change from one version to the next.
+
+Version 1.0.0 will come when a newcomer can choose their own colors and
+design, paint a car the project hasn't measured yet by following a plain
+start-to-finish guide, get started from a guide written for people who don't
+code, and work with the AI like a paint shop: a design brief, a mock-up to
+approve or change, then the finished paint.
 
 ### What's in it
 

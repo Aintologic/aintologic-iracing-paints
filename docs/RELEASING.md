@@ -28,7 +28,7 @@ A release is ready to publish when every box is ticked:
   from someone's computer, links to AI chat sessions, iRacing template files
   and anything generated from them. It also checks commit and tag details for
   customer IDs, machine names and chat links. The only tags allowed are
-  version numbers such as `v1.0.0`, on a commit in `main`.
+  version numbers such as `v0.1.0`, on a commit in `main`.
 - [ ] **The release notes and the zip pass the privacy check too.** They are
   made outside the project's tracked files, so the check on the project never
   sees them: the notes file, `INSTALL.txt`, `NOTICE.txt` and every file in the
@@ -49,9 +49,14 @@ maintainer's decision: stop at the draft and wait for an explicit yes.
 ### 1. Pick the version number
 
 Follow the rules in the README's Versions section. The tag is the version
-with a `v` in front (`v1.0.0`). Once a release is published, its tag is never
+with a `v` in front (`v0.1.0`). Once a release is published, its tag is never
 moved and its number is never used again. A mistake gets fixed in a new
 version.
+
+While the first number is 0, every release is an early preview: it is marked
+as a pre-release on GitHub, and its title ends in "(early preview)", for
+example "iRacing Paints 0.1.0 (early preview)". From 1.0.0 on, releases are
+not marked that way.
 
 ### 2. Check the builds
 
@@ -85,7 +90,8 @@ the release notes in a file that is never committed, for example
 `out/release/notes-vX.Y.Z.md` (the `out` folder is never uploaded), in this
 order:
 
-1. what this is, in a few plain sentences;
+1. what this is, in a few plain sentences (while the first number is 0, say
+   first that it's an early preview and what isn't in yet);
 2. what's in this version;
 3. how to use the ready-made paints download;
 4. known issues;
@@ -125,9 +131,15 @@ Use the full commit hash that passed the checks as the target, not the branch
 name. A draft's tag is only created when it's published, so with `main` as the
 target the tag would land on whatever `main` is by then.
 
+While the first number is 0, it's an early preview: add `--prerelease` and
+end the title with "(early preview)":
+
 ```
-gh release create vX.Y.Z --draft --target <full commit hash> --title "iRacing Paints X.Y.Z" --notes-file out/release/notes-vX.Y.Z.md out/release/iracing-paints-vX.Y.Z-ready-made-paints.zip
+gh release create vX.Y.Z --draft --prerelease --target <full commit hash> --title "iRacing Paints X.Y.Z (early preview)" --notes-file out/release/notes-vX.Y.Z.md out/release/iracing-paints-vX.Y.Z-ready-made-paints.zip
 ```
+
+From 1.0.0 on, leave out `--prerelease` and the "(early preview)" in the
+title.
 
 A draft is visible only to the repository's maintainers. Links in the notes
 that point at the new tag only work once the release is published. Give the

@@ -224,17 +224,34 @@ with a blank name strip and "YOUR LOGO" placeholders. All ten are in
 ## Versions
 
 Each release of this project has a version number in three parts, like
-`1.0.0`. Which part goes up tells you what kind of change it is:
+`0.1.0`.
+
+**While the first number is 0, this project is an early preview.** The tools
+and the ten ready-made paints work, but the project isn't finished, and things
+may still change from one version to the next. Version 1.0.0 will come when a
+newcomer can do all four of these:
+
+- choose their own colors and design;
+- paint a car the project hasn't measured yet, by following a plain
+  start-to-finish guide;
+- get started from a guide written for people who don't code;
+- work with the AI like a paint shop: a design brief, a mock-up to approve or
+  change, then the finished paint.
+
+Which part of the number goes up tells you what kind of change it is:
 
 - **The last number** is for fixes. If a logo landed in the wrong place and
-  that got fixed, the next version would be `1.0.1`.
-- **The middle number** is for something new that doesn't change anything you
-  already do, such as another measured car or a new build option: `1.1.0`.
-- **The first number** is for a change you'd have to adjust to, such as a
-  build option being renamed: `2.0.0`. We try hard not to need one.
+  that got fixed, `0.1.0` would become `0.1.1`.
+- **The middle number** is for something new, such as another measured car or
+  a new build option: `0.1.0` would become `0.2.0`. While the first number is
+  0, a middle-number release can also change how something already works; the
+  change log says when it does.
+- **The first number** goes to 1 for version 1.0.0. After that, it only goes up
+  for a change you'd have to adjust to, such as a build option being renamed.
+  We try hard not to need one.
 
-When one number goes up, the numbers after it go back to 0: after `1.0.3`
-comes `1.1.0`.
+When one number goes up, the numbers after it go back to 0: after `0.1.3`
+comes `0.2.0`.
 
 What changed in each version is in [`CHANGELOG.md`](CHANGELOG.md).
 
