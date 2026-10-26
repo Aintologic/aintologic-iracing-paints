@@ -1,0 +1,11 @@
+{
+  "note": "A sample design: white with a red stripe on its own and black lettering. Copy it to profiles/designs/ and change anything.",
+  "team_name": "SAMPLE MOTORSPORT",
+  "colors": {
+    "body": "#F2F2F2",
+    "graphic": "#C8102E",
+    "trim": "#111214",
+    "lettering": "#111214"
+  },
+  "stripes": "stripe-only"
+}

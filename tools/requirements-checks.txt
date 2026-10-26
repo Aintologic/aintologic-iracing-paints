@@ -1,0 +1,13 @@
+# The exact add-on versions used by the automatic checks (the "Checks" run on
+# GitHub, and tools/check_builds.py when you run it yourself).
+#
+# Why exact versions: the checks build the cars and compare each result with
+# its ready-made paint in paints/, byte for byte. These are the versions the
+# ready-made paints were made with. Another version of Pillow or numpy can
+# change a few pixels, and then the comparison fails even though nothing is
+# wrong with the code.
+#
+# This doesn't change the normal install. To build paints, follow the README's
+# "What you need" section; any version it allows works for that.
+Pillow==12.2.0
+numpy==2.4.4

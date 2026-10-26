@@ -14,8 +14,10 @@
 # <https://www.gnu.org/licenses/>.
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""Write a uniform spec map: python spec_flat.py R G B   (or 'none' to remove)
+"""Write a uniform spec map: python spec_flat.py R G B --id 123456   (or 'none' to remove)
 
+Writes the MX-5's car_spec_<id>.tga, the only name iRacing loads (--id is your
+customer ID; default: the IRACING_CUSTOMER_ID setting).
 Backs up any spec map already there into out/backup/ first; 'none' moves it there."""
 from PIL import Image
 import sys, os
@@ -23,10 +25,13 @@ import sys, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 from paintfolder import move_aside, save_tga
+import iracingpaths
 
-DEST = os.path.join(os.path.expanduser("~"), "Documents", "iRacing", "paint", "mx5 mx52016")
-TGA = os.path.join(DEST, "car_spec_CUSTOMERID.tga")
-MIP = os.path.join(DEST, "car_spec_CUSTOMERID.mip")
+cid = iracingpaths.take_id()
+if len(sys.argv) < 2:
+    sys.exit(__doc__)
+TGA = iracingpaths.test_paint(iracingpaths.paint_folder("mx5 mx52016"), cid, spec=True)
+MIP = os.path.splitext(TGA)[0] + ".mip"
 
 if sys.argv[1] == "none":
     moved = [p for p in (TGA, MIP) if move_aside(p)]

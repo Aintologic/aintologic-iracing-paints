@@ -343,7 +343,7 @@ that job.
    `NUMBER_BLOCKS`. Delete every placement constant — you will re-measure
    them all.
 4. **Probe before placing anything:** `python tools/probe.py team_<car>
-   grid --n 8`, then `rect` / `bands` on what you find. Read from a level
+   grid --n 8 --id <your customer ID>`, then `rect` / `bands` on what you find. Read from a level
    camera. Both sides. Write the map into `docs/car-maps/<car>.md` as you go,
    including what turned out to be wrong.
 5. **Find the centre line and the shut lines with tick rulers before

@@ -24,6 +24,7 @@ the rects and the placements, nothing else.
 
     python src/team_mx5.py --id <id>    -> out/car_<id>.tga in the project folder, blank driver, YOUR LOGO slots
     python src/team_mx5.py --id <id> --driver "A. DRIVER" --logo1 cds.png --logo2 ff.png
+    python src/team_mx5.py --design my-mx5   -> your own colours, team name, stripes
     python src/team_mx5.py --here       -> write to the cwd instead of out/
     python src/team_mx5.py --no-spec    -> colour map only
     python src/team_mx5.py --png        -> also write the flat texture as PNG
@@ -34,7 +35,9 @@ the rects and the placements, nothing else.
 Writes car_<id>.tga (+ car_spec_<id>.tga, the approved B3 finish).  Nothing
 else unless you ask: the four test finishes were for comparing finishes during
 development and are written only with --finish-tests.  The personalization flags
-(--id/--driver/--logo1/--logo2/--out/--profile) are defined in src/personalize.py.
+(--id/--driver/--logo1/--logo2/--out/--profile/--design) are defined in
+src/personalize.py; a design's colours, team name and stripe style come from
+src/design.py.
 """
 import argparse, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -42,15 +45,17 @@ from PIL import Image, ImageChops, ImageDraw
 import teamscheme as T
 import sponsors
 import personalize
+import iracingpaths
+import design
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CUSTOMER = personalize.DEFAULT_ID
-PAINT_DIR = os.path.join(os.path.expanduser("~"), "Documents", "iRacing",
-                         "paint", "mx5 mx52016")
+PAINT_DIR = iracingpaths.paint_folder("mx5 mx52016")
 # personalization, set from the CLI/profile in __main__ before build() runs:
 DRIVER_NAME = ""                       # blank driver strip by default
 LOGO1 = sponsors.placeholder_logo      # Cats Don't Suck slot (boot lid)
 LOGO2 = sponsors.placeholder_logo      # FreakFarm slot (rear quarters)
+DESIGN = design.EXAMPLE                # your own design (--design); apply_design() sets it
 W = H = 2048
 
 # --- verified panel map (docs/car-maps/mx5-2016-global-cup.md) ----------------
@@ -74,6 +79,15 @@ NUMBER_BLOCKS = {"N1": (493, 577, 123, 105),
 # the way the logo does.  The lower band is the same black in colour and
 # separates only as a MATERIAL (satin) in the spec map.
 BODY, BAND, LINE, ACCENT = T.BLACK, T.BLACK, T.WHITE, T.PAPAYA
+
+
+def apply_design(ds):
+    """Build with design ds (src/design.py): its colours, lettering and stripe
+    style.  The names here predate it: LINE is the design's accent (the thin
+    lines), ACCENT its stripe colour, and the lower band stays body colour."""
+    global DESIGN, BODY, BAND, LINE, ACCENT
+    DESIGN = ds
+    BODY, BAND, LINE, ACCENT = ds.body, ds.body, ds.trim, ds.graphic
 
 # --- flank layout, car-space: x = 0 at 20.6% of car length (just behind the
 # front wheel), x = 884 at 71.5% (just behind the door); y = 0 belt line,
@@ -102,7 +116,7 @@ HOOD_BADGE_D, HOOD_WM_DY = 250, 0   # 400 filled the bonnet and left no room for
 NOSE_BAND = (40, 134)                 # local y of the black band on the fascia
 NOSE_TOW = (500, 300)
 # bumper corners: the outer columns of the nose rect.  The stripe rises
-# there to meet the fender sweep at the seam (seam probe 2026-09-13).
+# there to meet the fender stripe at the seam (seam probe 2026-09-13).
 NOSE_RISE, NOSE_SEAM_Y, NOSE_MIRROR = 130, 4, 240
 # PROBED 2026-09-13 (tools/probe.py, 8x8 grid then rect/bands probes, read
 # from level rear three-quarters on BOTH sides):
@@ -130,8 +144,8 @@ VAL_TOW = (150, 372)
 # =============================================================================
 # FENDER STRIPES - Sebring/Cobra style.  2026-09-13, the designer's new direction.
 #
-# The front-to-rear ribbon is GONE (it lives in git history up to the
-# wip/stripe-ribbon branch and releases v3.4..v3.5).  In its place: three
+# The front-to-rear ribbon is GONE (it lives in git history and in
+# releases v3.4..v3.5).  In its place: three
 # parallel bands across each FRONT fender only - white | PAPAYA | white,
 # the orange twice a white - running from the top of the fender down its
 # outer face, roughly across the car, just behind the front wheel arch.
@@ -209,9 +223,9 @@ def _sash_centre(Y):
 def _fender_bands():
     """[(x0, x1, colour)] offsets across the group, in X at Y = 0."""
     half = FS_ORANGE / 2.0
-    return [(-half - FS_GAP - FS_WHITE, -half - FS_GAP, LINE),
-            (-half, half, ACCENT),
-            (half + FS_GAP, half + FS_GAP + FS_WHITE, LINE)]
+    return DESIGN.bands([(-half - FS_GAP - FS_WHITE, -half - FS_GAP, LINE),
+                         (-half, half, ACCENT),
+                         (half + FS_GAP, half + FS_GAP + FS_WHITE, LINE)])
 
 
 def _arch_top(X):
@@ -290,9 +304,9 @@ DECK_CDS_CXY = (600, 285)  # the cat moves off the centre line (was 558)
 def _band_rects(cx, spec_widths):
     """Three (x0, x1, colour) spans across x for a white|orange|white group."""
     ow, ww, g = spec_widths
-    return [(cx - ow / 2.0 - g - ww, cx - ow / 2.0 - g, LINE),
-            (cx - ow / 2.0, cx + ow / 2.0, ACCENT),
-            (cx + ow / 2.0 + g, cx + ow / 2.0 + g + ww, LINE)]
+    return DESIGN.bands([(cx - ow / 2.0 - g - ww, cx - ow / 2.0 - g, LINE),
+                         (cx - ow / 2.0, cx + ow / 2.0, ACCENT),
+                         (cx + ow / 2.0 + g, cx + ow / 2.0 + g + ww, LINE)])
 
 
 def _vbands(draw, cx, widths, y0, y1, spec, skip=None):
@@ -345,8 +359,8 @@ def _feeders(hood, hcx, hcy, spec):
             ty_ = 2 * (1 - s) * (p1[1] - p0[1]) + 2 * s * (p2[1] - p1[1])
             tl = math.hypot(tx_, ty_) or 1.0
             cl.append((x, y)); tn.append((tx_ / tl, ty_ / tl))
-        for a, b, c in ((-ow / 2.0 - g - ww, -ow / 2.0 - g, LINE), (-ow / 2.0, ow / 2.0, ACCENT),
-                        (ow / 2.0 + g, ow / 2.0 + g + ww, LINE)):
+        for a, b, c in DESIGN.bands([(-ow / 2.0 - g - ww, -ow / 2.0 - g, LINE), (-ow / 2.0, ow / 2.0, ACCENT),
+                                     (ow / 2.0 + g, ow / 2.0 + g + ww, LINE)]):
             col = tuple(T.SPEC_LINE if spec else c) + (255,)
             left, right = [], []
             for (x, y), (ux, uy) in zip(cl, tn):
@@ -433,11 +447,12 @@ def flank_panel(spec, left):
     place(panel, T.number_panel(npw, nph, fill=(T.SPEC_NUM if spec else T.WHITE)),
           npx, npy, left)
     # --- marks ----------------------------------------------------------------
-    wm = T.wordmark(int(WM_W * 0.17), ink=T.WHITE, accent=T.PAPAYA)
+    wm = DESIGN.wordmark(int(WM_W * 0.17))
     wm = wm.resize((WM_W, int(wm.height * WM_W / wm.width)), Image.LANCZOS)
+    wm = DESIGN.lettering_box(wm)          # your team name in the same box, if you gave one
     place(panel, S(wm), WM_CXY[0] - wm.width // 2, WM_CXY[1] - wm.height // 2, left)
-    place(panel, S(sponsors.driver_strip(DRIVER_W, DRIVER_NAME, face=T.BLACK,
-                                         ink=T.WHITE, accent=T.PAPAYA)),
+    place(panel, S(sponsors.driver_strip(DRIVER_W, DRIVER_NAME, face=DESIGN.body,
+                                         ink=DESIGN.lettering, accent=DESIGN.graphic)),
           *DRIVER_XY, left)
     place(panel, S(sponsors.cutoff_triangle(CUTOFF_H, spark=T.WHITE,
                                             edge=T.WHITE)), *CUTOFF_XY, left)
@@ -512,7 +527,8 @@ RQ_USE_AFFINE = True
 
 def rear_quarter_ff_affine(img, spec):
     S = (lambda im: specify(im)) if spec else (lambda im: im)
-    art = S(LOGO2(1200, ink=T.WHITE, accent=T.PAPAYA)).convert("RGBA")
+    art = S(sponsors.logo_slot(LOGO2, 1200, ink=DESIGN.lettering,
+                               accent=DESIGN.graphic)).convert("RGBA")
     ar = art.height / float(art.width)
     px = img.load()
     for side, M in RQ_AFFINE.items():
@@ -542,11 +558,11 @@ def rear_quarter_decals(img, spec):
     S = (lambda im: specify(im)) if spec else (lambda im: im)
     for kind, cx, cy, w, aniso, rot in RQ_PLACE:
         if kind == "roundel":
-            art = T.roundel(2 * w)
+            art = DESIGN.roundel(2 * w)
         elif kind == "ff":
-            art = LOGO2(2 * w, ink=T.WHITE, accent=T.PAPAYA)
+            art = sponsors.logo_slot(LOGO2, 2 * w, ink=DESIGN.lettering, accent=DESIGN.graphic)
         else:
-            art = LOGO1(2 * w)
+            art = sponsors.logo_slot(LOGO1, 2 * w, **DESIGN.logo_colours)
         art = S(art)
         h = max(1, int(round(w * (art.height / float(art.width)) * aniso)))
         el = art.resize((w, h), Image.LANCZOS)
@@ -595,12 +611,13 @@ def build(spec=False):
     hd.ellipse([hcx - r_ring - RING_GAP, hcy - r_ring - RING_GAP,
                 hcx + r_ring + RING_GAP, hcy + r_ring + RING_GAP],
                fill=tuple(T.SPEC_BODY if spec else BODY) + (255,))
-    hd.ellipse([hcx - r_ring, hcy - r_ring, hcx + r_ring, hcy + r_ring],
-               fill=tuple(T.SPEC_LINE if spec else LINE) + (255,))
+    if DESIGN.lines_on:                    # the ring is one of the thin lines
+        hd.ellipse([hcx - r_ring, hcy - r_ring, hcx + r_ring, hcy + r_ring],
+                   fill=tuple(T.SPEC_LINE if spec else LINE) + (255,))
     r_in = HOOD_BADGE_D / 2.0 + RING_GAP
     hd.ellipse([hcx - r_in, hcy - r_in, hcx + r_in, hcy + r_in],
                fill=tuple(T.SPEC_BODY if spec else BODY) + (255,))
-    hwm = S(T.roundel(HOOD_BADGE_D)).transpose(Image.ROTATE_180)
+    hwm = S(DESIGN.roundel(HOOD_BADGE_D)).transpose(Image.ROTATE_180)
     hood.alpha_composite(hwm, (hw // 2 - hwm.width // 2,
                                hh // 2 - hwm.height // 2 + HOOD_WM_DY))
     hood = hood.transpose(Image.ROTATE_90)
@@ -612,7 +629,7 @@ def build(spec=False):
     # visible band, measured 2026-08-17.
     deck = Image.new("RGBA", (DECK[2], DECK[3]), (0, 0, 0, 0))
     _vbands(ImageDraw.Draw(deck), CS_DECK_X, CS_DECK, CS_DECK_Y[0], CS_DECK_Y[1], spec)
-    cds = S(LOGO1(DECK_CDS_D))
+    cds = S(sponsors.logo_slot(LOGO1, DECK_CDS_D, **DESIGN.logo_colours))
     deck.alpha_composite(cds, (DECK_CDS_CXY[0] - cds.width // 2,
                                DECK_CDS_CXY[1] - cds.height // 2))
     img.paste(deck, (DECK[0], DECK[1]), deck)
@@ -639,16 +656,16 @@ def build(spec=False):
     val = Image.new("RGBA", (vw, vh), (0, 0, 0, 0))
     vd = ImageDraw.Draw(val)
     _vbands(vd, CS_TAIL_X, CS_TAIL, 0, vh, spec, skip=CS_TAIL_SKIP)
-    vwm = T.wordmark(int(VAL_WM_W * 0.17), ink=T.WHITE, accent=T.PAPAYA)
+    vwm = DESIGN.wordmark(int(VAL_WM_W * 0.17))
     vwm = vwm.resize((VAL_WM_W, int(vwm.height * VAL_WM_W / vwm.width)),
                      Image.LANCZOS)
-    vwm = S(vwm)
+    vwm = S(DESIGN.lettering_box(vwm, credit=False))   # the credit rides on the doors
     val.alpha_composite(vwm, (VAL_WM_CXY[0] - vwm.width // 2,
                               VAL_WM_CXY[1] - vwm.height // 2))
-    chk = S(T.checker_rule(VAL_CHK_W, accent=T.PAPAYA, dark=T.GRAPHITE, line=T.WHITE))
+    chk = S(T.checker_rule(VAL_CHK_W, accent=DESIGN.graphic, dark=DESIGN.shade, line=DESIGN.trim))
     val.alpha_composite(chk, (VAL_CHK_CXY[0] - chk.width // 2,
                               VAL_CHK_CXY[1] - chk.height // 2))
-    val.alpha_composite(S(sponsors.tow_arrow(92, color=T.PAPAYA, ink=T.BLACK)),
+    val.alpha_composite(S(sponsors.tow_arrow(92, color=DESIGN.graphic, ink=DESIGN.body)),
                         VAL_TOW)
     img.paste(val, (vx, vy), val)
 
@@ -695,11 +712,28 @@ SPEC_DEFAULT = "B3"        # APPROVED 2026-09-14 ("Satin-True"); B1/B2/B4 are ke
 SPEC_ORANGE_GROW = 3       # texels of orange-material halo around every papaya mark (see below)
 
 
+# A LOCAL spec-map helper for designs (the Spec Racer Ford's): the number
+# panels keep the car's own white finish (see spec_from_colour).  A no-op in
+# the example scheme, so the ready-made spec map is untouched byte for byte.
+def _panel_cover():
+    """Every texel the two door number panels cover (NUM_PANEL, placed by
+    flank_panel(): upright in FLANK_R, ROTATE_180 in FLANK_L)."""
+    import numpy as np
+    cov = np.zeros((H, W), dtype=bool)
+    npx, npy, npw, nph = NUM_PANEL
+    p = T.number_panel(npw, nph)
+    for r, y, im in ((FLANK_R, npy, p), (FLANK_L, FH - npy - nph, p.transpose(Image.ROTATE_180))):
+        a = np.asarray(im.getchannel("A")) > 0
+        cov[r[1] + y:r[1] + y + a.shape[0], r[0] + npx:r[0] + npx + a.shape[1]] |= a
+    return cov
+
+
 def spec_from_colour(img, variant=SPEC_DEFAULT):
     import numpy as np
-    P = SPEC_VARIANTS[variant]
+    P0 = SPEC_VARIANTS[variant]
+    P = DESIGN.spec_values(P0)
     a = np.asarray(img.convert("RGB")).astype(np.int16)
-    keys = [("body", BODY), ("orange", ACCENT), ("white", T.WHITE)]
+    keys = DESIGN.material_keys(BODY, ACCENT)
     dist = np.stack([np.abs(a - np.array(c, dtype=np.int16)).sum(axis=2) for _, c in keys], axis=0)
     best = dist.argmin(axis=0)
     close = dist.min(axis=0) <= 200         # else: some other colour (the cat) -> vinyl
@@ -707,6 +741,12 @@ def spec_from_colour(img, variant=SPEC_DEFAULT):
     out[...] = P["decal"]
     for i, (name, _) in enumerate(keys):
         out[(best == i) & close] = P[name]
+    # The panels are T.WHITE, which material_keys sorts into the "white" slot
+    # that a design's trim finish replaces: a chrome or matte trim would rim
+    # every number.  Put the panel texels back to the car's own white finish
+    # (what the example gives them, so a no-op there).
+    panel_white = np.array([tuple(c) == tuple(T.WHITE) for _, c in keys])[best] & close
+    out[_panel_cover() & panel_white] = P0["white"]
     # Small orange marks (the A-bar, the dots, "RACING") are a few texels
     # wide; the sim's texture filtering averages their glossy material with
     # the matte black around them and they read flat (the designer, 2026-09-14).
@@ -714,7 +754,7 @@ def spec_from_colour(img, variant=SPEC_DEFAULT):
     # material, and count any pixel with a papaya component (anti-aliased
     # edges of the marks) as orange too.  On the stripes the halo lands on
     # the white (also glossy) and a 3-texel rim of the black - invisible.
-    orange_ish = (a[..., 0] > 100) & (a[..., 0] - a[..., 2] > 80) & (a[..., 1] < a[..., 0] - 40)
+    orange_ish = DESIGN.stripe_mask(a)      # papaya's hue test in the example scheme
     m = orange_ish
     g = SPEC_ORANGE_GROW
     if g:
@@ -783,6 +823,7 @@ if __name__ == "__main__":
     args = ap.parse_args()
     args.debug = False
     cfg = personalize.resolve(args)
+    apply_design(cfg.design)
     CUSTOMER = cfg.id
     DRIVER_NAME = cfg.driver
     LOGO1, LOGO2 = cfg.logo1, cfg.logo2

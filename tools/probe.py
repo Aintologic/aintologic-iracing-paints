@@ -16,9 +16,9 @@
 
 """Labelled-grid probe over the LIVE livery of any build.  Car-agnostic.
 
-    python tools/probe.py team_mx5 grid --n 8
-    python tools/probe.py team_mx5 rect 1280 1536 256 256 --n 4
-    python tools/probe.py team_mx5 bands 1280 1536 256 256 --n 6
+    python tools/probe.py team_mx5 grid --n 8 --id 123456
+    python tools/probe.py team_mx5 rect 1280 1536 256 256 --n 4 --id 123456
+    python tools/probe.py team_mx5 bands 1280 1536 256 256 --n 6 --id 123456
 
 grid   N x N cells over the whole 2048 texture (playbook Rule 3d, elimination)
 rect   N x N cells over one rect, labels A1.. row-major
@@ -26,15 +26,18 @@ bands  N horizontal bands of distinct colour down one rect (height probe)
 
 Each cell carries its label, a RED bar on its texture-TOP edge and a BLUE
 bar on its texture-LEFT edge, so rotation and mirroring read in one look
-(playbook Rule 3).  The build module must expose build(spec=False),
-PAINT_DIR and CUSTOMER.  Then run view2.py / contact.py and READ FROM A
-LEVEL CAMERA.  Any paint file already there is backed up into out/backup/ first.
+(playbook Rule 3).  The build module must expose build(spec=False) and
+PAINT_DIR.  --id is your customer ID (default: the IRACING_CUSTOMER_ID
+setting): the probe is saved as car_<id>.tga, the only name iRacing loads.
+Then run view2.py / contact.py and READ FROM A LEVEL CAMERA.  Any paint file
+already there is backed up into out/backup/ first.
 """
 import argparse, importlib, os, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 from PIL import ImageDraw, ImageFont
 from paintfolder import save_tga
+import iracingpaths
 
 FONT = os.path.join(ROOT, "fonts", "ArchivoBlack-Regular.ttf")
 PAL = [(255, 0, 220), (0, 255, 90), (255, 230, 0), (0, 200, 255),
@@ -57,8 +60,12 @@ def main():
     ap.add_argument("--n", type=int, default=4)
     ap.add_argument("--outline", action="store_true",
                     help="grid mode: outline cells instead of filling them")
+    ap.add_argument("--id", default=os.environ.get("IRACING_CUSTOMER_ID"),
+                    help="your iRacing customer ID: the probe is saved as car_<id>.tga "
+                         "(default: the IRACING_CUSTOMER_ID setting)")
     a = ap.parse_args()
     B = importlib.import_module(a.module)
+    out = iracingpaths.test_paint(B.PAINT_DIR, a.id)
     img = B.build(spec=False)
     d = ImageDraw.Draw(img)
     if a.mode == "grid":
@@ -90,7 +97,6 @@ def main():
                      max(12, bh // 2))
             print("bands:", [(i + 1, y + i * bh, y + (i + 1) * bh - 1)
                              for i in range(a.n)])
-    out = os.path.join(B.PAINT_DIR, "car_%s.tga" % B.CUSTOMER)
     save_tga(img, out)
     print("wrote probe to", out)
 

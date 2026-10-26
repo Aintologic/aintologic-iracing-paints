@@ -16,7 +16,7 @@
 
 """Ruler probe: thin numbered bands along ONE axis of several rects, one reload.
 
-    python tools/probe_ruler.py team_rsr HOOD:215,1036,529,540:X:44 TAIL:952,12,1087,191:X:60 ...
+    python tools/probe_ruler.py team_rsr HOOD:215,1036,529,540:X:44 TAIL:952,12,1087,191:X:60 ... --id 123456
 
 Each spec is NAME:x,y,w,h:AXIS:step[:c=v].  AXIS X = vertical bands stepping
 along texture x (a ruler for "where along the car"); AXIS Y = horizontal bands
@@ -27,6 +27,8 @@ texture x=v (AXIS X) or y=v (AXIS Y) - use it to check a centre line.
 Written 2026-09-14 for the RSR, whose hood / bumper / tail islands needed
 "which texel column is the centre line and where does the panel end" rather
 than which-island-is-which (that is tools/probe_multi.py).
+--id is your customer ID (default: the IRACING_CUSTOMER_ID setting): the probe
+is saved as car_<id>.tga, the only name iRacing loads.
 Any paint file already there is backed up into out/backup/ first.
 """
 import importlib, os, sys
@@ -34,6 +36,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 from PIL import Image, ImageDraw, ImageFont
 from paintfolder import save_tga
+import iracingpaths
 
 FONT = os.path.join(ROOT, "fonts", "ArchivoBlack-Regular.ttf")
 PAL = [(255, 0, 220), (255, 230, 0), (0, 200, 255)]
@@ -50,9 +53,11 @@ def label_img(text, w, h):
 
 
 def main():
+    cid = iracingpaths.take_id()
     if len(sys.argv) < 3:
         sys.exit(__doc__)
     B = importlib.import_module(sys.argv[1])
+    out = iracingpaths.test_paint(B.PAINT_DIR, cid)
     img = B.build(spec=False).convert("RGBA")
     d = ImageDraw.Draw(img)
     for spec in sys.argv[2:]:
@@ -93,7 +98,6 @@ def main():
             else:
                 d.rectangle([x, centre - 1, x + w - 1, centre + 1], fill=(0, 0, 0, 255))
         print("%s: %d bands of %d along %s from %d" % (name, n, step, axis, x if axis == "X" else y))
-    out = os.path.join(B.PAINT_DIR, "car_%s.tga" % B.CUSTOMER)
     save_tga(img.convert("RGB"), out)
     print("wrote probe to", out)
 

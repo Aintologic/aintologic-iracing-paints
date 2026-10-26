@@ -1,0 +1,18 @@
+# Text files are stored with plain line endings, whoever commits them.
+* text=auto
+
+# Pictures, paints, fonts, zips and other binary files: git must never change
+# a single byte of them, on any computer. (The automatic checks compare the
+# ready-made paints byte for byte.)
+*.tga binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.mip binary
+*.ttf binary
+*.otf binary
+*.zip binary

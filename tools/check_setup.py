@@ -31,13 +31,14 @@ reports, in plain words:
 
 Exit code: 0 when Python and all four add-ons are ready, so the builders can
 run; 1 when any of them is missing, too old or won't load, or when this copy of
-the project is missing requirements.txt or src/setup_check.py.  The paint
+the project is missing requirements.txt, src/setup_check.py or
+src/iracingpaths.py.  The paint
 folder and the setup step are reported but don't change the exit code: you can
 build without the paint folder and copy the files over later, and each setup
 step is needed only for its own car.
 
-It uses nothing but Python itself (its standard library and
-src/setup_check.py), so it runs before any add-on is installed.
+It uses nothing but Python itself (its standard library, src/setup_check.py
+and src/iracingpaths.py), so it runs before any add-on is installed.
 """
 import importlib
 import os
@@ -52,6 +53,10 @@ try:
     import setup_check          # standard library only, like this file
 except ImportError:
     setup_check = None
+try:
+    import iracingpaths         # standard library only too
+except ImportError:
+    iracingpaths = None
 
 # The oldest Python the add-ons support.  On PyPI, numpy 1.24.0, Pillow 10.0.0
 # and scipy 1.10.0 each say "Requires-Python >=3.8"; psd-tools 1.9.0 sets no
@@ -190,37 +195,6 @@ def check_addons(path=REQUIREMENTS):
     return problems
 
 
-def documents_folder():
-    """The real Documents folder.  Windows lets people move it (into OneDrive,
-    for example), so ask Windows where it is; anywhere else, or if that fails,
-    the Documents folder in the home folder."""
-    if os.name == "nt":
-        try:
-            import ctypes
-            from ctypes import wintypes
-
-            class GUID(ctypes.Structure):
-                _fields_ = [("Data1", wintypes.DWORD), ("Data2", wintypes.WORD),
-                            ("Data3", wintypes.WORD), ("Data4", ctypes.c_ubyte * 8)]
-
-            # FOLDERID_Documents = {FDD39AD0-238F-46AF-ADB4-6C85480369C7}
-            folder = GUID(0xFDD39AD0, 0x238F, 0x46AF,
-                          (ctypes.c_ubyte * 8)(0xAD, 0xB4, 0x6C, 0x85, 0x48, 0x03, 0x69, 0xC7))
-            get = ctypes.windll.shell32.SHGetKnownFolderPath
-            get.argtypes = [ctypes.POINTER(GUID), wintypes.DWORD, wintypes.HANDLE,
-                            ctypes.POINTER(ctypes.c_wchar_p)]
-            get.restype = ctypes.c_long
-            path = ctypes.c_wchar_p()
-            ok = get(ctypes.byref(folder), 0, None, ctypes.byref(path)) == 0
-            found = path.value if ok else None
-            ctypes.windll.ole32.CoTaskMemFree(path)     # Windows asks for this either way
-            if found:
-                return found
-        except Exception:
-            pass
-    return os.path.join(os.path.expanduser("~"), "Documents")
-
-
 def check_paint_folder():
     """Report iRacing's paint folder; return a note for the summary, or None."""
     print("iRacing paint folder")
@@ -228,7 +202,11 @@ def check_paint_folder():
         say("NOTE", "Building paints works on this computer, but iRacing runs on Windows.")
         say("", "Copy the finished files to the Windows PC that runs iRacing.")
         return "Copy the files to the Windows PC that runs iRacing."
-    iracing = os.path.join(documents_folder(), "iRacing")
+    if iracingpaths is None:
+        say("MISSING", "src/iracingpaths.py - it belongs in the project folder.")
+        say("", "Is this a complete copy of the project?")
+        return None
+    iracing = os.path.join(iracingpaths.documents_folder(), "iRacing")
     paint = os.path.join(iracing, "paint")
     if os.path.isdir(paint):
         say("OK", paint)
@@ -302,6 +280,8 @@ def main():
     problems += check_addons()
     print("")
     paint_note = check_paint_folder()
+    if iracingpaths is None:
+        problems.append("src/iracingpaths.py is missing")
     print("")
     not_done = check_setup_step()
     if not_done is None:

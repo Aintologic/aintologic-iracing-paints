@@ -218,23 +218,28 @@ def cats_dont_suck(w, roundel_only=True, wordmark_ink=BONE):
 # neutral placeholder below; cats_dont_suck() / freakfarm() above stay as the
 # opt-in example marks. This keeps nobody's personal mark in the default output.
 
-def placeholder_logo(w, label="YOUR LOGO", ink=BONE, accent=RUST, **_):
+def placeholder_logo(w, label="YOUR LOGO", ink=BONE, accent=RUST, face=None, **_):
     """The neutral, code-drawn 'YOUR LOGO' placeholder for an unfilled slot.
 
     A bordered plate with the label and a small accent tab so it reads as a
     logo lockup. Returns an RGBA image of width w (height ~0.42 w). Extra
     keyword args (e.g. a slot's ink/accent) are honoured; anything else is
-    ignored, so the same placeholder drops into any slot."""
+    ignored, so the same placeholder drops into any slot.  With face, it is
+    instead a solid plate in that colour with the label on it: no outline,
+    no tab (a sponsor panel, for a spot where an outline would not read)."""
     S = 4
     W = w * S
     H = int(W * 0.42)
     im = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     k = ImageDraw.Draw(im)
     bw = max(S, int(H * 0.07))
-    k.rounded_rectangle([bw // 2, bw // 2, W - 1 - bw // 2, H - 1 - bw // 2],
-                        radius=int(H * 0.14), outline=tuple(ink) + (255,), width=bw)
-    k.rounded_rectangle([bw * 2, bw * 2, int(W * 0.17), int(H * 0.27)],
-                        radius=int(H * 0.06), fill=tuple(accent) + (255,))
+    if face is not None:
+        k.rounded_rectangle([0, 0, W - 1, H - 1], radius=int(H * 0.16), fill=tuple(face) + (255,))
+    else:
+        k.rounded_rectangle([bw // 2, bw // 2, W - 1 - bw // 2, H - 1 - bw // 2],
+                            radius=int(H * 0.14), outline=tuple(ink) + (255,), width=bw)
+        k.rounded_rectangle([bw * 2, bw * 2, int(W * 0.17), int(H * 0.27)],
+                            radius=int(H * 0.06), fill=tuple(accent) + (255,))
     target = W * 0.80
     fs = max(6, int(H * 0.40))
     f = ImageFont.truetype(F_COND, fs, layout_engine=ImageFont.Layout.BASIC)

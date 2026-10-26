@@ -16,8 +16,8 @@
 
 """Numbered colour bands MASKED to one UV island, over the live livery.
 
-    python tools/probe_bands.py team_l79 out/tpl/lotus 0:X:0:520:25 1:X:40:610:50 0:Y:0:480:40
-    python tools/probe_bands.py team_l79 out/tpl/lotus 1:X:40:610:50 line:1,10:1259 blocks
+    python tools/probe_bands.py team_l79 out/tpl/lotus 0:X:0:520:25 1:X:40:610:50 0:Y:0:480:40 --id 123456
+    python tools/probe_bands.py team_l79 out/tpl/lotus 1:X:40:610:50 line:1,10:1259 blocks --id 123456
 
 Each spec is IDX:X|Y:start:stop:step - bands every `step` texels along x (or
 y) of island IDX (indices as `tools/probe_islands.py ... list` prints them),
@@ -32,8 +32,9 @@ read from a dead-front, dead-rear or top frame.  Written for the Lotus 79
 (2026-09-17): it proved the nose / engine-cover centre row (1259) and found
 that the rear wing's rear face is the LOW-x end of the wing island, where a
 trailing-edge band drawn on the top surface had been invisible from behind.
-The build module must expose build(spec=False), PAINT_DIR, CUSTOMER and
-(for `blocks`) NUMBER_BLOCKS.
+The build module must expose build(spec=False), PAINT_DIR and (for `blocks`)
+NUMBER_BLOCKS.  --id is your customer ID (default: the IRACING_CUSTOMER_ID
+setting): the probe is saved as car_<id>.tga, the only name iRacing loads.
 Any paint file already there is backed up into out/backup/ first.
 """
 import importlib, os, sys
@@ -45,12 +46,15 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(os.path.dirname(HERE), "src"))
 import probe_islands as P
 from paintfolder import save_tga
+import iracingpaths
 
 
 def main():
+    cid = iracingpaths.take_id()
     if len(sys.argv) < 4:
         sys.exit(__doc__)
     B = importlib.import_module(sys.argv[1])
+    out = iracingpaths.test_paint(B.PAINT_DIR, cid)
     lab, isl = P.islands(sys.argv[2])
     by = {k: l for k, l, x, y, w, h, a in isl}
     bbox = {k: (x, y, w, h) for k, l, x, y, w, h, a in isl}
@@ -92,7 +96,6 @@ def main():
         bb = f.getbbox(t)
         d.text((cx - (bb[2] - bb[0]) / 2 - bb[0], cy - (bb[3] - bb[1]) / 2 - bb[1]),
                t, font=f, fill=(0, 0, 0))
-    out = os.path.join(B.PAINT_DIR, "car_%s.tga" % B.CUSTOMER)
     save_tga(img, out)
     print("wrote probe to", out, "- rebuild the livery afterwards")
 

@@ -168,6 +168,41 @@ rearward until its forward edge sits at 1095 — exactly the blister's rear edge
 **A future rebuild that restores matching coordinates is a regression, not a
 fix.**
 
+### Your own design (`--design`) — the hooks this car uses
+
+`python src/team_ray.py --design <file or name>` reads a settings file
+(`src/design.py`). With no `--design`, or with
+`examples/designs/example-scheme.json`, the output is byte-identical to the
+example build. `apply_design()` sets `DESIGN` and `BODY` (body), `LINE`
+(trim), `ACCENT` (graphic). No geometry or placement changes with a design.
+
+- **Stripe style:** `_band_rects()` passes every line | stripe | line triple
+  through `DESIGN.bands()` — nose (`nose_stripes`), scuttle (`cowl_stripes`),
+  sidepod sash (`draw_pod_sash`). The rear deck (`draw_deck_stripes`) draws its
+  stripe band only when `DESIGN.stripe_on` and its line only when
+  `DESIGN.lines_on`, each where it was measured. The ring round the nose badge
+  is one of the thin lines (`DESIGN.lines_on`, `centre_panels`).
+- **Team name:** `side_text()` sizes the wordmark (`DESIGN.wordmark`) and hands
+  it to `DESIGN.lettering_box()`: the team name and the small "made with
+  AINTOLOGIC" credit fill that same box. The box keeps the deliberate per-side
+  positions above (left x 1095; right x 1330 through `place_across_seam()`) —
+  do not mirror it.
+- **Badge:** `DESIGN.roundel(NOSE_BADGE_D)` on the nose node.
+- **Logo spots:** `sponsors.logo_slot(LOGO2, …, ink=DESIGN.lettering,
+  accent=DESIGN.graphic)` on the pod flank; `sponsors.logo_slot(LOGO1, …,
+  **DESIGN.logo_colours)` on the pod top.
+- **Driver strip:** face = body, ink = lettering, outline = graphic.
+- **Finish (spec) map:** `spec_from_colour()` uses `DESIGN.spec_values()`,
+  `DESIGN.material_keys()` and `DESIGN.stripe_mask()` (the F4 pattern): body,
+  graphic and trim take the finishes the file names, else this car's B3
+  values; the lettering takes the trim's. `_panel_cover()` puts the number
+  panels' white texels back to the car's own white finish (a no-op in the
+  example scheme), so a design's trim finish (chrome, matte) never rims the
+  numbers.
+- **Fixed on purpose:** the white number panels (iRacing stamps the number on
+  them; the build's number-block check allows exactly that white). This car
+  draws no other safety furniture.
+
 ## The design — locked v1.0 (2026-09-14)
 
 Everything is a constant at the top of `src/team_ray.py`, in RIGHT texture

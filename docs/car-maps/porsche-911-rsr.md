@@ -169,6 +169,39 @@ then `tools/walk.py` / `tools/walk_top.py` + `tools/contact_sheet.py`, read
 from level sides / dead front / dead rear / top. `tools/template_layers.py
 <zip> <dir>` regenerates the wire / block pictures.
 
+**Your own design (`--design`, `src/design.py`).** `apply_design()` in
+`src/team_rsr.py` sets `DESIGN`, `BODY`, `LINE` (the design's trim) and
+`ACCENT` (its graphic colour). The hooks, all in `src/team_rsr.py`:
+
+- **stripe style:** `_band_offsets()` goes through `DESIGN.bands()`, so the
+  roof, engine cover, tail stub and fender sash keep only the bands the style
+  draws. In `centre_panels()` the bumper and hood stripe are drawn only when
+  `DESIGN.stripe_on`; the hood-V wedges, the louvre lips and the roof ring only
+  when `DESIGN.lines_on`. A dropped band leaves the others where they were
+  measured.
+- **lettering:** the door (`side_text()`) is `DESIGN.wordmark()` +
+  `DESIGN.lettering_box()` with the small "made with" credit; the tail and the
+  windscreen banner (`centre_panels()`) pass `credit=False` (the credit rides
+  on the doors). On the tail a team name skips the box's top `TAIL_NAME_TOP`
+  (13) rows, the wordmark's I-dot band, so it never touches the stripe stub.
+- **badge:** the roof roundel is `DESIGN.roundel()`.
+- **logos and driver strip:** logo spot 2 (quarter haunch) is
+  `sponsors.logo_slot(LOGO2, ..., ink=DESIGN.lettering, accent=DESIGN.graphic)`,
+  logo spot 1 (lower quarter) `sponsors.logo_slot(LOGO1, ..., **DESIGN.logo_colours)`;
+  the driver strip takes face / ink / accent from body / lettering / graphic.
+- **finish map:** `spec_from_colour()` uses `DESIGN.spec_values()`,
+  `DESIGN.material_keys()` and `DESIGN.stripe_mask()` (the F4 pattern).
+  `_panel_cover()` puts the number panels' white texels back to the car's
+  own white finish (a no-op in the example scheme), so a design's trim
+  finish (chrome, matte) never rims the numbers.
+- **fixed on purpose:** the white number panels (hood N2, doors N1 / N3) stay
+  `T.WHITE`, as on the F4: the sim's number is printed on them. The car draws
+  no other safety furniture (the sim's own decal layer draws the cutoff and
+  extinguisher marks).
+
+The default build and `--design example-scheme` stay byte-identical to the
+ready-made example paint in `paints/porsche-911-rsr/`.
+
 ## Tried and wrong / not to re-litigate
 
 - Roof stripe from x 840 painted across the windscreen banner: the Z island

@@ -183,6 +183,39 @@ from level sides / dead front / top. `tools/template_layers.py <zip> <dir>`
 regenerates the wire / block pictures; `tools/f4_islands_gen.py` regenerates
 `src/f4_islands.py` from that wire.
 
+**Your own design (`--design`, `src/design.py`).** `apply_design()` in
+`src/team_f4.py` sets `DESIGN`, `BODY`, `LINE` (the design's trim) and
+`ACCENT` (its graphic colour) before `build()`; no geometry changes with the
+design. This is the pattern the other cars' notes call "the F4 pattern" /
+"the F4 way". The hooks, all in `src/team_f4.py`:
+
+- **stripe style:** `_band_rects()` goes through `DESIGN.bands()`, so the
+  sash (`draw_sash()`) and the nose stripes (`_hbands()` in `nose_panel()`)
+  keep only the bands the style draws. The engine-cover stripes
+  (`draw_ec_stripes()`) draw the graphic band only when `DESIGN.stripe_on`
+  and the trim band only when `DESIGN.lines_on`, and the ring round the nose
+  badge is a thin line, drawn only when `DESIGN.lines_on`. A dropped band
+  leaves the others where they were measured.
+- **lettering:** the sidepod wordmark (`side_text()`) is `DESIGN.wordmark()` +
+  `DESIGN.lettering_box()`, with the small "made with AÏNTOLOGIC" credit; it
+  is this car's only big lettering.
+- **badge:** the nose roundel is `DESIGN.roundel()` (`nose_panel()`).
+- **logos and driver strip:** logo spot 2 (engine cover) is
+  `sponsors.logo_slot(LOGO2, ..., ink=DESIGN.lettering, accent=DESIGN.graphic)`;
+  logo spot 1 (rear-wing endplates, `endplate()`) is
+  `sponsors.logo_slot(LOGO1, ..., **DESIGN.logo_colours)`. The driver strip
+  takes face / ink / accent from body / lettering / graphic.
+- **finish map:** `spec_from_colour()` uses `DESIGN.spec_values()`,
+  `DESIGN.material_keys()` and `DESIGN.stripe_mask()`. `_panel_cover()` puts
+  the number panels' white texels back to the car's own white finish (a
+  no-op in the example scheme), so a design's trim finish (chrome, matte)
+  never rims the numbers.
+- **fixed on purpose:** the three white number panels (nose N3, endplates N1
+  / N2) stay `T.WHITE`: the sim prints the number on them.
+
+No design, or `--design example-scheme`, builds the ready-made paint in
+`paints/fia-f4/` byte for byte.
+
 ## What was tried and is wrong / not to re-litigate
 
 - **First pass (2026-09-14 afternoon): the engine-cover stripe rode the crease

@@ -29,8 +29,10 @@ The details follow.
 ## What it reads
 
 - The project's own files: its code, fonts and images.
-- Logo images you choose with `--logo1` and `--logo2`.
+- Logo images you choose with `--logo1` and `--logo2`, or in a design file.
 - Your saved settings in `profiles/<name>.json`, if you use `--profile`.
+- A design settings file, if you use `--design`: yours in
+  `profiles/designs/`, a sample in `examples/designs/`, or the file you name.
 - An iRacing paint template you point it at, for a car's one-time setup step
   or for measuring a new car.
 - Whether your iRacing paint folder exists (`tools/check_setup.py`), and
@@ -38,8 +40,16 @@ The details follow.
   can be backed up.
 - For the viewer tools: the titles of the open windows, to find iRacing's
   (nothing is kept), and then a screenshot of the iRacing window.
-- `src/calibrate.py` reads an `IRACING_CUSTOMER_ID` setting, if you have made
-  one, to name its test file.
+- `src/calibrate.py` and the measuring tools read an `IRACING_CUSTOMER_ID`
+  setting, if you have made one, to name their test file. The measuring tools
+  also read the `protect_ids` list in your saved settings in `profiles/`, if
+  you have any, so they never replace a paint under one of those IDs.
+- The privacy check (`tools/privacy_check.py`) reads the project's files and,
+  with `--history`, its git history. It also reads your private word list,
+  `profiles/private-words.txt`, if you have made one, and the `id`, `driver`
+  and `protect_ids` values in your saved settings in `profiles/`, so it can
+  look for them. It never prints one of them in full. It also reads the list
+  of findings already looked at and accepted, `tools/privacy-accepted.txt`.
 
 It never reads your iRacing login, password or account files, your browser's
 history or data, or anything else in your `Documents\iRacing` folder.
@@ -48,7 +58,7 @@ history or data, or anything else in your `Documents\iRacing` folder.
 
 | where | what | which tools |
 |---|---|---|
-| `out` in the project folder | finished paints, previews, screenshots, contact sheets (several screenshots tiled into one picture), test pictures, backups and working files | the builders in `src/` and the tools in `tools/` (`check_setup.py` writes nothing) |
+| `out` in the project folder | finished paints, previews, screenshots, contact sheets (several screenshots tiled into one picture), test pictures, backups and working files | the builders in `src/` and the tools in `tools/` (`check_setup.py`, `privacy_check.py` and `license_check.py` write nothing) |
 | `src/` and `assets/` in the project folder | the panel shapes for six cars, made from your own copy of their iRacing template | `tools/first_run.py` (the one-time setup step), and the four tools it runs (`f4_islands_gen.py`, `island_edges.py`, `body_mask.py`, `island_id_mask.py`) if you run them yourself |
 | iRacing's paint folder for one car | a test-pattern paint or a test finish, while a car is being measured | the measuring tools, listed below. They back up first. |
 
@@ -56,6 +66,13 @@ If you choose another folder (for example with `--out`), the tools write
 there instead. Python itself also keeps compiled copies of the code in
 `__pycache__` folders inside `src/` and `tools/`; git ignores them, and they
 are safe to delete.
+
+Of the three checks GitHub runs on every change, `tools/privacy_check.py`
+and `tools/license_check.py` only read files and write nothing at all.
+`tools/check_builds.py` reads the project's files too, and writes only the
+cars it builds, into `out/check-builds/`; it removes them when it finishes,
+unless you add `--keep`. None of the three connects to the internet or
+installs anything.
 
 ## Your paint is backed up before anything replaces it
 
@@ -68,29 +85,28 @@ viewer: `tools/probe.py`, `probe_affine.py`, `probe_bands.py`,
 
 Before one of them replaces a file, it copies the one that's there into the
 project's `out\backup` folder, in a folder named after the car's paint folder,
-with the date and time added to its name. For example, a
-`car_CUSTOMERID.tga` in the MX-5's paint folder is saved as:
+with the date and time added to its name. For example, if your customer ID
+is 123456, your `car_123456.tga` in the MX-5's paint folder is saved as:
 
 ```
-out\backup\mx5 mx52016\car_CUSTOMERID.20261025-101500.tga
+out\backup\mx5 mx52016\car_123456.20261025-101500.tga
 ```
 
 The tool prints where the copy is. **To put it back,** copy that file into the
 car's paint folder and rename it to its original name, without the date and
 time. Then close the car viewer and open it again.
 
-As shipped, the measuring tools only ever write `car_CUSTOMERID.tga` and
-`car_spec_CUSTOMERID.tga`, so they never touch a paint named with your own
-customer ID. (That is also why they don't work as described yet; see the
-known issues in the [change log](../CHANGELOG.md).) They look for iRacing's
-paint folder in the `Documents` folder inside your user folder. Until that's
-fixed, `AGENTS.md` tells your AI assistant, while it measures a new car, to
-copy each test pattern over your own `car_<your ID>.tga` with
-`paintfolder.copy_in()`. The first copy saves your paint into
-`out\backup\<paint folder>\`; it stays replaced until you put that copy back
-or copy a finished paint in, and the assistant tells you where it is.
+iRacing only shows a paint named with your customer ID, so that is the name
+the measuring tools write: `car_<your ID>.tga`, and `car_spec_<your ID>.tga`
+for `spec_flat.py` and `spec_ladder.py`. They write only when you give them
+your ID (with `--id`, or the `IRACING_CUSTOMER_ID` setting). While a car is
+measured, its test patterns replace your own paint for that car. The first
+one saves your paint into `out\backup\<paint folder>\`; it stays replaced
+until you put that copy back or copy a finished paint in. They find
+iRacing's paint folder in your Documents folder, wherever Windows keeps it,
+even if it has been moved into OneDrive.
 
-`spec_flat.py none` takes the finish file `car_spec_CUSTOMERID.tga` back out
+`spec_flat.py none` takes the finish file `car_spec_<your ID>.tga` back out
 of the MX-5's paint folder, together with the `.mip` file iRacing made from
 it. It moves both into `out\backup` the same way and prints where they went.
 

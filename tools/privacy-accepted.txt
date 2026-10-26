@@ -1,0 +1,19 @@
+# Findings of tools/privacy_check.py that the maintainer has looked at and
+# accepted.
+#
+# Each line names one version of one file in the project's history (its full
+# git hash) and the kind of finding accepted in it. Any other kind of finding
+# in that version, and the same kind in any other version, is still reported,
+# so nothing new can hide behind this list.
+#
+# Only the maintainer adds a line here, after looking at the finding. A pull
+# request that adds one is not accepted on its own; say in the issue why the
+# finding is fine.
+#
+# Versions from the project's early history:
+d19f96087837e8d391537cd6a72160b63dfd35c2 race
+220ee36b8231af5ff55d79d314f2e476f6f30a45 race
+027a6a3fb64ae1276044166604854a938a17d558 race
+4fcf27b3389439c95cb78b680ce9622586163d21 race
+f1938dbf753f8c3e11b23148d398c7bc12ff63a9 private
+fddf0670f7baf51ef7eb0f073542180ea2531cab private

@@ -16,10 +16,11 @@
 
 """Hue-coded cell probe over one UV rect, on top of the live livery.
 
-    python tools/probe_affine.py team_mx5 1297,600,355,200 5 4
+    python tools/probe_affine.py team_mx5 1297,600,355,200 5 4 --id 123456
 
 Paints cols x rows cells over the rect, cell i coloured hue i/N, and writes
-the paint file.  Reload the viewer, capture a LEVEL side (or the view you
+the paint file as car_<id>.tga, the only name iRacing loads (--id is your
+customer ID; default: the IRACING_CUSTOMER_ID setting).  Reload the viewer, capture a LEVEL side (or the view you
 place from), then run fit_affine.py on the capture to get the texture ->
 screen affine for that island.  That affine is what lets a decal be placed
 as a SCREEN rectangle (same size, same spot on both sides) and inverse-mapped
@@ -34,12 +35,15 @@ import sys, os, colorsys, importlib
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
 from PIL import Image, ImageDraw
 from paintfolder import save_tga
+import iracingpaths
 
+cid = iracingpaths.take_id()
 if len(sys.argv) < 5:
     sys.exit(__doc__)
 B = importlib.import_module(sys.argv[1])
 x0, y0, w, h = map(int, sys.argv[2].split(","))
 cols, rows = int(sys.argv[3]), int(sys.argv[4])
+out = iracingpaths.test_paint(B.PAINT_DIR, cid)
 img = B.build(spec=False)
 d = ImageDraw.Draw(img)
 N = cols * rows
@@ -49,6 +53,5 @@ for r in range(rows):
         i = r * cols + c
         rgb = tuple(int(255 * v) for v in colorsys.hsv_to_rgb(i / float(N), 1.0, 1.0))
         d.rectangle([x0 + c * cw + 2, y0 + r * ch + 2, x0 + c * cw + cw - 3, y0 + r * ch + ch - 3], fill=rgb)
-out = os.path.join(B.PAINT_DIR, "car_%s.tga" % B.CUSTOMER)
 save_tga(img, out)
 print("wrote", out, "-", N, "cells of", cw, "x", ch, "texels; reload the viewer and capture")

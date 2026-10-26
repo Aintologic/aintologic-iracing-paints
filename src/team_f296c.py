@@ -32,7 +32,8 @@ body) with every RSR number deleted - no UV is shared with any other car.
     python src/team_f296c.py --png      -> also write the flat texture as PNG
 
 Writes car_<id>.tga (+ car_spec_<id>.tga); see src/personalize.py for
---id / --driver / --logo1 / --logo2 / --out / --profile.
+--id / --driver / --logo1 / --logo2 / --out / --profile / --design, and
+src/design.py for a design's colours, team name and stripe style.
 
 Template: 203_template_F296C.zip
 ("Ferrari 296 Challenge.psd", 2048x2048).  NOT 173_template_F296.zip - that
@@ -58,15 +59,17 @@ from PIL import Image, ImageDraw
 import teamscheme as T
 import sponsors
 import personalize
+import iracingpaths
+import design
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CUSTOMER = personalize.DEFAULT_ID
-PAINT_DIR = os.path.join(os.path.expanduser("~"), "Documents", "iRacing",
-                         "paint", "ferrari296challenge")
+PAINT_DIR = iracingpaths.paint_folder("ferrari296challenge")
 # personalization, set from the CLI/profile in __main__ before build() runs:
 DRIVER_NAME = ""                       # blank driver strip by default
 LOGO1 = sponsors.placeholder_logo      # Cats Don't Suck slot
 LOGO2 = sponsors.placeholder_logo      # FreakFarm slot
+DESIGN = design.EXAMPLE                # your own design (--design); apply_design() sets it
 W = H = 2048
 MIRROR = 2472                        # other-side pixel row = MIRROR - row
 CL = 1236                            # centre row of hood / banner / roof / E strip
@@ -80,6 +83,16 @@ NUMBER_BLOCKS = {"N1": (468, 216, 60, 37),     # rear bumper, left of the fog li
 PANELLED = ("N1", "N2", "N3", "N4", "N5")    # N3: the sim stamps a plate on the banner too (concept pass 1 render)
 
 BODY, LINE, ACCENT = T.BLACK, T.WHITE, T.PAPAYA
+
+
+def apply_design(ds):
+    """Build with design ds (src/design.py): its colours, lettering and stripe
+    style.  The names here predate it: LINE is the design's trim (the thin
+    lines and the roof ring), ACCENT its graphic (the wide stripe).  The hood
+    vent gap is body colour, so it follows BODY."""
+    global DESIGN, BODY, LINE, ACCENT
+    DESIGN = ds
+    BODY, LINE, ACCENT = ds.body, ds.trim, ds.graphic
 
 # =============================================================================
 # PLACEMENTS - locked v1.0, 2026-09-16 (issue #4).  Band recipe: orange =
@@ -109,6 +122,15 @@ RING_GAP, RING_W = 6, 12
 ESTRIP_X = (1358, 1484)              # the strip between the rear glass and the engine window
 LIP_CX, LIP_Y = 555, (69, 164)       # rear deck lip (island 9): +x = car's right; rows 69..163 at the centre column
 TAIL_WM_W, TAIL_WM_CXY = 170, (555, 188)   # rear bumper upper band (island 8): only rows 173..210 at the centre column
+# A TEAM NAME at the tail can't use the wordmark's 170x36 box: island 8's top
+# edge is an arch - row 172 only for x 504..608, then 176 at x 488/620, 180 at
+# 480/630, 185 at 470/640 - and a name that fills the box loses the tops of its
+# end letters above it (the wordmark's own sloped shape fits).  These boxes all
+# sit under the arch and end at row 206, above the N1 panel margin (row 208);
+# the name goes in whichever draws it biggest (_tail_name).
+TAIL_NAME_BOXES = (((555, 190), (104, 34)),   # x 503..606, rows 173..206: short names
+                   ((555, 192), (134, 30)),   # x 488..621, rows 177..206
+                   ((555, 194), (150, 26)))   # x 480..629, rows 181..206: long two-line names
 WING_WM_W, WING_WM_CXY = 440, (1698, 70)   # rear wing TOP (island 4 rows 10..129): art ROTATE_180 reads upright from behind / chase cam
                                            # (pass 4 flipped it to upright after misreading a low-res frame; full-res crops of both
                                            # renders showed ROTATE_180 correct - judge text orientation from full-res crops only)
@@ -133,10 +155,12 @@ def _col(c, spec):
 
 
 def _band_offsets(widths):
+    """[line, stripe, line] offsets; the design's stripe style drops bands
+    (classic keeps all three), the rest stay where they were measured."""
     ow, ww, g = widths
-    return [(-ow / 2.0 - g - ww, -ow / 2.0 - g, LINE),
-            (-ow / 2.0, ow / 2.0, ACCENT),
-            (ow / 2.0 + g, ow / 2.0 + g + ww, LINE)]
+    return DESIGN.bands([(-ow / 2.0 - g - ww, -ow / 2.0 - g, LINE),
+                         (-ow / 2.0, ow / 2.0, ACCENT),
+                         (ow / 2.0 + g, ow / 2.0 + g + ww, LINE)])
 
 
 def _cut(lo, hi, skips):
@@ -206,18 +230,37 @@ def side_geometry(spec):
     return mirror_geometry(big.resize((W, H), Image.LANCZOS))
 
 
-def _wm(w, spec):
-    wm = T.wordmark(int(w * 0.17), ink=T.WHITE, accent=T.PAPAYA)
+def _wm(w, spec, credit=False):
+    """The big lettering at width w: the wordmark in the design's colours, or
+    the team name in the same box (DESIGN.lettering_box).  credit=True adds
+    the small "made with AINTOLOGIC" line - the doors carry it; the banner,
+    tail and wing spots are secondary and pass credit=False."""
+    wm = DESIGN.wordmark(int(w * 0.17))
     wm = wm.resize((w, int(wm.height * w / wm.width)), Image.LANCZOS)
+    wm = DESIGN.lettering_box(wm, credit=credit)
     return specify(wm) if spec else wm
+
+
+def _tail_name(spec):
+    """A team name at the tail, in the TAIL_NAME_BOXES box that draws it
+    biggest (most ink: same letters, so more ink = bigger letters).  Only
+    called when the design has a team name; the wordmark keeps TAIL_WM_*."""
+    best = None
+    for cxy, size in TAIL_NAME_BOXES:
+        im = DESIGN.lettering_box(Image.new("RGBA", size), credit=False)
+        ink = int(np.asarray(im.getchannel("A"), dtype=np.int64).sum())
+        if best is None or ink > best[0]:
+            best = (ink, cxy, im)
+    _, cxy, im = best
+    return (specify(im) if spec else im), cxy
 
 
 def side_text(img, spec):
     S = (lambda im: specify(im)) if spec else (lambda im: im)
-    wm = _wm(DOOR_WM_W, spec)
-    ff = S(LOGO2(Q_FF_W, ink=T.WHITE, accent=T.PAPAYA))
-    ds = S(sponsors.driver_strip(DOOR_DRIVER_W, DRIVER_NAME, face=T.BLACK,
-                                 ink=T.WHITE, accent=T.PAPAYA))
+    wm = _wm(DOOR_WM_W, spec, credit=True)
+    ff = S(sponsors.logo_slot(LOGO2, Q_FF_W, ink=DESIGN.lettering, accent=DESIGN.graphic))
+    ds = S(sponsors.driver_strip(DOOR_DRIVER_W, DRIVER_NAME, face=DESIGN.body,
+                                 ink=DESIGN.lettering, accent=DESIGN.graphic))
     for right in (False, True):
         place(img, wm, DOOR_WM_CXY[0] - wm.width // 2, DOOR_WM_CXY[1] - wm.height // 2, right)
         place(img, ff, Q_FF_CXY[0] - ff.width // 2, Q_FF_CXY[1] - ff.height // 2, right)
@@ -238,10 +281,10 @@ def centre_panels(img, spec):
     # hood: one constant stripe, nose lip -> cowl; the vent slots occlude it
     hbands(d, CL, CS, HOOD_X[0], HOOD_X[1], spec, skips=[HOOD_VENT_SKIP])
     # Cats Don't Suck on the hood's right rear corner (reads from the front)
-    cat = S(LOGO1(HOOD_CDS_D)).transpose(Image.ROTATE_270)
+    cat = S(sponsors.logo_slot(LOGO1, HOOD_CDS_D, **DESIGN.logo_colours)).transpose(Image.ROTATE_270)
     img.alpha_composite(cat, (HOOD_CDS_CXY[0] - cat.width // 2, HOOD_CDS_CXY[1] - cat.height // 2))
     # windscreen banner wordmark, read from the front
-    bw_ = _wm(BANNER_WM_W, spec).transpose(Image.ROTATE_270)
+    bw_ = _wm(BANNER_WM_W, spec, credit=False).transpose(Image.ROTATE_270)   # the credit rides on the doors
     img.alpha_composite(bw_, (BANNER_WM_CXY[0] - bw_.width // 2, BANNER_WM_CXY[1] - bw_.height // 2))
     d = ImageDraw.Draw(img)
     # roof through the roundel node, then the strip behind the rear glass
@@ -249,19 +292,23 @@ def centre_panels(img, spec):
     r_ring = ROOF_BADGE_D / 2.0 + RING_GAP + RING_W
     hbands(d, CL, CS, ROOF_X[0], ROOF_X[1], spec,
            skips=[(int(cx - r_ring - RING_GAP), int(cx + r_ring + RING_GAP))])
-    d.ellipse([cx - r_ring, cy - r_ring, cx + r_ring, cy + r_ring], fill=_col(LINE, spec))
+    if DESIGN.lines_on:                  # the ring is one of the thin lines
+        d.ellipse([cx - r_ring, cy - r_ring, cx + r_ring, cy + r_ring], fill=_col(LINE, spec))
     r_in = ROOF_BADGE_D / 2.0 + RING_GAP
     d.ellipse([cx - r_in, cy - r_in, cx + r_in, cy + r_in],
               fill=tuple(T.SPEC_BODY if spec else BODY) + (255,))
-    badge = S(T.roundel(ROOF_BADGE_D)).transpose(Image.ROTATE_270)
+    badge = S(DESIGN.roundel(ROOF_BADGE_D)).transpose(Image.ROTATE_270)
     img.alpha_composite(badge, (cx - badge.width // 2, cy - badge.height // 2))
     d = ImageDraw.Draw(img)
     hbands(d, CL, CS, ESTRIP_X[0], ESTRIP_X[1], spec)
     # rear deck lip behind the engine window, and the tail wordmark
     vbands(d, LIP_CX, CS, LIP_Y[0], LIP_Y[1], spec)
-    wm = _wm(TAIL_WM_W, spec)
-    img.alpha_composite(wm, (TAIL_WM_CXY[0] - wm.width // 2, TAIL_WM_CXY[1] - wm.height // 2))
-    ww = _wm(WING_WM_W, spec).transpose(Image.ROTATE_180)
+    if DESIGN.team_name is None:
+        wm, tcxy = _wm(TAIL_WM_W, spec, credit=False), TAIL_WM_CXY
+    else:                                # a name fills its box: keep it under the arch
+        wm, tcxy = _tail_name(spec)
+    img.alpha_composite(wm, (tcxy[0] - wm.width // 2, tcxy[1] - wm.height // 2))
+    ww = _wm(WING_WM_W, spec, credit=False).transpose(Image.ROTATE_180)
     img.alpha_composite(ww, (WING_WM_CXY[0] - ww.width // 2, WING_WM_CXY[1] - ww.height // 2))
 
 
@@ -290,10 +337,28 @@ SPEC_DEFAULT = "B3"
 SPEC_ORANGE_GROW = 3
 
 
+# A LOCAL spec-map helper for designs (the Spec Racer Ford's): the number
+# panels keep the car's own B3 white (see spec_from_colour).  A no-op in the
+# example scheme, so the ready-made spec map is untouched byte for byte.
+def _panel_cover():
+    """Every texel the white number panels cover (number_panels() geometry)."""
+    cov = np.zeros((H, W), dtype=bool)
+    m = NUM_MARGIN
+    for key in PANELLED:
+        bx, by, bw, bh = NUMBER_BLOCKS[key]
+        p = np.asarray(T.number_panel(bw + 2 * m, bh + 2 * m).getchannel("A")) > 0
+        cov[by - m:by - m + p.shape[0], bx - m:bx - m + p.shape[1]] |= p
+    return cov
+
+
 def spec_from_colour(img, variant=SPEC_DEFAULT):
-    P = SPEC_VARIANTS[variant]
+    """The design's finishes go in through DESIGN.spec_values (body, graphic
+    -> "orange", trim -> "white"); the example scheme gets B3 unchanged.  The
+    number panels keep the car's own B3 white in every design."""
+    P0 = SPEC_VARIANTS[variant]
+    P = DESIGN.spec_values(P0)
     a = np.asarray(img.convert("RGB")).astype(np.int16)
-    keys = [("body", BODY), ("orange", ACCENT), ("white", T.WHITE)]
+    keys = DESIGN.material_keys(BODY, ACCENT)
     dist = np.stack([np.abs(a - np.array(c, dtype=np.int16)).sum(axis=2) for _, c in keys], axis=0)
     best = dist.argmin(axis=0)
     close = dist.min(axis=0) <= 200
@@ -301,7 +366,13 @@ def spec_from_colour(img, variant=SPEC_DEFAULT):
     out[...] = P["decal"]
     for i, (name, _) in enumerate(keys):
         out[(best == i) & close] = P[name]
-    m = (a[..., 0] > 100) & (a[..., 0] - a[..., 2] > 80) & (a[..., 1] < a[..., 0] - 40)
+    # The panels are T.WHITE, which material_keys sorts into the "white" slot
+    # that a design's trim finish replaces: a chrome or matte trim would rim
+    # every number.  Put the panel texels back to the car's own B3 white
+    # (what the example gives them, so a no-op there).
+    panel_white = np.array([tuple(c) == tuple(T.WHITE) for _, c in keys])[best] & close
+    out[_panel_cover() & panel_white] = P0["white"]
+    m = DESIGN.stripe_mask(a)            # papaya's hue test in the example scheme
     g = SPEC_ORANGE_GROW
     if g:
         pad = np.pad(m, g)
@@ -341,6 +412,7 @@ if __name__ == "__main__":
     personalize.add_args(ap)
     args = ap.parse_args()
     cfg = personalize.resolve(args)
+    apply_design(cfg.design)
     CUSTOMER = cfg.id
     DRIVER_NAME = cfg.driver
     LOGO1, LOGO2 = cfg.logo1, cfg.logo2

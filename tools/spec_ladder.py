@@ -14,7 +14,7 @@
 # <https://www.gnu.org/licenses/>.
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""Spec-map ladder test.
+"""Spec-map ladder test:  python tools/spec_ladder.py --id 123456
 
 Stop guessing global values. Paint a stepped ladder of (R,G,B) material values
 along both flanks, load it, and read off the car which combination looks right.
@@ -29,6 +29,8 @@ NOSE, so band 1 is at the nose on both sides.
 Channels per the painting tutorial: R = metallic, G = roughness (low = glossy),
 B = clear coat.
 
+Writes the MX-5's car_spec_<id>.tga, the only name iRacing loads (--id is your
+customer ID; default: the IRACING_CUSTOMER_ID setting).
 Any spec map already there is backed up into out/backup/ first.
 """
 import os, sys
@@ -37,8 +39,10 @@ from PIL import Image, ImageDraw
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 from paintfolder import save_tga
+import iracingpaths
 
-OUT = os.path.join(os.path.expanduser("~"), "Documents", "iRacing", "paint", "mx5 mx52016", "car_spec_CUSTOMERID.tga")
+OUT = iracingpaths.test_paint(iracingpaths.paint_folder("mx5 mx52016"),
+                              iracingpaths.take_id(), spec=True)
 FLANK_R = (386, 1679, 884, 306)
 FLANK_L = (386, 507, 884, 306)
 BASE = (0, 128, 128)

@@ -25,14 +25,18 @@ Every ``src/team_*.py`` builder exposes the same options through this module:
     --out      the output folder (default: out in the project folder, wherever
                the builder is run from)
     --profile  load a saved profile from profiles/<name>.json (local only)
+    --design   your own colours, team name and stripe style: a settings file,
+               or a name in profiles/designs/ or examples/designs/ (see
+               src/design.py).  Without it, the example scheme.
 
 Defaults are neutral: a placeholder ID in the filename, a blank driver strip,
 and a code-drawn "YOUR LOGO" placeholder in both slots. Nobody's personal mark
 is ever the default.
 
-A logo slot value is either a path to an image file, or one of the built-in
-example-mark tokens ``placeholder`` / ``cats_dont_suck`` / ``freakfarm`` (the
-last two are drawn by src/sponsors.py). ``resolve_logo`` turns a slot value into
+A logo slot value is either a path to an image file, ``none`` for an empty
+spot, or one of the built-in example-mark tokens ``placeholder`` /
+``cats_dont_suck`` / ``freakfarm`` (the last two are drawn by src/sponsors.py).
+``resolve_logo`` turns a slot value into
 a ``f(width, **kwargs) -> RGBA`` callable that the builders drop in exactly where
 their fixed per-car logo placements expect it.
 
@@ -43,6 +47,9 @@ storing any image path.
 import json
 import os
 
+from PIL import Image
+
+import design
 import sponsors
 
 DEFAULT_ID = "CUSTOMERID"
@@ -56,12 +63,13 @@ _TOKENS = {"placeholder": sponsors.placeholder_logo,
 class Config:
     """The resolved per-build personalization."""
 
-    def __init__(self, id, driver, logo1, logo2, out_dir):
+    def __init__(self, id, driver, logo1, logo2, out_dir, design=design.EXAMPLE):
         self.id = id
         self.driver = driver
         self.logo1 = logo1
         self.logo2 = logo2
         self.out_dir = out_dir
+        self.design = design
 
 
 def add_args(ap):
@@ -80,6 +88,9 @@ def add_args(ap):
                     help="output folder (default: out in the project folder)")
     ap.add_argument("--profile", default=None,
                     help="load a saved profile for the above (local only)")
+    ap.add_argument("--design", default=None,
+                    help="your own colours, team name and stripe style: a settings "
+                         "file, or a name in profiles/designs/ (default: the example scheme)")
 
 
 def default_out_dir():
@@ -105,6 +116,12 @@ def profile_id(name, default=DEFAULT_ID):
         return default
 
 
+def _empty_logo(w, **_):
+    """An empty logo spot: fully transparent, the placeholder's shape, so a
+    builder's placement maths runs exactly as with a logo."""
+    return Image.new("RGBA", (w, max(1, int(w * 4 * 0.42) // 4)), (0, 0, 0, 0))
+
+
 def _aspect(mark):
     """Height / width of a code-drawn mark."""
     im = mark(1000)
@@ -115,6 +132,7 @@ def resolve_logo(spec, slot=None):
     """Turn a logo-slot value into a ``f(width, **kwargs) -> RGBA`` callable.
 
     ``None`` / ``""`` / ``"placeholder"`` -> the neutral YOUR LOGO placeholder;
+    ``"none"`` -> nothing: the spot stays body colour;
     ``"cats_dont_suck"`` / ``"freakfarm"`` -> the code-drawn example marks;
     anything else is treated as a path to an image file. A user image is fitted
     inside the shape its slot was designed for, so it never spills off its panel:
@@ -123,6 +141,8 @@ def resolve_logo(spec, slot=None):
     """
     if spec in (None, ""):
         return sponsors.placeholder_logo
+    if spec == "none":
+        return _empty_logo
     if spec in _TOKENS:
         return _TOKENS[spec]
     box = {1: sponsors.cats_dont_suck, 2: sponsors.placeholder_logo}.get(slot)
@@ -130,18 +150,22 @@ def resolve_logo(spec, slot=None):
 
 
 def resolve(args):
-    """Resolve CLI args (+ an optional profile) into a Config.
+    """Resolve CLI args (+ an optional profile and design) into a Config.
 
-    CLI values override profile values; a profile fills in anything left at its
-    default. Refuses any customer ID listed in the profile's ``protect_ids``.
+    CLI values override the design file's logos, which override the profile's;
+    a profile fills in anything left at its default. Refuses any customer ID
+    listed in the profile's ``protect_ids``.
     """
     prof = load_profile(args.profile) if args.profile else {}
+    ds = design.load(getattr(args, "design", None))
     cid = args.id if args.id is not None else prof.get("id", DEFAULT_ID)
     driver = args.driver if args.driver is not None else prof.get("driver", "")
-    logo1 = args.logo1 if args.logo1 is not None else prof.get("logo1")
-    logo2 = args.logo2 if args.logo2 is not None else prof.get("logo2")
+    logo1 = next((v for v in (args.logo1, ds.logo1, prof.get("logo1")) if v is not None), None)
+    logo2 = next((v for v in (args.logo2, ds.logo2, prof.get("logo2")) if v is not None), None)
     protect = set(prof.get("protect_ids", []))
     if str(cid) in protect:
         raise SystemExit("refusing to build with protected ID %s (see the profile's "
                          "protect_ids)" % cid)
-    return Config(str(cid), driver, resolve_logo(logo1, 1), resolve_logo(logo2, 2), args.out)
+    for w in ds.warnings():
+        print("note: " + w)
+    return Config(str(cid), driver, resolve_logo(logo1, 1), resolve_logo(logo2, 2), args.out, ds)

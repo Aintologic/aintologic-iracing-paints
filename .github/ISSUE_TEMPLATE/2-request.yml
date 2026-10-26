@@ -11,7 +11,7 @@ body:
     attributes:
       label: What and why
       description: What you'd like, and why it would help you.
-      placeholder: e.g. I'd like to choose my own colors, not just the example design.
+      placeholder: e.g. I'd like to choose where my logos go on the car.
     validations:
       required: true
   - type: textarea
@@ -19,7 +19,7 @@ body:
     attributes:
       label: What "done" looks like
       description: How we'd know it's finished, from your point of view.
-      placeholder: e.g. I can tell my AI assistant my team colors, and the paint uses them.
+      placeholder: e.g. I can tell my AI assistant where each logo goes, and the paint puts it there.
     validations:
       required: true
   - type: textarea

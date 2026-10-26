@@ -29,7 +29,8 @@ exist here.
     python src/team_ray.py --png      -> also write the flat texture as PNG
 
 Writes car_<id>.tga (+ car_spec_<id>.tga); see src/personalize.py for
---id / --driver / --logo1 / --logo2 / --out / --profile.
+--id / --driver / --logo1 / --logo2 / --out / --profile / --design, and
+src/design.py for a design's colours, team name and stripe style.
 
 Template: 163_template_GR22.zip
 ("Ray FF1600.psd", 2048x2048).  Car ID #163 confirmed in Car Info 2026-09-14.
@@ -54,18 +55,20 @@ from PIL import Image, ImageDraw
 import teamscheme as T
 import sponsors
 import personalize
+import iracingpaths
+import design
 import setup_check
 setup_check.require("ray")
 import ray_islands as ISL
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CUSTOMER = personalize.DEFAULT_ID
-PAINT_DIR = os.path.join(os.path.expanduser("~"), "Documents", "iRacing",
-                         "paint", "raygr22")
+PAINT_DIR = iracingpaths.paint_folder("raygr22")
 # personalization, set from the CLI/profile in __main__ before build() runs:
 DRIVER_NAME = ""                       # blank driver strip by default
 LOGO1 = sponsors.placeholder_logo      # Cats Don't Suck slot
 LOGO2 = sponsors.placeholder_logo      # FreakFarm slot
+DESIGN = design.EXAMPLE                # your own design (--design); apply_design() sets it
 W = H = 2048
 MIRROR = ISL.MIRROR                  # 2052; left y = MIRROR - right y
 CENTRE = MIRROR // 2                 # 1026, the car's centre line in texture
@@ -76,6 +79,15 @@ NUMBER_BLOCKS = {"N1": (1688, 625, 106, 95),     # RIGHT rear body side
                  "N3": (1688, 1332, 106, 95)}    # LEFT rear body side
 
 BODY, LINE, ACCENT = T.BLACK, T.WHITE, T.PAPAYA
+
+
+def apply_design(ds):
+    """Build with design ds (src/design.py): its colours, lettering and stripe
+    style.  The names here predate it: LINE is the design's trim (the thin
+    lines and the badge ring), ACCENT its graphic (the wide stripe)."""
+    global DESIGN, BODY, LINE, ACCENT
+    DESIGN = ds
+    BODY, LINE, ACCENT = ds.body, ds.trim, ds.graphic
 
 # Everything above the centre line is the car's RIGHT side and gets mirrored
 # down.  Rows 6..1026 -> 1026..2046 (the whole half in one copy, which also
@@ -159,11 +171,12 @@ def _col(c, spec):
 
 
 def _band_rects(cx, widths):
-    """(a, b, colour) for white | orange | white about cx."""
+    """(a, b, colour) for white | orange | white about cx - only the bands the
+    design's stripe style draws; the ones kept stay where they were measured."""
     ow, ww, g = widths
-    return [(cx - ow / 2.0 - g - ww, cx - ow / 2.0 - g, LINE),
-            (cx - ow / 2.0, cx + ow / 2.0, ACCENT),
-            (cx + ow / 2.0 + g, cx + ow / 2.0 + g + ww, LINE)]
+    return DESIGN.bands([(cx - ow / 2.0 - g - ww, cx - ow / 2.0 - g, LINE),
+                         (cx - ow / 2.0, cx + ow / 2.0, ACCENT),
+                         (cx + ow / 2.0 + g, cx + ow / 2.0 + g + ww, LINE)])
 
 
 def place(img, el, x, y, right):
@@ -247,10 +260,11 @@ def draw_deck_stripes(d, spec):
         if bot - top < s["gap"] + s["orange"] + 2:
             continue
         y = bot - s["gap"] - s["orange"]
-        d.rectangle([x, int(round(y)), x, int(round(y + s["orange"])) - 1],
-                    fill=_col(ACCENT, spec))
-        y -= s["mid"] + s["white"]
-        if y > top:
+        if DESIGN.stripe_on:               # the stripe style may drop either band;
+            d.rectangle([x, int(round(y)), x, int(round(y + s["orange"])) - 1],
+                        fill=_col(ACCENT, spec))
+        y -= s["mid"] + s["white"]         # the other stays where it was measured
+        if DESIGN.lines_on and y > top:
             d.rectangle([x, int(round(y)), x, int(round(y + s["white"])) - 1],
                         fill=_col(LINE, spec))
 
@@ -301,11 +315,12 @@ def centre_panels(img, spec):
     # the roundel node: body-colour gap, white ring, gap, badge
     cx, cy = NOSE_BADGE_CX, CENTRE
     r_ring = NOSE_BADGE_D / 2.0 + RING_GAP + RING_W
-    d.ellipse([cx - r_ring, cy - r_ring, cx + r_ring, cy + r_ring], fill=_col(LINE, spec))
+    if DESIGN.lines_on:                  # the ring is one of the thin lines
+        d.ellipse([cx - r_ring, cy - r_ring, cx + r_ring, cy + r_ring], fill=_col(LINE, spec))
     r_in = NOSE_BADGE_D / 2.0 + RING_GAP
     d.ellipse([cx - r_in, cy - r_in, cx + r_in, cy + r_in],
               fill=tuple(T.SPEC_BODY if spec else BODY) + (255,))
-    badge = S(T.roundel(NOSE_BADGE_D)).transpose(Image.ROTATE_270)
+    badge = S(DESIGN.roundel(NOSE_BADGE_D)).transpose(Image.ROTATE_270)
     img.alpha_composite(badge, (cx - badge.width // 2, cy - badge.height // 2))
     # the nose number panel (the stamp lands centred on it)
     px, py, pw, ph = NOSE_NUM
@@ -329,13 +344,15 @@ def side_geometry(spec):
 def side_text(img, spec):
     """Every mark that must read upright on both sides (Rule 4)."""
     S = (lambda im: specify(im)) if spec else (lambda im: im)
-    wm = T.wordmark(int(TUB_WM_W * 0.17), ink=T.WHITE, accent=T.PAPAYA)
-    wm = S(wm.resize((TUB_WM_W, int(wm.height * TUB_WM_W / wm.width)), Image.LANCZOS))
-    ff = S(LOGO2(POD_FF_W, ink=T.WHITE, accent=T.PAPAYA))
-    cat = S(LOGO1(POD_CDS_D))
-    ds = S(sponsors.driver_strip(TUB_DRIVER_W, DRIVER_NAME, face=T.BLACK,
-                                 ink=T.WHITE, accent=T.PAPAYA))
-    # AINTOLOGIC: per-side X (the right flank's fairing blister, car map).
+    wm = DESIGN.wordmark(int(TUB_WM_W * 0.17))
+    wm = wm.resize((TUB_WM_W, int(wm.height * TUB_WM_W / wm.width)), Image.LANCZOS)
+    wm = S(DESIGN.lettering_box(wm))     # your team name in the same box, if you gave one
+    ff = S(sponsors.logo_slot(LOGO2, POD_FF_W, ink=DESIGN.lettering, accent=DESIGN.graphic))
+    cat = S(sponsors.logo_slot(LOGO1, POD_CDS_D, **DESIGN.logo_colours))
+    ds = S(sponsors.driver_strip(TUB_DRIVER_W, DRIVER_NAME, face=DESIGN.body,
+                                 ink=DESIGN.lettering, accent=DESIGN.graphic))
+    # AINTOLOGIC (or the team name, same box): per-side X - the right flank's
+    # fairing blister, car map.  Both sides take the SAME lettering image.
     place_across_seam(img, wm, TUB_WM_CXY_R[0] - wm.width // 2,
                       TUB_WM_CXY_R[1] - wm.height // 2)
     place(img, wm, TUB_WM_CXY[0] - wm.width // 2,
@@ -383,10 +400,27 @@ SPEC_DEFAULT = "B3"
 SPEC_ORANGE_GROW = 3
 
 
+# A LOCAL spec-map helper for designs (the Spec Racer Ford's): the number
+# panels keep the car's own B3 white (see spec_from_colour).  A no-op in the
+# example scheme, so the ready-made spec map is untouched byte for byte.
+def _panel_cover():
+    """Every texel the white number panels cover: the nose panel NOSE_NUM
+    (centre_panels()) and the body panels on N1 / N3 (number_panels())."""
+    cov = np.zeros((H, W), dtype=bool)
+    m = NUM_MARGIN
+    rects = [(bx - m, by - m, bw + 2 * m, bh + 2 * m)
+             for bx, by, bw, bh in (NUMBER_BLOCKS["N1"], NUMBER_BLOCKS["N3"])]
+    for x, y, w, h in [NOSE_NUM] + rects:
+        p = np.asarray(T.number_panel(w, h).getchannel("A")) > 0
+        cov[y:y + p.shape[0], x:x + p.shape[1]] |= p
+    return cov
+
+
 def spec_from_colour(img, variant=SPEC_DEFAULT):
-    P = SPEC_VARIANTS[variant]
+    P0 = SPEC_VARIANTS[variant]
+    P = DESIGN.spec_values(P0)            # the design's finishes, where it named them
     a = np.asarray(img.convert("RGB")).astype(np.int16)
-    keys = [("body", BODY), ("orange", ACCENT), ("white", T.WHITE)]
+    keys = DESIGN.material_keys(BODY, ACCENT)
     dist = np.stack([np.abs(a - np.array(c, dtype=np.int16)).sum(axis=2) for _, c in keys], axis=0)
     best = dist.argmin(axis=0)
     close = dist.min(axis=0) <= 200
@@ -394,7 +428,13 @@ def spec_from_colour(img, variant=SPEC_DEFAULT):
     out[...] = P["decal"]
     for i, (name, _) in enumerate(keys):
         out[(best == i) & close] = P[name]
-    m = (a[..., 0] > 100) & (a[..., 0] - a[..., 2] > 80) & (a[..., 1] < a[..., 0] - 40)
+    # The panels are T.WHITE, which material_keys sorts into the "white" slot
+    # that a design's trim finish replaces: a chrome or matte trim would rim
+    # every number.  Put the panel texels back to the car's own B3 white
+    # (what the example gives them, so a no-op there).
+    panel_white = np.array([tuple(c) == tuple(T.WHITE) for _, c in keys])[best] & close
+    out[_panel_cover() & panel_white] = P0["white"]
+    m = DESIGN.stripe_mask(a)            # papaya's hue test in the example scheme
     g = SPEC_ORANGE_GROW
     if g:
         pad = np.pad(m, g)
@@ -437,6 +477,7 @@ if __name__ == "__main__":
     personalize.add_args(ap)
     args = ap.parse_args()
     cfg = personalize.resolve(args)
+    apply_design(cfg.design)
     CUSTOMER = cfg.id
     DRIVER_NAME = cfg.driver
     LOGO1, LOGO2 = cfg.logo1, cfg.logo2

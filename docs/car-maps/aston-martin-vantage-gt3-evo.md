@@ -222,6 +222,25 @@ approved v1.1 paint untouched and build the change as a separate version.
    (`tools/probe_bands.py`, `tools/probe_islands.py`).
 6. **Mask:** `python tools/body_mask.py out/tpl assets/amv-centre-mask.png 3 5 14 4 6 leak:1390,940,470,640`
    regenerates `assets/amv-centre-mask.png` (template-derived, not shipped).
+7. **Your own design (`--design`, `src/design.py`, issue #5):**
+   `apply_design()` sets `DESIGN` and `BODY` / `LINE` / `ACCENT` = the
+   design's body / trim / graphic before `build()`. Stripes: `_band_offsets()`
+   goes through `DESIGN.bands`, so the sash, bumper, hood, roof and rear-deck
+   bands all follow the stripe style; a kept band stays exactly where it was
+   measured (the deck stripe stays on row 1249). The roof ring is a trim line,
+   drawn only when `DESIGN.lines_on`. Lettering: `_wm()` = `DESIGN.wordmark` +
+   `DESIGN.lettering_box`; the door lettering carries the "made with
+   AINTOLOGIC" credit (`credit=True`), the windscreen banner, tail and wing
+   top pass `credit=False`. Badge: `DESIGN.roundel` on the roof node. Logos:
+   `sponsors.logo_slot` — logo slot 1 (tail) with `DESIGN.logo_colours`, logo
+   slot 2 (rear haunch) in lettering / graphic. Driver strip: face body, ink
+   lettering, outline graphic. Spec map: `DESIGN.spec_values` /
+   `material_keys` / `stripe_mask`, and `_panel_cover()` puts the panels'
+   white texels back to the car's own white finish, so a design's trim
+   finish (chrome, matte) never rims the numbers (a no-op in the example
+   scheme). Left fixed: the white number panels (under the sim's number
+   stamp; the number-block check accepts body or that white). No design, or
+   `--design example-scheme`, builds the v1.1 paint byte for byte.
 
 ## Milestone-1 pictures
 

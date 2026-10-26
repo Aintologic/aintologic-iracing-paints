@@ -1,0 +1,11 @@
+{
+  "note": "A plain starting point: silver with a blue stripe and dark lettering. Copy it to profiles/designs/, put your own team name in, and change any colour.",
+  "team_name": "YOUR TEAM NAME",
+  "colors": {
+    "body": "#D5D8DC",
+    "graphic": "#2456A6",
+    "trim": "#15181C",
+    "lettering": "#15181C"
+  },
+  "stripes": "classic"
+}

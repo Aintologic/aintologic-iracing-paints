@@ -1,0 +1,11 @@
+{
+  "note": "The example scheme, written out. Building with this file gives exactly the same paint as building with no design at all.",
+  "team_name": "",
+  "colors": {
+    "body": "#0C0C0D",
+    "graphic": "#FF7A00",
+    "trim": "#ECECEC",
+    "lettering": "#ECECEC"
+  },
+  "stripes": "classic"
+}

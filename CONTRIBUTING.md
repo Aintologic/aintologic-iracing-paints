@@ -62,6 +62,55 @@ can't be merged here directly.
 3. If you open a pull request anyway, we'll read it, but we'll still bring it in
    that way.
 
+Every pull request is checked automatically, on Windows and on Linux, the same
+way as every change to the project (the README's
+[Automatic checks](README.md#automatic-checks) section says what is checked).
+The results show at the bottom of the pull request.
+
+### Running the checks yourself
+
+You can run the same three checks on your own computer before you offer a
+change. Open a terminal in the project folder and run:
+
+```
+python tools/privacy_check.py
+python tools/license_check.py
+python tools/check_builds.py
+```
+
+- `privacy_check.py` looks for things that look private: numbers shaped like
+  customer IDs, folder paths from your computer, race results, links to AI
+  chats, iRacing template files, keys. Add `--history` to check every older
+  version of every file and every commit message too. Names can't be spotted
+  by a pattern: to look for your own name, IDs and computer name, list them
+  in `profiles/private-words.txt` (one per line), which git never commits.
+  Whatever it finds is printed with most of each word hidden.
+- `license_check.py` checks that the code, paints, example logos and fonts
+  still carry their licenses.
+- `check_builds.py` builds each car with its default settings and compares
+  the result with its ready-made paint in `paints/`, byte for byte. Cars that
+  need the one-time setup step are skipped unless you've run it. Then it
+  builds each car again with every sample design in `examples/designs/`, to
+  check that the car reads the design (add `--no-designs` to skip that).
+
+Each one says what it found in plain words, and ends with a one-line result.
+They only read your files, except that `check_builds.py` writes the cars it
+builds into `out/check-builds/` and removes them when it finishes. None of
+them installs anything or connects to the internet.
+
+If the privacy check flags something that is fine, say so in your issue or
+pull request. The maintainer looks at it, and either the check is changed or
+the finding is added to `tools/privacy-accepted.txt`.
+
+The build check matches byte for byte only with the exact Pillow and numpy
+versions the ready-made paints were made with. With other versions a few
+pixels can differ, and `check_builds.py` says so. To use the exact versions,
+which are listed in `tools/requirements-checks.txt`:
+
+```
+python -m pip install -r tools/requirements-checks.txt
+```
+
 ## Licensing
 
 By offering a change, you agree it can be published under the same license as
@@ -84,4 +133,6 @@ If you are helping someone contribute:
   you paste, including error output.
 - If the change touches a car's builder, build that car before and after, and
   say in the issue what changed in the output.
+- Run the three checks above before you propose a change, and say in the
+  issue or pull request what they reported.
 - Follow `AGENTS.md` for everything else.

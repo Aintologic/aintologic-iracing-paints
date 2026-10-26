@@ -36,10 +36,11 @@ The project is doing its job when:
   without permission, and nothing private is shared.
 
 Planned next steps are tracked as
-[issues](https://github.com/Aintologic/aintologic-iracing-paints/issues): your
-own colors and design, the full brief-to-delivery workflow, a delivery pack with
-a Trading Paints guide, cars that aren't on the list, versioned releases, and
-automatic checks.
+[issues](https://github.com/Aintologic/aintologic-iracing-paints/issues): the
+rest of your own design (colors, finishes, stripe style and a team name came
+in 0.3.0; other stripe layouts and choosing where the logos go aren't in yet),
+the full brief-to-delivery workflow, a delivery pack with a Trading Paints
+guide, and cars that aren't on the list.
 
 ## For the AI agent
 
@@ -51,5 +52,8 @@ automatic checks.
   layout is measured is in `docs/PANEL-PROBING.md`; each car's verified panel
   map is in `docs/car-maps/`.
 - Personalization options (`--id`, `--driver`, `--logo1`, `--logo2`, `--out`,
-  `--profile`) are shared by every builder through `src/personalize.py`.
-  Defaults are neutral: a blank driver strip and a "YOUR LOGO" placeholder.
+  `--profile`, `--design`) are shared by every builder through
+  `src/personalize.py`. Defaults are neutral: a blank driver strip and a
+  "YOUR LOGO" placeholder. `--design` reads a design settings file
+  (`src/design.py`, `docs/YOUR-OWN-DESIGN.md`); without it, the example
+  scheme.

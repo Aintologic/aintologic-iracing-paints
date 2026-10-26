@@ -191,6 +191,26 @@ reads from the car's side). Set all three Car Number chips to `#0C0C0D`.
 (0,35,16) with a 3-texel halo, logo faces (0,120,150), number blocks (0,60,110).
 Validated with an A/B comparison at a level-left pose.
 
+**Your own design (`--design`, `src/design.py`):** `apply_design()`
+sets `DESIGN` and `BODY` / `LINE` / `ACCENT` = the design's body / trim /
+graphic before `build()`. Stripes: `_band_rects()` goes through
+`DESIGN.bands`, so every band set on the car — nose stripes, engine-cover
+stubs, pod sash, wing rear-face bands — follows the stripe style; the ring
+round the nose badge is a trim line, drawn only when `DESIGN.lines_on`.
+Lettering: all three wordmark spots are `DESIGN.wordmark` +
+`DESIGN.lettering_box` — the pod-face lettering (`side_text()`) carries the
+"made with AINTOLOGIC" credit; the wing top and wing rear face
+(`wing_and_endplates()`) pass `credit=False`. Badge: `DESIGN.roundel` on the
+nose (`centre_panels()`). Logos: `sponsors.logo_slot` — logo 1 (endplate outer
+faces) with `DESIGN.logo_colours`, logo 2 (tub side) in lettering / graphic.
+Driver strip: face body, ink lettering, outline graphic. Spec map:
+`DESIGN.spec_values` / `material_keys` / `stripe_mask` (the F4 pattern), and
+`_panel_cover()` puts the panels' white texels back to the car's own white
+finish, so a design's trim finish (chrome, matte) never rims the numbers (a
+no-op in the example scheme). Left fixed: the white number panels
+(`T.WHITE`, under the sim's number stamp).
+No design, or `--design example-scheme`, builds the ready-made paint byte for byte.
+
 **Hidden / occluded — don't put anything that matters here:**
 - tub side rows below ~1520 (under the pod top) and the nose underside;
 - the front of the engine cover under the headrest fairing (x < ~1440) and the

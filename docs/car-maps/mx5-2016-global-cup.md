@@ -898,7 +898,7 @@ constant in the viewer's level side view, which is the pose you judge from.
 
 ## v4.0 — SEBRING SASH + COBRA CENTRE STRIPES, 2026-09-14. THE RIBBON IS GONE.
 
-The front-to-rear ribbon (v3.4–v3.6, `wip/stripe-ribbon`) was scrapped
+The front-to-rear ribbon (v3.4–v3.6) was scrapped
 and replaced with a Cobra/Sebring language: a white | papaya | white
 sash across each FRONT fender, and centred white | papaya | white stripes
 nose → hood → boot lid → tail, with the hood roundel as a node (white ring,
@@ -1029,3 +1029,39 @@ Approved on the render. Changes since v4.0:
     orientation and anisotropy take care of themselves.
 - The old per-island placement table (`RQ_PLACE`) is kept behind
   `RQ_USE_AFFINE = False` for reference only.
+
+## Your own design (`--design`, `src/design.py`)
+
+`apply_design()` in `src/team_mx5.py` sets `DESIGN`, `BODY` and `BAND` (both
+the design's body colour: the lower band stays body colour), `LINE` (its
+trim) and `ACCENT` (its graphic colour) before `build()`; no geometry changes
+with the design. The hooks, all in `src/team_mx5.py`:
+
+- **stripe style:** `_fender_bands()` (the fender sash), `_band_rects()`
+  (every centre-line group `_vbands()` draws: hood, rear deck, nose, bumper
+  top, lip and tail) and the hood feeders (`_feeders()`) go through
+  `DESIGN.bands()`, so each keeps only the bands the style draws. The ring
+  round the hood badge is a thin line, drawn only when `DESIGN.lines_on`. A
+  dropped band leaves the others where they were measured.
+- **lettering:** the door wordmark (`flank_panel()`) is `DESIGN.wordmark()` +
+  `DESIGN.lettering_box()`, with the small "made with AÏNTOLOGIC" credit; the
+  rear valance wordmark passes `credit=False` (the credit rides on the doors).
+- **badge:** the hood roundel is `DESIGN.roundel()`.
+- **logos and driver strip:** logo spot 2 (rear quarters, through
+  `RQ_AFFINE`) is `sponsors.logo_slot(LOGO2, ..., ink=DESIGN.lettering,
+  accent=DESIGN.graphic)`; logo spot 1 (boot lid) is
+  `sponsors.logo_slot(LOGO1, ..., **DESIGN.logo_colours)`. The driver strip
+  takes face / ink / accent from body / lettering / graphic; the tail's
+  checker rule takes graphic / `DESIGN.shade` / trim, and its tow arrow is
+  graphic on body.
+- **finish map:** `spec_from_colour()` uses `DESIGN.spec_values()`,
+  `DESIGN.material_keys()` and `DESIGN.stripe_mask()`. `_panel_cover()` puts
+  the two door number panels' white texels back to the car's own white
+  finish (a no-op in the example scheme), so a design's trim finish (chrome,
+  matte) never rims the numbers.
+- **fixed on purpose:** the white door number panels (N1, N2) stay `T.WHITE`:
+  the sim prints the number on them. The door safety marks (cutoff triangle,
+  extinguisher) keep their own white and black.
+
+No design, or `--design example-scheme`, builds the ready-made paint in
+`paints/mx5-2016-global-cup/` byte for byte.

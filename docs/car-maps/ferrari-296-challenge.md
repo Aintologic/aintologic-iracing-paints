@@ -228,6 +228,31 @@ B3's body (0,170,200) / orange (0,35,16) / white (0,55,30); everything else
 (the logo-slot art) gets decal (0,120,150); a 3-texel orange halo
 (`SPEC_ORANGE_GROW`) keeps the A-bar, the Ï dots and the logo lettering glossy.
 
+**Your own design (`--design`, `src/design.py`):** `apply_design()`
+sets `DESIGN` and `BODY` / `LINE` / `ACCENT` = the design's body / trim /
+graphic before `build()`. Stripes: `_band_offsets()` goes through
+`DESIGN.bands`, so the hood, roof, E strip and rear-lip bands and the fender
+sash follow the stripe style; the roof ring is a trim line, drawn only when
+`DESIGN.lines_on`. The hood-vent gap is body colour, so it follows `BODY`.
+Lettering: `_wm()` = `DESIGN.wordmark` + `DESIGN.lettering_box`; the door
+wordmarks carry the "made with AINTOLOGIC" credit, the windscreen banner, tail
+bumper and wing top pass `credit=False`. A team name at the tail does NOT
+use the wordmark's 170x36 box: island 8's top edge is an arch (row 172 only
+for x 504..608, 180 at x 480/630, 185 at 470/640) and a name filling that box
+lost the tops of its end letters. `_tail_name()` puts it in whichever
+`TAIL_NAME_BOXES` box (all under the arch, all ending at row 206 above the N1
+margin) draws it biggest; the wordmark itself keeps `TAIL_WM_*`.
+Badge: `DESIGN.roundel` on the roof.
+Logos: `sponsors.logo_slot` — logo 1 (hood right rear corner) with
+`DESIGN.logo_colours`, logo 2 (rear haunch) in lettering / graphic. Driver
+strip: face body, ink lettering, outline graphic. Spec map:
+`DESIGN.spec_values` / `material_keys` / `stripe_mask` (the F4 pattern), and
+`_panel_cover()` puts the panels' white texels back to the car's own white
+finish, so a design's trim finish (chrome, matte) never rims the numbers (a
+no-op in the example scheme). Left fixed: the white number panels
+(`T.WHITE`, under the sim's number stamp).
+No design, or `--design example-scheme`, builds the ready-made paint byte for byte.
+
 **Hidden / occluded areas to remember:**
 - the hood vent x 405..575 across the centre (slats; the stripe skips it);
 - the open engine window behind the roof — nothing paintable between

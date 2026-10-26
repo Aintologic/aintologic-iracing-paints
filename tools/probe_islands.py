@@ -18,7 +18,7 @@
 
     python tools/template_layers.py <zip> out/tpl/ray      # once
     python tools/probe_islands.py team_ray out/tpl/ray list
-    python tools/probe_islands.py team_ray out/tpl/ray 4:A:4,2 7:B:3,2 ...
+    python tools/probe_islands.py team_ray out/tpl/ray 4:A:4,2 7:B:3,2 ... --id 123456
 
 `list` prints every island the template's GREEN wire outlines enclose, sorted
 by area, with its index, bbox and centroid.  Each later spec is
@@ -34,7 +34,9 @@ those neighbours too and they render somewhere else entirely.  Masking to the
 island makes every painted texel attributable to one island.  Written for the
 Ray FF1600, 2026-09-14.
 
-The build module must expose build(spec=False), PAINT_DIR and CUSTOMER.
+The build module must expose build(spec=False) and PAINT_DIR.  --id is your
+customer ID (default: the IRACING_CUSTOMER_ID setting; `list` needs none):
+the probe is saved as car_<id>.tga, the only name iRacing loads.
 Read the result from a LEVEL camera (playbook Rule 3a).
 Any paint file already there is backed up into out/backup/ first.
 """
@@ -102,6 +104,11 @@ def islands(tpl_dir, erode=1):
 
 
 def main():
+    # imported here, not at the top: body_mask, island_runs, mirror_row and
+    # island_id_mask import this module only for islands()
+    import iracingpaths
+    from paintfolder import save_tga
+    cid = iracingpaths.take_id()
     if len(sys.argv) < 4:
         sys.exit(__doc__)
     B = importlib.import_module(sys.argv[1])
@@ -112,9 +119,7 @@ def main():
             cy, cx = ndimage.center_of_mass(lab == l)
             print("%-4d %6d %6d %6d %6d %9d  (%d,%d)" % (k, x, y, w, h, area, cx, cy))
         return
-    # imported here, not at the top: body_mask, island_runs, mirror_row and
-    # island_id_mask import this module only for islands()
-    from paintfolder import save_tga
+    out = iracingpaths.test_paint(B.PAINT_DIR, cid)
     by_idx = {k: (l, x, y, w, h) for k, l, x, y, w, h, a in isl}
     img = B.build(spec=False).convert("RGB")
     a = np.asarray(img).copy()
@@ -156,7 +161,6 @@ def main():
         bb = f.getbbox(t)
         d.text((cx - (bb[2] - bb[0]) / 2 - bb[0], cy - (bb[3] - bb[1]) / 2 - bb[1]),
                t, font=f, fill=(0, 0, 0))
-    out = os.path.join(B.PAINT_DIR, "car_%s.tga" % B.CUSTOMER)
     save_tga(img, out)
     print("wrote probe to", out)
 

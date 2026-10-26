@@ -91,16 +91,12 @@ cup car (`team_mx5.py`).
    (`docs/IRACING-PAINTING-PLAYBOOK.md`, Rule 2).
 5. **Never guess a panel.** Measure each one with the probe tools in `tools/`,
    following `docs/PANEL-PROBING.md`: what it covers, which way it runs, and
-   where it sits on both sides of the car. Known problem in this version: the
-   probes save their test pattern as `car_CUSTOMERID.tga`, a name iRacing
-   doesn't load, and look for the paint folder under the `Documents` folder in
-   the user's home folder. Tell the client, and after each probe copy that file
-   to `car_<their customer ID>.tga` in the same folder with
-   `paintfolder.copy_in()`, which backs up their own paint first. Tell them
-   their own paint is replaced by test patterns while you measure, where the
-   backup is, and offer to put it back when you stop. If `check_setup.py` found
-   their paint folder somewhere else (for example in OneDrive), the probes
-   can't reach it yet: say so and stop measuring.
+   where it sits on both sides of the car. Run each probe with
+   `--id <their customer ID>`: iRacing loads only `car_<id>.tga`, so the test
+   pattern replaces their own paint in the car's paint folder while you
+   measure. The tool backs that paint up into `out\backup\<paint folder>\`
+   first and prints where. Tell them before the first probe, tell them where
+   the backup is, and offer to put it back when you stop.
 6. Show the client check pictures as you go, so they can confirm things look
    right.
 7. Record what you measured in a new `docs/car-maps/<car>.md`, so nobody has to
@@ -109,9 +105,12 @@ cup car (`team_mx5.py`).
 
 ### The job, step by step
 
-1. **Take the brief.** Ask only what you need: the car, the driver name for the
-   cockpit strip (or none), up to two logo images, and their iRacing customer ID
-   (needed only to name the final file).
+1. **Take the brief.** Ask only what you need: the car, their colors and team
+   name (or the example design), the driver name for the cockpit strip (or
+   none), up to two logo images, and their iRacing customer ID (needed only to
+   name their files). Without a team name, the AÏNTOLOGIC lettering stays on
+   the car (and the AÏNTOLOGIC badge, unless they choose `badge_text`): say
+   so, and ask for a team name.
 2. **Say what you'll do.** Repeat the brief back in one or two sentences,
    including anything you can't do yet. Wait for a yes.
 3. **Build a preview** into `out`. Convert it to a PNG and show the client, and
@@ -160,7 +159,11 @@ cup car (`team_mx5.py`).
 - **Our marks stay off their car.** Never put AÏntologic, Freak Farm Racing or
   Cats Don't Suck names or logos on a client's car unless they ask. The logos in
   `examples/logos/` and the `cats_dont_suck` and `freakfarm` logo tokens are an
-  opt-in example only. See `TRADEMARKS.md`.
+  opt-in example only. See `TRADEMARKS.md`. The small "made with AÏNTOLOGIC"
+  line that a design puts under the client's team name is the project's
+  credit, not a logo you add: leave it as it is. Without a team name, the
+  AÏNTOLOGIC lettering stays on the car; tell the client so when you take the
+  brief.
 - **iRacing's templates stay private.** Never commit, upload or share an
   iRacing template, or any file generated from one. They stay on the client's
   computer.
@@ -174,12 +177,15 @@ cup car (`team_mx5.py`).
 
 ### Be honest about limits
 
-Today every car carries the example design, with the client's name and two
-logos, saved under their customer ID. Their own colors and layouts are planned
-but not built yet.
-If the client asks for that, say so plainly and offer
-what is possible today. If they want to experiment anyway, work on a copy and
-tell them the result is unsupported.
+Today every measured car can carry the client's own colors, finishes, stripe
+style and team name from a design settings file (`--design`; see
+`docs/YOUR-OWN-DESIGN.md`), with their name and two logos, saved under their
+customer ID. A design can't move anything yet: each car's two logo spots and
+its stripes stay where they are (a design picks what goes in the spots and
+which stripes show), and the number panels stay white because iRacing prints
+the number on them. If the client asks for more than that, say so plainly and
+offer what is possible today. If they want to experiment anyway, work on a
+copy and tell them the result is unsupported.
 
 ### Commands
 
@@ -196,6 +202,12 @@ python src/team_<car>.py --id <customer ID> --driver "<name>" --logo1 <image> --
   "YOUR LOGO" placeholder.
 - `--profile <name>` reads `profiles/<name>.json` with the keys `id`, `driver`,
   `logo1`, `logo2`. Values given on the command line win.
+- `--design <name>` builds the car in the client's own colors, finishes,
+  stripe style and team name. It reads `profiles/designs/<name>.json`, a
+  sample in `examples/designs/`, or any file path. Write the client's design
+  into `profiles/designs/`, never into `examples/designs/`. Every choice and
+  its allowed values are in `docs/YOUR-OWN-DESIGN.md`. Tell the client about
+  any `note:` line the build prints: it means a color will be hard to see.
 
 One-time setup for six measured cars:
 
@@ -203,7 +215,24 @@ One-time setup for six measured cars:
 python tools/first_run.py <f4|ray|hpd|srf|sbf2000|amv> <template.zip>
 ```
 
+Checks: before you propose any change to this project, run the three checks
+GitHub runs on every change, and report what they said:
+
+```
+python tools/privacy_check.py
+python tools/license_check.py
+python tools/check_builds.py
+```
+
+They only read (the build check writes only under `out/check-builds/`). Never
+put a real customer ID, name or folder path into a test or an example; use
+`123456` and placeholders such as `<my folder>`. Private words for the
+privacy check belong in `profiles/private-words.txt`, which is never
+committed. Never add a line to `tools/privacy-accepted.txt` to make a finding
+go away: tell the client what was found and let the maintainer decide.
+
 Further reading: `docs/GETTING-STARTED.md` (the client's side of the job),
+`docs/YOUR-OWN-DESIGN.md` (their own colors and team name),
 `docs/TRUST-AND-SAFETY.md` (what the tools read and write; keep it true when
 you add or change a tool), `docs/IRACING-PAINTING-PLAYBOOK.md` (method),
 `docs/PANEL-PROBING.md` (measuring panels), `docs/REGENERATING-GEOMETRY.md`

@@ -8,7 +8,7 @@ use this project, and you can start with the simplest and move on later.
 | | you need | you get |
 |---|---|---|
 | **Path 1. Just the paints** | iRacing on a Windows PC. Nothing to install. | a ready-made paint in the example design, with a blank name strip and "YOUR LOGO" in both logo spots |
-| **Path 2. Personalize with a command** | Python and four free add-ons, which you install yourself | the example design with your name and your own two logos |
+| **Path 2. Personalize with a command** | Python and four free add-ons, which you install yourself | your name and your own two logos, on the example design or in your own colors and team name |
 | **Path 3. Work with an AI assistant** | the same as path 2, plus an AI assistant that can work with files on your computer | the same, plus help with a car the project hasn't measured yet |
 
 We never install anything for you. Where something is needed, this guide says
@@ -188,7 +188,9 @@ full.
    past its end. For your own
    logos, use PNG pictures with a see-through background (a JPG brings its
    white background along as a box), and either put them in the project
-   folder or type each one's full path in quotes.
+   folder or type each one's full path in quotes. For your own colors and
+   team name, add `--design`:
+   [Your own colors and team name](YOUR-OWN-DESIGN.md) shows how.
 6. The build writes two files into the `out` folder inside the project:
    `car_123456.tga` (the paint) and `car_spec_123456.tga` (the finish). When
    it works, the last lines it prints start with `wrote` and name these two
@@ -201,9 +203,7 @@ full.
 ## Path 3: Work with an AI assistant
 
 You describe the paint and the AI runs the commands from path 2 for you. This
-is also the way to paint a car the project hasn't measured yet. (One known
-problem in this version: while a new car is measured, the measuring tools'
-test patterns don't show in the car viewer. The change log has the details.)
+is also the way to paint a car the project hasn't measured yet.
 
 ### What the AI needs
 
@@ -213,7 +213,8 @@ test patterns don't show in the car viewer. The change log has the details.)
 - **The project folder**, downloaded as in path 2 (open the inner folder, the
   one with `AGENTS.md` in it), and **Python with the four add-ons**, installed
   by you.
-- **Your customer ID**, only to name the finished file.
+- **Your customer ID**, only to name your files: the finished paint, and the
+  test patterns while a new car is measured.
 - **Your logo pictures**, if you want them on the car.
 - **Your OK before it copies anything into iRacing's paint folder.**
   [`AGENTS.md`](../AGENTS.md) tells it to back up what's there first and tell
@@ -221,7 +222,8 @@ test patterns don't show in the car viewer. The change log has the details.)
 - **For a car that isn't measured yet:** that car's paint template from
   iRacing, iRacing on your Windows PC, and your OK to use the viewer tools.
   They move the mouse inside iRacing's car viewer to take screenshots of the
-  car while it is measured.
+  car while it is measured. Until it's done, test patterns replace your paint
+  for that car; your paint is backed up first.
 
 ### What it doesn't need, and won't ask for
 

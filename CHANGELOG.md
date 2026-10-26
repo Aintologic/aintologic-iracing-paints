@@ -4,6 +4,79 @@ What changed in each version of iRacing Paints, newest first. How the version
 numbers work is explained in the README's [Versions](README.md#versions)
 section.
 
+## 0.3.0 (2026-10-26)
+
+Still an early preview. This version is about making the car yours: your own
+colors, finishes, stripe style and team name, on every measured car. GitHub
+now also checks every change automatically. The ready-made paints are
+unchanged, byte for byte.
+
+### What's new
+
+- **Your own colors and team name.** A design settings file, a small text
+  file, sets the car's body, stripe, trim and lettering colors, how each part
+  takes the light (gloss, satin, matte, metallic, pearl, chrome or brushed),
+  which stripes are drawn, what goes in the two logo spots, and your team
+  name in place of the big AÏNTOLOGIC lettering, with a small "made with
+  AÏNTOLOGIC" line under it. Add `--design` to build any of the ten measured
+  cars with it; the same file works on all of them. Four samples to start
+  from are in `examples/designs/`, and the new guide,
+  [`docs/YOUR-OWN-DESIGN.md`](docs/YOUR-OWN-DESIGN.md), explains every
+  choice. Anything you leave out keeps the example design, and with no design
+  every car builds exactly the same paint as before. The build also warns you
+  when a color will be hard to see. The number panels stay white, with their
+  own finish, because iRacing prints the number on them. `TRADEMARKS.md` now
+  also says you may race a paint you built with the tools on your own car,
+  the "made with AÏNTOLOGIC" line included.
+  ([#5](https://github.com/Aintologic/aintologic-iracing-paints/issues/5))
+- **Automatic checks on every change.** Each time a change is pushed or
+  offered as a pull request, GitHub now checks it on Windows and on Linux:
+  nothing that looks private in the files or their history, every license in
+  place, and the cars built with their default settings match the ready-made
+  paints byte for byte. A design check builds each car again with every
+  sample design: the example-scheme sample must make exactly the default
+  paint, and every other sample a different one. The badge at the top of the
+  README shows the latest result, and you can run the same checks yourself:
+  `tools/privacy_check.py`, `tools/license_check.py` and
+  `tools/check_builds.py` (see `CONTRIBUTING.md`).
+  ([#12](https://github.com/Aintologic/aintologic-iracing-paints/issues/12))
+
+### What's fixed
+
+- **The measuring tools' test patterns now show on the car.** They saved
+  their test pattern as `car_CUSTOMERID.tga`, a name iRacing doesn't load, so
+  the car viewer kept showing the old paint. Now each one takes your customer
+  ID with `--id` (or from an `IRACING_CUSTOMER_ID` setting) and saves the test
+  pattern as `car_<your ID>.tga`, the name iRacing loads. Without an ID they
+  stop and say what they need instead of writing a file iRacing ignores.
+  While a car is measured, the test patterns replace your own paint for that
+  car, so your paint is still backed up into `out\backup` first, and the tool
+  says where. They also refuse an ID that one of your saved profiles lists
+  under `protect_ids`. This covers `tools/probe.py`, `probe_affine.py`,
+  `probe_bands.py`, `probe_islands.py`, `probe_multi.py`, `probe_ruler.py`,
+  `probe_ticks.py`, `coord_grid.py`, `spec_flat.py` and `spec_ladder.py`.
+  ([#17](https://github.com/Aintologic/aintologic-iracing-paints/issues/17))
+- **They find your paint folder if Windows has moved Documents,** for example
+  into OneDrive. They ask Windows where Documents is, the same way
+  `tools/check_setup.py` does.
+  ([#17](https://github.com/Aintologic/aintologic-iracing-paints/issues/17))
+- `AGENTS.md` no longer tells your AI assistant to copy each test pattern by
+  hand; the guides show the `--id` option instead.
+
+### Known issues
+
+- **The logo spots stay where they are.** Each car has its two logo spots in
+  fixed places: a design picks what goes in them, not where they are. The
+  stripes keep each car's layout too; a design picks their colors and which
+  ones show.
+  ([#5](https://github.com/Aintologic/aintologic-iracing-paints/issues/5))
+- **GitHub builds four of the ten cars:** the MX-5, the Porsche 911 RSR, the
+  Ferrari 296 Challenge and the Lotus 79. The other six need their one-time
+  setup step, which reads iRacing's own paint template, and iRacing's
+  templates can't be published. Those six are checked on a computer with the
+  templates before each release.
+  ([#12](https://github.com/Aintologic/aintologic-iracing-paints/issues/12))
+
 ## 0.2.0 (2026-10-25)
 
 Still an early preview. This version is about newcomers: getting started

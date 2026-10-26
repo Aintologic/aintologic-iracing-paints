@@ -86,27 +86,30 @@ before believing it.**
 Since 2026-09-13. Car-agnostic: give it the build module and it paints the
 probe OVER that build's live livery.
 
-    python tools/probe.py team_mx5 grid --n 8                 # section 3
-    python tools/probe.py team_mx5 rect 1024 0 512 512 --n 4  # sections 1-2
-    python tools/probe.py team_mx5 bands 1280 1536 256 256 --n 8   # section 4
+    python tools/probe.py team_mx5 grid --n 8 --id 123456                 # section 3
+    python tools/probe.py team_mx5 rect 1024 0 512 512 --n 4 --id 123456  # sections 1-2
+    python tools/probe.py team_mx5 bands 1280 1536 256 256 --n 8 --id 123456   # section 4
 
 Every cell carries its label, a red bar on its texture-top edge and a blue
 bar on its texture-left edge. Then `tools/contact.py` for six angles, and
 `tools/zoom.py` to crop and upscale the one you need to read. The build
-module only needs `build(spec=False)`, `PAINT_DIR` and `CUSTOMER`.
-`probe.py` writes into the car's iRacing paint folder through
-`src/paintfolder.py`, which first copies the file that's there into
-`out/backup/<paint folder>/` and prints where; a rerun over its own test
-pattern isn't copied again. Every probe and `coord_grid.py`, `spec_flat.py`
-and `spec_ladder.py` do the same.
+module only needs `build(spec=False)` and `PAINT_DIR`.
 
-**Known problem (0.2.0):** the probes save their test pattern as
-`car_CUSTOMERID.tga` (the builder's placeholder name), which iRacing doesn't
-load, and look for the paint folder under the `Documents` folder in your
-home folder. If a probe seems to have no effect, check the file name before
-you blame the reload. Until it's fixed, copy the test pattern to
-`car_<your customer ID>.tga` in the same folder after each probe, with
-`paintfolder.copy_in()` so your own paint is backed up first.
+**`--id` is your iRacing customer ID** (`123456` above stands in for it).
+iRacing loads only `car_<your customer ID>.tga`, so every probe and
+`coord_grid.py`, `spec_flat.py` and `spec_ladder.py` save their test pattern
+under that name; without an ID they stop and say so. Set
+`IRACING_CUSTOMER_ID` once and you can leave `--id` off. They find the
+paint folder where Windows really keeps Documents, even when it has been
+moved (into OneDrive, for example), the same way `tools/check_setup.py`
+does (`src/iracingpaths.py`). They refuse an ID a profile lists under
+`protect_ids`.
+
+The test pattern replaces your own paint while you measure. Each tool writes
+through `src/paintfolder.py`, which first copies the file that's there into
+`out/backup/<paint folder>/` and prints where; a rerun over its own test
+pattern isn't copied again. Put that copy back, or copy a finished paint in,
+when you're done.
 
 **Camera:** `view2.py --drag 260` is ~90°. Pitch clamps, so `--drag-y -600`
 is always level and `+600` always top-down — if a capture is top-down, that

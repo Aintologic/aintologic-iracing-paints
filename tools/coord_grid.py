@@ -16,7 +16,7 @@
 
 """Paint the WHOLE texture as a labelled coordinate grid, over the live build.
 
-    python tools/coord_grid.py team_hpd [cell]
+    python tools/coord_grid.py team_hpd [cell] --id 123456
 
 Every `cell`-texel square (default 128) is tinted in a 4-colour checker so
 neighbours always differ, and carries its own texture coordinate as "COL,ROW"
@@ -33,7 +33,9 @@ layer is blank. Read it from LEVEL side / dead front / dead rear / top frames
 (playbook Rule 3a), then zoom with tools/zoom.py to read the labels.
 
 Coordinates are COL,ROW in units of `cell`; texel x = COL * cell.
-The build module must expose build(spec=False), PAINT_DIR and CUSTOMER.
+The build module must expose build(spec=False) and PAINT_DIR.  --id is your
+customer ID (default: the IRACING_CUSTOMER_ID setting): the grid is saved as
+car_<id>.tga, the only name iRacing loads.
 Any paint file already there is backed up into out/backup/ first.
 """
 import importlib, os, sys
@@ -42,15 +44,18 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 from paintfolder import save_tga
+import iracingpaths
 FONT = os.path.join(ROOT, "fonts", "ArchivoBlack-Regular.ttf")
 TINTS = [(250, 250, 250), (255, 210, 120), (150, 235, 255), (200, 255, 190)]
 
 
 def main():
+    cid = iracingpaths.take_id()
     if len(sys.argv) < 2:
         sys.exit(__doc__)
     B = importlib.import_module(sys.argv[1])
     cell = int(sys.argv[2]) if len(sys.argv) > 2 else 128
+    out = iracingpaths.test_paint(B.PAINT_DIR, cid)
     img = B.build(spec=False).convert("RGB")
     d = ImageDraw.Draw(img)
     f = ImageFont.truetype(FONT, int(cell * 0.30))
@@ -69,7 +74,6 @@ def main():
             d.text((x0 + cell / 2 - (bb[2] - bb[0]) / 2 - bb[0],
                     y0 + cell / 2 - (bb[3] - bb[1]) / 2 - bb[1]),
                    t, font=f, fill=(0, 0, 0))
-    out = os.path.join(B.PAINT_DIR, "car_%s.tga" % B.CUSTOMER)
     save_tga(img, out)
     print("wrote", out, "- cell", cell, "->", n, "x", n,
           "; labels are COL,ROW in units of", cell)

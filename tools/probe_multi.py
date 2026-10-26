@@ -16,7 +16,7 @@
 
 """Labelled-cell probe over SEVERAL rects at once, on top of the live livery.
 
-    python tools/probe_multi.py team_f4 SR:67,234,838,210:6,2 SL:71,1830,838,193:6,2 ...
+    python tools/probe_multi.py team_f4 SR:67,234,838,210:6,2 SL:71,1830,838,193:6,2 ... --id 123456
 
 Each spec is NAME:x,y,w,h:cols,rows.  Cells are labelled NAME + index
 (row-major, 1-based), filled from an 8-colour palette, with a RED bar on the
@@ -24,7 +24,9 @@ texture-TOP edge and a BLUE bar on the texture-LEFT edge (playbook Rule 3),
 so orientation and mirroring read in one look.  Written 2026-09-14 for the
 F4, whose UV has ~20 islands worth probing - one rect per reload (probe.py)
 would have cost a reload per island.  The build module must expose
-build(spec=False), PAINT_DIR and CUSTOMER.  Read from a LEVEL camera.
+build(spec=False) and PAINT_DIR.  --id is your customer ID (default: the
+IRACING_CUSTOMER_ID setting): the probe is saved as car_<id>.tga, the only
+name iRacing loads.  Read from a LEVEL camera.
 Any paint file already there is backed up into out/backup/ first.
 """
 import importlib, os, sys
@@ -32,6 +34,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 from PIL import ImageDraw, ImageFont
 from paintfolder import save_tga
+import iracingpaths
 
 FONT = os.path.join(ROOT, "fonts", "ArchivoBlack-Regular.ttf")
 PAL = [(255, 0, 220), (0, 255, 90), (255, 230, 0), (0, 200, 255),
@@ -50,9 +53,11 @@ def cell(d, x0, y0, w, h, label, col):
 
 
 def main():
+    cid = iracingpaths.take_id()
     if len(sys.argv) < 3:
         sys.exit(__doc__)
     B = importlib.import_module(sys.argv[1])
+    out = iracingpaths.test_paint(B.PAINT_DIR, cid)
     img = B.build(spec=False)
     d = ImageDraw.Draw(img)
     k = 0
@@ -66,7 +71,6 @@ def main():
                 cell(d, x + c * cw, y + r * ch, cw, ch, "%s%d" % (name, r * cols + c + 1), PAL[k % 8])
                 k += 1
         print("%s: %dx%d cells of %dx%d at (%d,%d)" % (name, cols, rows, cw, ch, x, y))
-    out = os.path.join(B.PAINT_DIR, "car_%s.tga" % B.CUSTOMER)
     save_tga(img, out)
     print("wrote probe to", out)
 

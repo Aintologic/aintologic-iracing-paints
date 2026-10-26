@@ -16,7 +16,7 @@
 
 """Tick probe: thin numbered cross-lines over the LIVE stripe, one reload.
 
-    python tools/probe_ticks.py team_rsr HOOD:215,744:X:1306:25 COVER:153,443:Y:318:25 ...
+    python tools/probe_ticks.py team_rsr HOOD:215,744:X:1306:25 COVER:153,443:Y:318:25 ... --id 123456
 
 Spec NAME:a,b:AXIS:centre:step.  AXIS X: the stripe runs along x, centred on
 row `centre`; a magenta 2-texel line is drawn ACROSS the stripe (centre+-110)
@@ -25,6 +25,8 @@ x as a label beside the stripe.  AXIS Y: the same with the roles swapped.
 Purpose (RSR, 2026-09-14): measure the RENDERED width of the existing stripe
 per texture column, so the band widths can be set per column and the stripe
 reads one width through islands of different texel density.
+--id is your customer ID (default: the IRACING_CUSTOMER_ID setting): the probe
+is saved as car_<id>.tga, the only name iRacing loads.
 Any paint file already there is backed up into out/backup/ first.
 """
 import importlib, os, sys
@@ -32,13 +34,16 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 from PIL import Image, ImageDraw, ImageFont
 from paintfolder import save_tga
+import iracingpaths
 
 FONT = os.path.join(ROOT, "fonts", "ArchivoBlack-Regular.ttf")
 HALF = 110
 
 
 def main():
+    cid = iracingpaths.take_id()
     B = importlib.import_module(sys.argv[1])
+    out = iracingpaths.test_paint(B.PAINT_DIR, cid)
     img = B.build(spec=False).convert("RGBA")
     d = ImageDraw.Draw(img)
     f = ImageFont.truetype(FONT, 22)
@@ -58,7 +63,6 @@ def main():
                 if big:
                     d.text((c + HALF + 4, v - 10), str(v), font=f, fill=col)
         print(name, "ticks", a, "..", b, "step", step)
-    out = os.path.join(B.PAINT_DIR, "car_%s.tga" % B.CUSTOMER)
     save_tga(img.convert("RGB"), out)
     print("wrote probe to", out)
 

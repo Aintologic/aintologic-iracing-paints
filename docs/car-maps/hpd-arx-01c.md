@@ -182,3 +182,23 @@ All of it is in `src/team_hpd.py` as named constants.
    other on this car, and it is the first thing to run on the next one.
 4. Read everything from a **level** camera, and judge text orientation from a
    full-resolution crop, never a contact-sheet tile.
+5. **Your own design (`--design`, `src/design.py`, issue #5):**
+   `apply_design()` sets `DESIGN` and `BODY` / `LINE` / `ACCENT` = the
+   design's body / trim / graphic before `build()`. Stripes: `_band_rects()`
+   goes through `DESIGN.bands`, so the nose and engine-cover centre stripes
+   (`centre_line()`) and the front-fender sash (`side_geometry()`) follow the
+   stripe style; the ring round the nose badge is a trim line, drawn only when
+   `DESIGN.lines_on`. Lettering: both wordmark spots are `DESIGN.wordmark` +
+   `DESIGN.lettering_box` — the sidepod flanks (`side_text()`) carry the
+   "made with AINTOLOGIC" credit; the rear-wing top (`wing_and_endplates()`)
+   passes `credit=False`. Badge: `DESIGN.roundel` on the nose. Logos:
+   `sponsors.logo_slot` — logo 1 (both endplate outer faces, at their
+   deliberate per-side sizes) with `DESIGN.logo_colours`, logo 2 (engine-cover
+   top shoulders, `cover_flanks()`) in lettering / graphic. Driver strip: face
+   body, ink lettering, outline graphic. Spec map: `DESIGN.spec_values` /
+   `material_keys` / `stripe_mask` (the F4 pattern), and `_panel_cover()`
+   puts the panels' white texels back to the car's own white finish, so a
+   design's trim finish (chrome, matte) never rims the numbers (a no-op in
+   the example scheme). Left fixed: the white number panels (`T.WHITE`,
+   under the sim's number stamp); this car draws no other safety furniture.
+   No design, or `--design example-scheme`, builds v1.0 byte for byte.

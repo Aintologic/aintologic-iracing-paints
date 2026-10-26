@@ -213,3 +213,30 @@ LEFT texture space (y > 1347); `place()` does the right side
    `python tools/island_id_mask.py <tpl> assets/sbf2000-pod-islands.png 8=8 5=5`.
 5. Mirror: `python tools/mirror_row.py <tpl> 2670 2715 9/8 29/27 31/30 3/3 17/17`
    (sides 2695, centre 2691); `python tools/mirror_row.py <tpl> 385 415 15/16` (398).
+6. **Your own design (`--design`, `src/design.py`)** — wired the F4 way.
+   `apply_design()` sets `DESIGN`, `BODY` (body), `LINE` (trim) and `ACCENT`
+   (graphic) before `build()`; no geometry changes with the design.
+   - Stripe style: `_band_rects()` passes every band group through
+     `DESIGN.bands()` — the centre stripes (nose tip taper, nose top, scuttle,
+     the tapering spine and the tail) and both sash pieces (pod top and pod
+     face). The node's ring is a thin line, drawn only when `DESIGN.lines_on`.
+   - Team name: `side_text()` puts it in the flank wordmark's box with
+     `DESIGN.lettering_box()`, with the small "made with AÏNTOLOGIC" credit
+     (the flank is this car's only big lettering).
+   - Badge: `DESIGN.roundel()` at the scuttle node. Driver strip: face body,
+     ink lettering, outline graphic. Logo spot 2 (pod face):
+     `sponsors.logo_slot(..., ink=lettering, accent=graphic)`; logo spot 1
+     (pod top): `**DESIGN.logo_colours`.
+   - Finishes: `spec_from_colour()` uses `DESIGN.spec_values`,
+     `DESIGN.material_keys` and `DESIGN.stripe_mask`, which leaves out the
+     soft edges of the trim lines and the lettering, so the 3 px
+     graphic-finish halo (`SPEC_ORANGE_GROW`) does not spread into dark lines
+     on a light body. It does nothing in the example scheme.
+     `_panel_cover()` puts the number panels' white texels back to the
+     car's own white finish (also a no-op in the example scheme), so a
+     design's trim finish (chrome, matte) never rims the numbers.
+   - Fixed by convention: the three white number panels (the sim stamps the
+     number on them), the cutoff triangle (red / blue / white) and the
+     extinguisher mark (red ring, white disc, black E).
+   - No `--design`, or `--design example-scheme`, builds the locked example
+     byte for byte.

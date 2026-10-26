@@ -1,0 +1,11 @@
+{
+  "note": "A sample design: deep blue with a yellow stripe and white lines. Copy it to profiles/designs/ and change anything.",
+  "team_name": "EXAMPLE RACING",
+  "colors": {
+    "body": "#14306E",
+    "graphic": "#FFC20E",
+    "trim": "#F2F2F2",
+    "lettering": "#F2F2F2"
+  },
+  "stripes": "classic"
+}

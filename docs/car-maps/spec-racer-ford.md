@@ -166,6 +166,32 @@ All named constants at the top of `src/team_srf.py`.
    `python tools/body_mask.py <tpl> assets/srf-centre-mask.png 5 10 4`,
    `python tools/body_mask.py <tpl> assets/srf-side-mask.png 0 1 6 7 2 3 12 13 14 15 9 8 18 17`,
    `python tools/island_id_mask.py <tpl> assets/srf-sash-islands.png 1=1 14=14 12=12`.
+5. **Your own design (`--design`, `src/design.py`).** `apply_design()` sets
+   `DESIGN`, `BODY` (body), `LINE` (trim) and `ACCENT` (graphic) before
+   `build()`; no geometry changes with the design.
+   - Stripe style: `_band_rects()` passes every band group through
+     `DESIGN.bands()` — the centre stripes (nose face, nose top, deck) and both
+     sash pieces (shoulder and the per-texel flank). The deck node's ring is a
+     thin line, drawn only when `DESIGN.lines_on`.
+   - Team name: `door_text()` puts it in the door wordmark's box with
+     `DESIGN.lettering_box()`, with the small "made with AÏNTOLOGIC" credit;
+     `tail()` does the same on the tail face with `credit=False` (210 texels
+     is too small for the credit).
+   - Badge: `DESIGN.roundel()` at the deck node. Driver strip: face body,
+     ink lettering, outline graphic. Logo spot 2 (rear fender tops):
+     `sponsors.logo_slot(..., ink=lettering, accent=graphic)`; logo spot 1
+     (tail): `**DESIGN.logo_colours`.
+   - Finishes: `spec_from_colour()` uses `DESIGN.spec_values` and
+     `DESIGN.material_keys` and `DESIGN.stripe_mask` (which keeps the soft
+     edges of dark lettering on a light body on the trim finish instead of
+     the graphic finish), plus one local helper, a no-op in the example
+     scheme: `_panel_cover()` puts the number panels' white texels back to the car's
+     own white finish, so a design's trim finish (chrome, matte) never rims
+     the numbers.
+   - Fixed by convention: the four white number panels (the sim stamps the
+     number on them), colour and finish. This car draws no safety furniture.
+   - No `--design`, or `--design example-scheme`, builds the example scheme
+     byte for byte.
 
 ## Known and accepted in v1.0
 

@@ -12,6 +12,9 @@ What you may do:
 
 - Race the ready-made paints and the example logos on **your own** iRacing car,
   for **personal, non-commercial** use.
+- Race a paint you built with these tools on **your own** iRacing car, for
+  **personal, non-commercial** use, including the AÏNTOLOGIC lettering, badge
+  or small "made with AÏNTOLOGIC" line the tools put on it.
 
 What you may not do:
 

@@ -1,5 +1,7 @@
 ![AÏntologic iRacing Paints](assets/brand/banner.png)
 
+[![Checks](https://github.com/Aintologic/aintologic-iracing-paints/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/Aintologic/aintologic-iracing-paints/actions/workflows/checks.yml)
+
 # iRacing Paints
 
 **Paint any iRacing car with help from an AI assistant.**
@@ -26,9 +28,11 @@ explained below. Nothing in this project installs itself.
 > **Where it stands today.** Ten cars are already measured and painted. They
 > were chosen to cover the main kinds of car: formula cars, a prototype, GT
 > cars and road-based cup cars. Any other car takes one extra step: the AI
-> measures it first. On any car you can put your name and two logos of your own
-> on an example design, saved under your iRacing customer ID. Picking your own
-> colors and layout isn't in this version yet; it's planned for a later one.
+> measures it first. On any measured car you can put your name and two logos
+> of your own, saved under your iRacing customer ID, and choose your own
+> colors, finishes, stripe style and team name
+> ([how](docs/YOUR-OWN-DESIGN.md)). Each car's stripes and two logo spots
+> stay where they are for now.
 
 ## What and why
 
@@ -66,8 +70,10 @@ is written in plain language, so you can read exactly what the AI is told.
 ## What "done" looks like
 
 - One paint file, `car_<your customer ID>.tga`, in iRacing's paint folder for
-  that car. An optional second file, `car_spec_<your customer ID>.tga`, adds the
-  satin and gloss finish.
+  that car. A second file, `car_spec_<your customer ID>.tga`, adds the finish:
+  how each part takes the light. It's optional for the ready-made paints
+  (satin and gloss); with your own design it holds your finishes, so copy it
+  too.
 - The car shows your paint in iRacing's car viewer and on track.
 - By default only you see it. Other drivers see it if you share it through a
   paint service such as Trading Paints (a step-by-step guide is planned).
@@ -197,17 +203,27 @@ python src/team_mx5.py --id 123456 --driver "A. DRIVER" --logo1 mylogo1.png --lo
 | `--logo1`, `--logo2` | your own PNG images for the two logo spots (leave them out for the "YOUR LOGO" placeholder) |
 | `--out` | the folder the files are written to (default: `out` in the project folder) |
 | `--profile` | load saved settings from `profiles/<name>.json` instead of typing them each time |
+| `--design` | your own colors, finishes, stripe style and team name, from a design settings file (leave it out for the example design) |
 
 A profile is a small text file such as `profiles/me.json` holding
 `{"id": "123456", "driver": "A. DRIVER", "logo1": "mylogo1.png"}`. Git
 ignores the `profiles` folder, so it stays on your computer.
+
+**Your own colors and team name.** A design settings file is another small
+text file. It sets the car's colors, how each part takes the light (gloss,
+satin, metallic and more), which stripes are drawn, and your team name in
+place of the big AÏNTOLOGIC lettering. Try a sample first, such as
+`--design blue-and-yellow`; the four samples are in `examples/designs/`. The
+same file works on every measured car.
+[`docs/YOUR-OWN-DESIGN.md`](docs/YOUR-OWN-DESIGN.md) shows how to make your
+own, and every choice in it.
 
 A build writes exactly two files into the `--out` folder:
 
 | file | what it is |
 |---|---|
 | `car_<id>.tga` | the paint |
-| `car_spec_<id>.tga` | the finish: which parts are satin and which are glossy |
+| `car_spec_<id>.tga` | the finish: how each part takes the light (satin and gloss in the example design, or the finishes your design picks) |
 
 Nothing else, unless you ask for it: `--png` also writes the paint as a flat
 picture (`car_<id>.png`), and `--no-spec` leaves out the finish file. On the
@@ -295,7 +311,9 @@ and the ten ready-made paints work, but the project isn't finished, and things
 may still change from one version to the next. Version 1.0.0 will come when a
 newcomer can do all four of these:
 
-- choose their own colors and design;
+- choose their own colors and design (colors, finishes, stripe style and a
+  team name came in 0.3.0; other stripe layouts and choosing where the logos
+  go aren't in yet);
 - paint a car the project hasn't measured yet, by following a plain
   start-to-finish guide;
 - get started from a guide written for people who don't code;
@@ -329,6 +347,37 @@ is at `v1.1`, as the top of its
 [car map](docs/car-maps/aston-martin-vantage-gt3-evo.md) says. A car's design
 revision only goes up when that car's paint changes. The project's version goes
 up with every release, whether or not any paint changed.
+
+## Automatic checks
+
+Every time a change is pushed to this project or offered as a pull request,
+GitHub runs the same checks on a Windows computer and a Linux one. The
+**Checks** badge at the top of this page shows whether the latest run passed.
+They check that:
+
+- **nothing that looks private has crept in:** no numbers shaped like
+  customer IDs, folder paths from someone's computer, race results, links to
+  AI chats, iRacing template files or keys, in the files or anywhere in their
+  history. Names can't be spotted by a pattern, so before each release the
+  maintainer also runs this check with a private list of names and IDs;
+- **every license is in place:** the code, the paints, the example logos and
+  the fonts each carry theirs;
+- **the cars build, and match the ready-made paints:** each one, built with
+  its default settings, makes files identical, byte for byte, to the ones in
+  `paints/`;
+- **every car reads the design settings:** each one is built again with
+  every sample design in `examples/designs/`. The example-scheme sample must
+  make exactly the default paint, and every other sample must build and make
+  a different one.
+
+GitHub builds only four of the ten measured cars: the MX-5, the Porsche 911
+RSR, the Ferrari 296 Challenge and the Lotus 79. The other six need their
+one-time setup step, which reads iRacing's own paint template for the car, and
+iRacing's templates can't be published, so GitHub doesn't have them. Those six
+are checked on a computer that has the templates before each release.
+
+You can run the same checks on your own computer;
+[`CONTRIBUTING.md`](CONTRIBUTING.md) shows how.
 
 ## Getting involved
 
